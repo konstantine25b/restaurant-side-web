@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import COLORS from "../themes/colors";
 
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import LeftNavbarList from "./pageComponents/LeftNavbarList";
 
 export default function HomePage() {
   return (
@@ -13,17 +14,8 @@ export default function HomePage() {
             <CompanyName>Fast Order</CompanyName>
           </LeftSideTop>
           <LeftSideList>
-            <listItems>
-              <listItemTitle>Categories</listItemTitle>
-              <ChevronDownIcon
-                style={{
-                  width: 20,
-                  height: 20,
-                  color: 'white',
-                }}
-                
-              />
-            </listItems>
+            <LeftNavbarList title={"Restaurant Info"} data={["address" , "MainImage" ]}/>   
+            <LeftNavbarList title={"Products & Categories"} data={["Products" , "Categories" ]}/>     
           </LeftSideList>
         </LeftSide>
         <UpperSide>
@@ -47,10 +39,9 @@ const UpperSide = styled.div`
   align-items: center;
 `;
 const UpperSideIn = styled.div`
-  width: 94%;
+  width: 97%;
   display: flex;
 
-  margin-left: 3%;
   margin-right: 3%;
   padding: 20px 0px;
   justify-content: right;
@@ -88,7 +79,9 @@ const LeftSideTop = styled.div`
 const LeftSideList = styled.ul`
   display: flex;
   flex-direction: column;
+  max-width: 100%;
+  margin: 0;
+  padding: 10px 10px;
 `;
-const listItems = styled.li``;
 
-const listItemTitle = styled.p``;
+

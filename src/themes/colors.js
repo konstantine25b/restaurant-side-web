@@ -8,5 +8,6 @@ const COLORS = {
     light: "#f7f7f7",
     light2: "#dbdbdb",
     blue: "rgb(6 30 52)",
+    insideBlue: "rgb(18 43 67)",
   };
   export default COLORS;
