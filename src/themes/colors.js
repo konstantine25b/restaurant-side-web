@@ -10,6 +10,7 @@ const COLORS = {
     blue: "rgb(6 30 52)",
     insideBlue: "rgb(18 43 67)",
     green: "#5cdb5c",
-    red: "#ff0021"
+    red: "#ff0021",
+    yellow: "#ffff00",
   };
   export default COLORS;

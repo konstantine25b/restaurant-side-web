@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import './MainImage.css';
 
 export default function AddCategories() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit , formState: { errors }} = useForm();
   const onSubmit = (data) => console.log(data);
   const navigate = useNavigate();
 
@@ -37,15 +37,17 @@ export default function AddCategories() {
       
       <NameP>Name (English)</NameP>
       <NameInput {...register("NameEng", { required: true})} />
+      {errors.NameEng?.type === 'required' && <p style={{color:'red' ,margin: 0 , paddingLeft: 18,}} role="alert">English Name is required</p>}
       <NameP>Name (Georgian)</NameP>
       <NameInput {...register("NameGeo", { required: true})} />
+      {errors.NameGeo?.type === 'required' && <p style={{color:'red' ,margin: 0 , paddingLeft: 18,}} role="alert">Georgian Name is required</p>}
       
       <div className="image-uploader">
     <label className="file-label">
       <input
         className="file-input"
         type="file"
-        {...register("img", { required: true})}
+        {...register("img")}
         onChange={handleFileInputChange}
         
       />
@@ -71,6 +73,7 @@ export default function AddCategories() {
       />
     )}
   </div>
+  {!selectedFile?.name && <p style={{color:"yellow" ,margin: 0 , marginTop: -10, paddingLeft: 18,}} role="alert">picture is not selected</p>}
       
       <SubmitInput type="submit" />
      
@@ -146,7 +149,7 @@ const SubmitInput = styled.input`
   justify-content: center;
   align-items: center;
   border-radius: 10px;
-  margin-top: 18px;
+  margin-top: 38px;
   margin-left: 18px;
   margin-bottom: 30px;
 `;
