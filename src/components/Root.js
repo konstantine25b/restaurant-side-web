@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
 import COLORS from "../themes/colors";
-
 import LeftNavbarList from "./pageComponents/LeftNavbarList";
 import { Outlet, useNavigate } from "react-router-dom";
 

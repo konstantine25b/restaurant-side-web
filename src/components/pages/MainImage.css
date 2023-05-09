@@ -1,8 +1,9 @@
 .image-uploader {
   margin: 2rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  gap: 10px;
 }
 
 .file-label {
@@ -43,7 +44,7 @@
 
 .selected-file-preview {
   margin-top: 1rem;
-  max-width: 400px;
+  max-width: 200px;
 }
 
 
