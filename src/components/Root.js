@@ -2,27 +2,36 @@ import React from "react";
 import styled from "@emotion/styled";
 import COLORS from "../themes/colors";
 
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import LeftNavbarList from "./pageComponents/LeftNavbarList";
+import { Outlet, useNavigate } from "react-router-dom";
 
-export default function HomePage() {
+export default function Root() {
+  const navigate = useNavigate();
+
   return (
     <Main>
       <Page>
         <LeftSide>
           <LeftSideTop>
-            <CompanyName>Fast Order</CompanyName>
+            <CompanyName onClick={() => navigate(`/`)}>Fast Order</CompanyName>
           </LeftSideTop>
           <LeftSideList>
-            <LeftNavbarList title={"Restaurant Info"} data={["address" , "MainImage" ]}/>   
-            <LeftNavbarList title={"Products & Categories"} data={["Products" , "Categories" ]}/>     
+            <LeftNavbarList
+              title={"Restaurant Info"}
+              data={["Address", "MainImage"]}
+            />
+            <LeftNavbarList
+              title={"Products & Categories"}
+              data={["Products", "Categories"]}
+            />
           </LeftSideList>
         </LeftSide>
-        <UpperSide>
+        <RightSide>
           <UpperSideIn>
             <UserTitle>konstantin@gmail.com</UserTitle>
           </UpperSideIn>
-        </UpperSide>
+          <Outlet />
+        </RightSide>
       </Page>
     </Main>
   );
@@ -31,24 +40,28 @@ export default function HomePage() {
 const Main = styled.div`
   width: 100%;
 `;
-const UpperSide = styled.div`
+const RightSide = styled.div`
   width: 100%;
   display: flex;
-  background-color: ${COLORS.light};
-  height: 80px;
+  flex-direction: column;
+  height: 100%;
+
   align-items: center;
 `;
 const UpperSideIn = styled.div`
-  width: 97%;
+  width: 100%;
   display: flex;
-
-  margin-right: 3%;
+  height: 40px;
+  padding-right: 3%;
+  background-color: ${COLORS.light};
   padding: 20px 0px;
   justify-content: right;
+  align-items: center;
 `;
 const UserTitle = styled.p`
   font-size: 17px;
   margin: 0;
+  margin-right: 30px;
 `;
 const CompanyName = styled.p`
   font-size: 30px;
@@ -83,5 +96,3 @@ const LeftSideList = styled.ul`
   margin: 0;
   padding: 10px 10px;
 `;
-
-
