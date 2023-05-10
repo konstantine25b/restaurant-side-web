@@ -29,8 +29,8 @@ export default function AddProduct() {
     <>
      
       <Select1 name={name} ref={ref} onChange={onChange} onBlur={onBlur}>
-         {valueData?.map((value)=>{
-            return ( <option value={value}>{value}</option>)
+         {valueData?.map((value,index)=>{
+            return ( <option key = {index} value={value}>{value}</option>)
          })}
        
       
