@@ -6,6 +6,8 @@ import MainImage from './components/pages/MainImage';
 import HomePage from './components/pages/HomePage';
 import Categories from './components/pages/Categories';
 import AddCategories from './components/pages/AddCategories';
+import Products from './components/pages/Products';
+import AddProduct from './components/pages/AddProduct';
 
 
 const router = createBrowserRouter(
@@ -15,6 +17,8 @@ const router = createBrowserRouter(
        <Route path="/MainImage"  element={<MainImage/>}/>
        <Route path="/Categories"  element={<Categories/>}/>
        <Route path="/Categories/AddCategories"  element={<AddCategories/>}/>
+       <Route path="/Products"  element={<Products/>}/>
+       <Route path="/Products/AddProduct"  element={<AddProduct/>}/>
       
     </Route>
     

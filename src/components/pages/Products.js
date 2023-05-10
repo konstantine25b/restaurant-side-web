@@ -4,19 +4,21 @@ import COLORS from '../../themes/colors'
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from 'react-router-dom';
 
-export default function Categories() {
+export default function Products() {
 
     const navigate = useNavigate();
 
   return (
     <MainDiv>
         <Top>
-            <TopP>Categories</TopP>
-            <AddButton onClick={() => navigate(`/Categories/AddCategories`)}><PlusIcon style={{width: 30 , color: 'white'}} /></AddButton>
+            <TopP>Products</TopP>
+            <AddButton onClick={() => navigate(`/Products/AddProduct`)}><PlusIcon style={{width: 30 , color: 'white'}} /></AddButton>
         </Top>
         <Bottom>
+        <BottomItem>Category</BottomItem>
           <BottomItem>Name (English)</BottomItem>
-          <BottomItem>Name (Gerogian)</BottomItem>
+          <BottomItem>See Details</BottomItem>
+          <BottomItem>Avaibility</BottomItem>
           <BottomItem>Correction</BottomItem>
           <BottomItem>Delete</BottomItem>
         </Bottom>
@@ -66,17 +68,19 @@ justify-content: center;
 `;
 const Bottom = styled.ul`
 all :unset;
- width: 100%;
- display: flex;
+width: 100%;
+display: flex;
 
  justify-content: space-between;
  align-items: center;
  background-color: ${COLORS.light2};
  border: 0.5px solid ${COLORS.insideBlue};
+ 
 `
 const BottomItem = styled.li`
 all: unset;
 padding: 15px;
 border-right: 0.5px solid ${COLORS.insideBlue};
-width: 25%;
+min-width: 15%;
+
 `

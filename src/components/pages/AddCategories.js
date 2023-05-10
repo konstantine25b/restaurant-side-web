@@ -116,6 +116,10 @@ const BackButton = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
 `;
 
 const Bottom = styled.form`
@@ -152,4 +156,8 @@ const SubmitInput = styled.input`
   margin-top: 38px;
   margin-left: 18px;
   margin-bottom: 30px;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
 `;

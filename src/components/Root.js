@@ -29,7 +29,9 @@ export default function Root() {
           <UpperSideIn>
             <UserTitle>konstantin@gmail.com</UserTitle>
           </UpperSideIn>
+          <OutletSpace>
           <Outlet />
+          </OutletSpace>
         </RightSide>
       </Page>
     </Main>
@@ -38,6 +40,7 @@ export default function Root() {
 
 const Main = styled.div`
   width: 100%;
+ 
 `;
 const RightSide = styled.div`
   width: 100%;
@@ -53,10 +56,15 @@ const UpperSideIn = styled.div`
   height: 40px;
   padding-right: 3%;
   background-color: ${COLORS.light};
-  padding: 20px 0px;
+  
   justify-content: right;
   align-items: center;
+  position: fixed;
+  top: 0;
+  border-bottom : 0.4px solid ${COLORS.blue};
+  z-index: 1;
 `;
+
 const UserTitle = styled.p`
   font-size: 17px;
   margin: 0;
@@ -66,6 +74,9 @@ const CompanyName = styled.p`
   font-size: 30px;
   color: white;
   margin: 0;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 const Page = styled.div`
   width: 100%;
@@ -77,6 +88,9 @@ const LeftSide = styled.div`
   width: 300px;
   height: 100%;
   background-color: ${COLORS.blue};
+  position: fixed;
+  top: 0;
+  z-index: 2;
 `;
 
 const LeftSideTop = styled.div`
@@ -95,3 +109,12 @@ const LeftSideList = styled.ul`
   margin: 0;
   padding: 10px 10px;
 `;
+
+const OutletSpace = styled.div`
+
+width: calc(100% - 300px);
+margin-left: 400px;
+margin-top: 80px;
+
+`;
+ 
