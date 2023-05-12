@@ -12,7 +12,7 @@ export default function Products() {
     <MainDiv>
         <Top>
             <TopP>Products</TopP>
-            <AddButton onClick={() => navigate(`/Products/AddProduct`)}><PlusIcon style={{width: 30 , color: 'white'}} /></AddButton>
+            <AddButton onClick={() => navigate(`/HomePage/Products/AddProduct`)}><PlusIcon style={{width: 30 , color: 'white'}} /></AddButton>
         </Top>
         <Bottom>
         <BottomItem>Category</BottomItem>

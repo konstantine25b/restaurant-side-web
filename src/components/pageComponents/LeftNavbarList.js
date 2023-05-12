@@ -33,7 +33,7 @@ export default function LeftNavbarList(props) {
       <ListContent style={{ display: isOpen ? "block" : "none" }}>
         {props.data?.map((item,index)=>(
             
-           <ListContentItem onClick={()=>navigate(`/${item}`)} key ={index}>
+           <ListContentItem onClick={()=>navigate(`/HomePage/${item}`)} key ={index}>
            <ListContentItemP>  {item}</ListContentItemP>
           
             </ListContentItem>

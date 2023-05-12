@@ -1,18 +1,33 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import styled from "@emotion/styled";
 import COLORS from "../themes/colors";
 import LeftNavbarList from "./pageComponents/LeftNavbarList";
 import { Outlet, useNavigate } from "react-router-dom";
+import { UserContext } from "../App";
+import { signOut } from "../Processing/Database";
+
 
 export default function Root() {
   const navigate = useNavigate();
+
+  // amit xdeba shesulia tu ara useris shemowmeba
+  const context = useContext(UserContext)
+
+ 
+
+  //tu user gamosvlas daachers mashin mas ushvebs log inshi isev
+  useEffect(()=>{
+    if(!context?.isLoggedIn){
+      navigate(`/`)
+    }
+  },[context])
 
   return (
     <Main>
       <Page>
         <LeftSide>
           <LeftSideTop>
-            <CompanyName onClick={() => navigate(`/`)}>Fast Order</CompanyName>
+            <CompanyName onClick={() => navigate(`/HomePage`)}>Fast Order</CompanyName>
           </LeftSideTop>
           <LeftSideList>
             <LeftNavbarList
@@ -27,10 +42,18 @@ export default function Root() {
         </LeftSide>
         <RightSide>
           <UpperSideIn>
-            <UserTitle>konstantin@gmail.com</UserTitle>
+            <UserTitle
+              onClick={() => {
+                context?.setIsLoggedIn(false);
+                console.log(context);
+                signOut()
+              }}
+            >
+              konstantin@gmail.com
+            </UserTitle>
           </UpperSideIn>
           <OutletSpace>
-          <Outlet />
+            <Outlet />
           </OutletSpace>
         </RightSide>
       </Page>
@@ -40,7 +63,6 @@ export default function Root() {
 
 const Main = styled.div`
   width: 100%;
- 
 `;
 const RightSide = styled.div`
   width: 100%;
@@ -56,12 +78,12 @@ const UpperSideIn = styled.div`
   height: 40px;
   padding-right: 3%;
   background-color: ${COLORS.light};
-  
+
   justify-content: right;
   align-items: center;
   position: fixed;
   top: 0;
-  border-bottom : 0.4px solid ${COLORS.blue};
+  border-bottom: 0.4px solid ${COLORS.blue};
   z-index: 1;
 `;
 
@@ -111,10 +133,7 @@ const LeftSideList = styled.ul`
 `;
 
 const OutletSpace = styled.div`
-
-width: calc(100% - 300px);
-margin-left: 400px;
-margin-top: 80px;
-
+  width: calc(100% - 300px);
+  margin-left: 400px;
+  margin-top: 80px;
 `;
- 

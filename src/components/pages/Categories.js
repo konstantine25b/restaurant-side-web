@@ -12,7 +12,7 @@ export default function Categories() {
     <MainDiv>
         <Top>
             <TopP>Categories</TopP>
-            <AddButton onClick={() => navigate(`/Categories/AddCategories`)}><PlusIcon style={{width: 30 , color: 'white'}} /></AddButton>
+            <AddButton onClick={() => navigate(`/HomePage/Categories/AddCategories`)}><PlusIcon style={{width: 30 , color: 'white'}} /></AddButton>
         </Top>
         <Bottom>
           <BottomItem>Name (English)</BottomItem>
