@@ -202,17 +202,23 @@ let OwnedRestaurant;
  * @returns {Promise<*|null>}
  */
 export const getRestaurantAdmin = async () => {
-    if (EditableRestaurant !== null) {
+    if (EditableRestaurant !== null && EditableRestaurant !== undefined) {
+        console.log(EditableRestaurant + " is the editable restaurant.");
         return EditableRestaurant;
     }
     const superUsersCol = collection(db, 'SuperUsers');
     const superUsersSnapshot = await getDocs(superUsersCol);
     const superUsers = superUsersSnapshot.docs.map(doc => doc.data());
+    const superUsersId = superUsersSnapshot.docs.map(doc => doc.id);
+    console.log("Hello");
     for (let i = 0; i < superUsers.length; i++) {
         const restaurant = superUsers[i];
+        const id = superUsersId[i];
+
+        console.log(id + " is the restaurant.");
         if (restaurant.Owner === user.email || restaurant.Editors.includes(user.email)) {
-            EditableRestaurant = restaurant.id;
-            return restaurant.id;
+            EditableRestaurant = id;
+            return id;
         }
     }
     return null;
@@ -222,57 +228,59 @@ export const getRestaurantAdmin = async () => {
  * @returns {Promise<*|null>}
  */
 export const getRestaurantOwner = async () => {
-    if (OwnedRestaurant !== null) {
+    if (OwnedRestaurant !== null && OwnedRestaurant !== undefined) {
+        console.log(OwnedRestaurant + " is the owned restaurant.");
         return OwnedRestaurant;
     }
     const superUsersCol = collection(db, 'SuperUsers');
     const superUsersSnapshot = await getDocs(superUsersCol);
     const superUsers = superUsersSnapshot.docs.map(doc => doc.data());
+    const superUsersId = superUsersSnapshot.docs.map(doc => doc.id);
     for (let i = 0; i < superUsers.length; i++) {
         const restaurant = superUsers[i];
+        const id = superUsersId[i];
         if (restaurant.Owner === user.email) {
-            OwnedRestaurant = restaurant.id;
-            return restaurant.id;
+            OwnedRestaurant = id;
+            return id;
         }
     }
     return null;
 }
+/**
+ * Adds a SuperUser to the restaurant.
+ * @param email
+ * @returns {Promise<void>}
+ */
 export const addSuperUser = async (email) => {
-    let restaurant = await getRestaurantOwner();
-    if (restaurant === null) {
-        throw new Error("You don't own any restaurants");
-    }
-    //add the email to SuperUsers/restaurants/Editors array
-    const superUsersCol = collection(db, 'SuperUsers');
-    const superUsersSnapshot = await getDocs(superUsersCol);
-    const superUsers = superUsersSnapshot.docs.map(doc => doc.data());
-    for (let i = 0; i < superUsers.length; i++) {
-        const restaurant = superUsers[i];
-        if (restaurant.id === restaurant) {
-            restaurant.Editors.push(email);
-            await updateDoc(doc(db, "SuperUsers", restaurant.id), {
-                Editors: restaurant.Editors
+    const restaurantId = await getRestaurantOwner();
+    if (restaurantId !== null) {
+        const restaurantRef = doc(db, "SuperUsers", restaurantId);
+        const restaurantSnapshot = await getDoc(restaurantRef);
+        if (restaurantSnapshot.exists()) {
+            const restaurantData = restaurantSnapshot.data();
+            const editors = restaurantData.Editors;
+            editors.push(email);
+            await updateDoc(restaurantRef, {
+                Editors: editors
             });
-            return;
         }
     }
 }
 /**
  * Add a new category to the restaurant.
- * @param restaurantId
  * @param categoryName
  * @param categoryData
  * @returns {Promise<void>}
  */
-export const addCategory = async (restaurantId, categoryName, categoryData) => {
-    //CategoryData is an object with the following properties: Title, Description, Image, dishes (note the lowercase d)
+export const addCategory = async (categoryName, categoryData) => {
+    const restaurantId = await getRestaurantOwner();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
         const restaurantData = restaurantSnapshot.data();
         const categories = restaurantData.FoodCategories;
         categories[categoryName] = categoryData;
-        await updateDoc(restaurantRef, {
+        await addDoc(restaurantRef, {
             FoodCategories: categories
         });
         FullRestaurantStorage[restaurantId] = restaurantData;
@@ -283,11 +291,11 @@ export const addCategory = async (restaurantId, categoryName, categoryData) => {
 }
 /**
  * Delete a category in the restaurant.
- * @param restaurantId
  * @param categoryName
  * @returns {Promise<void>}
  */
-export const deleteCategory = async (restaurantId, categoryName) => {
+export const deleteCategory = async (categoryName) => {
+    const restaurantId = await getRestaurantOwner();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
@@ -306,13 +314,13 @@ export const deleteCategory = async (restaurantId, categoryName) => {
 
 /**
  * Update a category in the restaurant.
- * @param restaurantId
  * @param categoryName
  * @param categoryData
  * @returns {Promise<void>}
  */
-export const updateCategory = async (restaurantId, categoryName, categoryData) => {
-const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
+export const updateCategory = async (categoryName, categoryData) => {
+    const restaurantId = await getRestaurantOwner();
+    const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
         const restaurantData = restaurantSnapshot.data();
@@ -330,13 +338,13 @@ const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
 
 /**
  * Add a dish to a category in the restaurant.
- * @param restaurantId
  * @param categoryName
  * @param dishName
  * @param dishData
  * @returns {Promise<void>}
  */
-export const addDish = async (restaurantId, categoryName, dishName, dishData) => {
+export const addDish = async (categoryName, dishName, dishData) => {
+    const restaurantId = await getRestaurantOwner();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
@@ -360,7 +368,8 @@ export const addDish = async (restaurantId, categoryName, dishName, dishData) =>
  * @param dishName
  * @returns {Promise<void>}
  */
-export const deleteDish = async (restaurantId, categoryName, dishName) => {
+export const deleteDish = async (categoryName, dishName) => {
+    const restaurantId = await getRestaurantOwner();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
@@ -385,7 +394,8 @@ export const deleteDish = async (restaurantId, categoryName, dishName) => {
  * @param dishData
  * @returns {Promise<void>}
  */
-export const updateDish = async (restaurantId, categoryName, dishName, dishData) => {
+export const updateDish = async (categoryName, dishName, dishData) => {
+    const restaurantId = await getRestaurantOwner();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
