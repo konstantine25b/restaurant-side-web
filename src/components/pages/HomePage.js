@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { getRestaurantAdmin } from '../../Processing/Database'
+import { getRestaurantAdmin, getRestaurantOwner } from '../../Processing/Database'
 
 export default function HomePage() {
 
-  // const[restInfo , setRestInfo] = useState()
+  const[restInfo , setRestInfo] = useState()
 
-  // useEffect(()=>{
-  //   const getRestaurant = async ()=>{
-  //     setRestInfo(await getRestaurantAdmin())
-  //   }
-  //   getRestaurant()
-  //   console.log(restInfo)
-  // },[])
+
+  useEffect(()=>{
+    const getRestaurant = async ()=>{
+      setRestInfo(await getRestaurantOwner())
+    }
+    getRestaurant()
+    console.log(restInfo)
+    console.log(getRestaurant())
+  },[])
 
   return (
     <div></div>
