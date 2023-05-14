@@ -76,10 +76,9 @@ export const getUser = ()=>{
 /**
  * Subscribe to user login/out event and call the callback function
  * @param callback {function} - function to be called when user logs in
- * @returns {Unsubscribe}
  */
 export const subscribeToLogInEvent = (callback)=>{
-    return auth.onAuthStateChanged(callback)
+    auth.onAuthStateChanged((usr)=>{ user = usr; callback(usr)});
 }
 /**
  * Reset password. Send a reset password email to the user
@@ -210,12 +209,9 @@ export const getRestaurantAdmin = async () => {
     const superUsersSnapshot = await getDocs(superUsersCol);
     const superUsers = superUsersSnapshot.docs.map(doc => doc.data());
     const superUsersId = superUsersSnapshot.docs.map(doc => doc.id);
-    console.log("Hello");
     for (let i = 0; i < superUsers.length; i++) {
         const restaurant = superUsers[i];
         const id = superUsersId[i];
-
-        console.log(id + " is the restaurant.");
         if (restaurant.Owner === user.email || restaurant.Editors.includes(user.email)) {
             EditableRestaurant = id;
             return id;
@@ -229,7 +225,6 @@ export const getRestaurantAdmin = async () => {
  */
 export const getRestaurantOwner = async () => {
     if (OwnedRestaurant !== null && OwnedRestaurant !== undefined) {
-        console.log(OwnedRestaurant + " is the owned restaurant.");
         return OwnedRestaurant;
     }
     const superUsersCol = collection(db, 'SuperUsers');
