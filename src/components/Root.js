@@ -1,10 +1,10 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import styled from "@emotion/styled";
 import COLORS from "../themes/colors";
 import LeftNavbarList from "./pageComponents/LeftNavbarList";
 import { Outlet, useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
-import { signOut } from "../Processing/Database";
+import { getRestaurant, getRestaurantAdmin, signOut } from "../Processing/Database";
 
 
 export default function Root() {
@@ -13,7 +13,36 @@ export default function Root() {
   // amit xdeba shesulia tu ara useris shemowmeba
   const context = useContext(UserContext)
 
- 
+  const[restName , setRestName] = useState()
+  const [restInfo , setRestInfo] = useState()
+  
+
+
+  useLayoutEffect(()=>{
+    const getRestaurantName = async ()=>{
+      setRestName(await getRestaurantAdmin())
+    }
+    getRestaurantName()
+    
+    
+
+    
+  },[])
+  
+
+  useEffect(()=>{
+    
+    const getRestaurantInfo = async()=>{
+      setRestInfo(await getRestaurant(restName))
+    }
+    getRestaurantInfo()
+
+  },[restName])
+
+  console.log(restInfo)
+  
+
+  
 
   //tu user gamosvlas daachers mashin mas ushvebs log inshi isev
   useEffect(()=>{
@@ -32,11 +61,11 @@ export default function Root() {
           <LeftSideList>
             <LeftNavbarList
               title={"Restaurant Info"}
-              data={["Address", "MainImage"]}
+              data={[{Name: "Address"}, {Name: "MainImage"}]}
             />
             <LeftNavbarList
               title={"Products & Categories"}
-              data={["Products", "Categories"]}
+              data={[{Name:"Products" , restInfo: restInfo}, {Name: "Categories" , restInfo: restInfo}]}
             />
           </LeftSideList>
         </LeftSide>
@@ -45,15 +74,15 @@ export default function Root() {
             <UserTitle
               onClick={() => {
                 context?.setIsLoggedIn(false);
-                console.log(context);
+               
                 signOut()
               }}
             >
-              konstantin@gmail.com
+              {context?.mainUser}
             </UserTitle>
           </UpperSideIn>
           <OutletSpace>
-            <Outlet />
+            <Outlet/>
           </OutletSpace>
         </RightSide>
       </Page>

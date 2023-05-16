@@ -1,19 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { getRestaurantAdmin, getRestaurantOwner } from '../../Processing/Database'
+import React, { useContext, useEffect, useLayoutEffect, useState } from 'react'
+import { getRestaurant, getRestaurantAdmin, getRestaurantOwner } from '../../Processing/Database'
+import { UserContext } from '../../App';
+
 
 export default function HomePage() {
 
-  const[restInfo , setRestInfo] = useState()
+ 
 
-
-  useEffect(()=>{
-    const getRestaurant = async ()=>{
-      setRestInfo(await getRestaurantOwner())
-    }
-    getRestaurant()
-    console.log(restInfo)
-    console.log(getRestaurant())
-  },[])
+  
 
   return (
     <div></div>

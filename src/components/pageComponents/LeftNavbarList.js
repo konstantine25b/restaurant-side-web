@@ -5,18 +5,14 @@ import COLORS from "../../themes/colors";
 import { useNavigate } from "react-router-dom";
 
 export default function LeftNavbarList(props) {
-
-
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
-
+  
 
   const navigate = useNavigate();
-
-  
 
   return (
     <>
@@ -31,14 +27,23 @@ export default function LeftNavbarList(props) {
         />
       </ListItem>
       <ListContent style={{ display: isOpen ? "block" : "none" }}>
-        {props.data?.map((item,index)=>(
-            
-           <ListContentItem onClick={()=>navigate(`/HomePage/${item}`)} key ={index}>
-           <ListContentItemP>  {item}</ListContentItemP>
-          
-            </ListContentItem>
+        {props.data?.map((item, index) => (
+          <ListContentItem
+            onClick={() =>
+              navigate(`/HomePage/${item.Name}`, {
+                
+                  state: {
+                    restInfo: item?.restInfo
+                  }
+                }
+                
+              )
+            }
+            key={index}
+          >
+            <ListContentItemP> {item.Name}</ListContentItemP>
+          </ListContentItem>
         ))}
-        
       </ListContent>
     </>
   );
@@ -58,18 +63,16 @@ const ListItem = styled.li`
   &:hover {
     cursor: pointer;
   }
-  
-
 `;
 const ListContent = styled.ul`
   all: unset;
   background-color: ${COLORS.insideBlue};
-  padding-bottom : 15px ;
-`
+  padding-bottom: 15px;
+`;
 const ListContentItem = styled.li`
   display: flex;
   width: 50%;
-  
+
   align-items: center;
   padding: 2px 10px;
 
@@ -78,10 +81,10 @@ const ListContentItem = styled.li`
     cursor: pointer;
   }
   margin-top: 17px;
-  border-left : 1px solid white;
-`
+  border-left: 1px solid white;
+`;
 const ListContentItemP = styled.p`
-color:white;
-margin: 0;
-font-size: 15px;
- `;
+  color: white;
+  margin: 0;
+  font-size: 15px;
+`;

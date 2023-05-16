@@ -27,6 +27,8 @@ export default function LoginPage() {
   useEffect(() => {
     subscribeToLogInEvent((user) => {
       setUser(user);
+      context.setMainUser(user.email);
+     
       // kotem daamata
       // console.log(user)
       
@@ -59,7 +61,7 @@ export default function LoginPage() {
             Password is required
           </p>
         )}
-        <SubmitInput type="submit" />
+        <SubmitInput  type="submit" value={"Sign In"}/>
       </Form>
       {/* <button
         onClick={() => {
@@ -105,7 +107,7 @@ const SubmitInput = styled.input`
   all: unset;
   width: 80px;
   height: 40px;
-  background-color: ${COLORS.green};
+  background-color: ${COLORS.lightBlue};
   color: white;
   display: flex;
   justify-content: center;
