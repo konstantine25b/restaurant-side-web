@@ -5,10 +5,18 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import './MainImage.css';
+import { addCategory } from "../../Processing/Database";
 
 export default function AddCategories() {
   const { register, handleSubmit , formState: { errors }} = useForm();
-  const onSubmit = (data) => console.log(data);
+
+  const onSubmit = (data) => {
+    console.log(data)
+    const add = async ()=>{await addCategory(data.NameEng , [data.img] )}
+    add()
+  }
+  
+  ;
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);

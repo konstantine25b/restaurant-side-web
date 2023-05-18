@@ -2,18 +2,30 @@ import React, { useEffect, useState } from "react";
 import COLORS from "../../themes/colors";
 import styled from "@emotion/styled";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useForm,useFieldArray } from "react-hook-form";
 import "./MainImage.css";
+
 
 export default function AddProduct() {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    control
   } = useForm();
   const onSubmit = (data) => console.log(data);
   const navigate = useNavigate();
+
+  const { state } = useLocation();
+  const { restInfo } = state;
+
+ 
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'items',
+    
+  });
 
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -24,19 +36,25 @@ export default function AddProduct() {
     console.log(selectedFile);
   }, [selectedFile]);
 
+  const categories = restInfo.FoodCategories.map((item) => {
+    return item.Title;
+  });
 
-  const Select = React.forwardRef(({ onChange, onBlur, name , valueData }, ref) => (
-    <>
-     
-      <Select1 name={name} ref={ref} onChange={onChange} onBlur={onBlur}>
-         {valueData?.map((value,index)=>{
-            return ( <option key = {index} value={value}>{value}</option>)
-         })}
-       
-      
-      </Select1>
-    </>
-  ));
+  const Select = React.forwardRef(
+    ({ onChange, onBlur, name, valueData }, ref) => (
+      <>
+        <Select1 name={name} ref={ref} onChange={onChange} onBlur={onBlur}>
+          {valueData?.map((value, index) => {
+            return (
+              <option key={index} value={value}>
+                {value}
+              </option>
+            );
+          })}
+        </Select1>
+      </>
+    )
+  );
 
   return (
     <MainDiv>
@@ -52,14 +70,20 @@ export default function AddProduct() {
       </Top>
       <Bottom onSubmit={handleSubmit(onSubmit)}>
         <NameP>Name (English)</NameP>
-        <NameInput {...register("NameEng", { required: true })} />
+        <NameInput
+          placeholder="Add Product Name (English)"
+          {...register("NameEng", { required: true })}
+        />
         {errors.NameEng?.type === "required" && (
           <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
             English Name is required
           </p>
         )}
         <NameP>Name (Georgian)</NameP>
-        <NameInput {...register("NameGeo", { required: true })} />
+        <NameInput
+          placeholder="Add Product Name (Georgian)"
+          {...register("NameGeo", { required: true })}
+        />
         {errors.NameGeo?.type === "required" && (
           <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
             Georgian Name is required
@@ -77,10 +101,50 @@ export default function AddProduct() {
           </p>
         )}
 
-        <NameP>Category Name</NameP>
-        <Select valueData={["Burgers " , "Drinks"]} {...register("Category")} />
+        <NameP>Aprroximate Time (Minutes)</NameP>
+        <NameInput
+          placeholder="0"
+          {...register("AproxTime", { required: true, pattern: /^\d+$/ })}
+        />
+        {errors.AproxTime?.type === "required" && (
+          <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
+            price is required
+          </p>
+        )}
 
-        <NameP style = {{marginBottom : -10}}>Picture</NameP>
+        <NameP> Desctiption</NameP>
+        <NameInput
+          placeholder="Add small description"
+          {...register("Description", {})}
+        />
+
+
+
+        <NameP>Category Name</NameP>
+        <Select valueData={categories} {...register("Category")} />
+
+
+        <NameP>Ingredients</NameP>
+        {fields.map((item, index) => (
+        <div key={item.id} style = {{display: 'flex'}}>
+          <IngrInput
+            {...register(`ingredients.${index}`)}
+            placeholder="Ingredient Name"
+            defaultValue={item.name}
+          />
+       
+          <DeleteIngr type="button" onClick={() => remove(index)}>
+            Remove
+          </DeleteIngr>
+        </div>
+      ))}
+      <IngredientButton type="button" onClick={() => append({})}>
+        Add Ingredients
+      </IngredientButton>
+     
+
+
+        <NameP style={{ marginBottom: -10 }}>Picture</NameP>
         <div className="image-uploader">
           <label className="file-label">
             <input
@@ -177,6 +241,7 @@ const Bottom = styled.form`
   justify-content: center;
 `;
 
+
 const NameP = styled.p`
   padding: 10px 0px 0px 10px;
   margin: 8px;
@@ -187,6 +252,13 @@ const NameInput = styled.input`
   width: 80%;
   margin: 0px 0 10px 18px;
   outline: none;
+`;
+
+const IngrInput = styled.input`
+padding: 10px;
+width: 40%;
+margin: 0px 0 10px 18px;
+outline: none;
 `;
 
 const SubmitInput = styled.input`
@@ -208,6 +280,47 @@ const SubmitInput = styled.input`
   }
 `;
 
+const IngredientButton = styled.button`
+   all: unset;
+  width: 80px;
+  height: 40px;
+  background-color: ${COLORS.lightBlue};
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 5px;
+
+  margin-top: 8px;
+  margin-left: 18px;
+  margin-bottom: 30px;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
+`
+const DeleteIngr = styled.button`
+  all: unset;
+  width: 60px;
+  height: 30px;
+  background-color: ${COLORS.red};
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 5px;
+  
+  margin-left: 4px;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
+`
+
+
 
 const Select1 = styled.select`
   outline: none;
@@ -215,5 +328,4 @@ const Select1 = styled.select`
   padding: 10px;
   margin-left: 18px;
   margin-bottom: 10px;
-
- `
+`;
