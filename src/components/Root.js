@@ -13,11 +13,14 @@ export default function Root() {
   // amit xdeba shesulia tu ara useris shemowmeba
   const context = useContext(UserContext)
 
+  // restornis axels vwer aq  
   const[restName , setRestName] = useState()
+
+  // aq vinaxav restornis mtlian informacia
   const [restInfo , setRestInfo] = useState()
   
 
-
+// amit tavidanve momaq restornis saxeli
   useLayoutEffect(()=>{
     const getRestaurantName = async ()=>{
       setRestName(await getRestaurantAdmin())
@@ -32,6 +35,7 @@ export default function Root() {
 
   useEffect(()=>{
     
+    // amit saxelis sashualebit momaq restornis info
     const getRestaurantInfo = async()=>{
       setRestInfo(await getRestaurant(restName))
     }

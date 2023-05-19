@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm,useFieldArray } from "react-hook-form";
 import "./MainImage.css";
+import { addDish } from "../../Processing/Database";
 
 
 export default function AddProduct() {
@@ -14,7 +15,9 @@ export default function AddProduct() {
     formState: { errors },
     control
   } = useForm();
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    addDish(data.Category , data.NameEng , {})
+  };
   const navigate = useNavigate();
 
   const { state } = useLocation();

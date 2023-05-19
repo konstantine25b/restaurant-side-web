@@ -12,8 +12,8 @@ export default function AddCategories() {
 
   const onSubmit = (data) => {
     console.log(data)
-    const add = async ()=>{await addCategory(data.NameEng , [data.img] )}
-    add()
+     addCategory(data.NameEng , {Image: data.img , Description: "sfkdfks"} )
+  
   }
   
   ;
