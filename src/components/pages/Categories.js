@@ -11,6 +11,17 @@ export default function Categories() {
 
   const { state } = useLocation();
   const {restInfo} = state
+
+  const handleDelete = () => {
+    // Perform the delete operation here
+    // ...
+
+    if (window.confirm('Are you sure you want to delete?')) {
+      // Delete confirmed, perform the delete operation
+      // ...
+      console.log("dssf")
+    }
+  };
   
  
 
@@ -37,7 +48,7 @@ export default function Categories() {
               <BottomItem1>{item.Title}</BottomItem1>
               <BottomItem1>{item.Title}</BottomItem1>
               <CorrectionButton>Correction</CorrectionButton>
-              <DeleteButton>Delete</DeleteButton>
+              <DeleteButton onClick={handleDelete}>Delete</DeleteButton>
             </Bottom1>
           );
         })}

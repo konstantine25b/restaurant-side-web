@@ -3,6 +3,7 @@ import React from 'react'
 import COLORS from '../../themes/colors'
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { deleteDish } from '../../Processing/Database';
 
 export default function Products() {
 
@@ -10,6 +11,18 @@ export default function Products() {
     const { state } = useLocation();
     const {restInfo} = state;
     console.log(restInfo.FoodCategories[0].dishes)
+
+    const handleDelete = (Dish, Category) => {
+      // Perform the delete operation here
+      // ...
+  
+      if (window.confirm('Are you sure you want to delete?')) {
+        // Delete confirmed, perform the delete operation
+        // ...
+        console.log("dssf")
+        deleteDish(Dish, Category)
+      }
+    };
 
 
   return (
@@ -26,7 +39,7 @@ export default function Products() {
           <BottomItem>See Details</BottomItem>
           <BottomItem>Avaibility</BottomItem>
           <BottomItem>Correction</BottomItem>
-          <BottomItem>Delete</BottomItem>
+          <BottomItem >Delete</BottomItem>
         </Bottom>
         <BottomList>
           
@@ -35,16 +48,16 @@ export default function Products() {
             
            <BottomItem2 >{item.Title}</BottomItem2>
            <Bottom3>
-            {item.dishes.map((item , index)=>{
-            console.log(item.Title)
+            {item.dishes.map((dish , index)=>{
+            console.log(dish.Title , item.Title)
             
             return (
               <Bottom1 key = {index}>
-                <BottomItem1>{item.Title}</BottomItem1>
-                <BottomItem1>{item.Title}</BottomItem1>
-                <BottomItem1>{item.Title}</BottomItem1>
+                <BottomItem1>{dish.Title}</BottomItem1>
+                <BottomItem1>{dish.Title}</BottomItem1>
+                <BottomItem1>{dish.Title}</BottomItem1>
                 <CorrectionButton>Correction</CorrectionButton>
-                <DeleteButton>Delete</DeleteButton>
+                <DeleteButton onClick={()=>handleDelete(dish.Title , item.Title)}>Delete</DeleteButton>
               </Bottom1>
             );
              
