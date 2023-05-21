@@ -8,7 +8,7 @@ import {
     updatePassword,
     updateEmail,
     reauthenticateWithCredential} from "firebase/auth";
-import {collection, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc, addDoc} from 'firebase/firestore/lite';
+import {collection, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc} from 'firebase/firestore/lite';
 
 //region Firebase Config
 const firebaseConfig = {
@@ -263,19 +263,25 @@ export const addSuperUser = async (email) => {
 }
 /**
  * Add a new category to the restaurant.
- * @param categoryName
- * @param categoryData
  * @returns {Promise<void>}
+ * @param Title
+ * @param Description
+ * @param Image
  */
-export const addCategory = async (categoryName, categoryData) => {
-    const restaurantId = await getRestaurantOwner();
+export const addCategory = async (Title, Description, Image) => {
+    let dishes = [];
+    const restaurantId = await getRestaurantAdmin();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
         const restaurantData = restaurantSnapshot.data();
         const categories = restaurantData.FoodCategories;
-        categories[categoryName] = categoryData;
-        await addDoc(restaurantRef, {
+        //add the category to the array
+        categories.push({Title: Title, Description: Description, Image: Image, dishes: dishes});
+        for (const key in categories) {
+            console.log(categories[key]);
+        }
+        await updateDoc(restaurantRef, {
             FoodCategories: categories
         });
         FullRestaurantStorage[restaurantId] = restaurantData;
@@ -290,13 +296,18 @@ export const addCategory = async (categoryName, categoryData) => {
  * @returns {Promise<void>}
  */
 export const deleteCategory = async (categoryName) => {
-    const restaurantId = await getRestaurantOwner();
+    const restaurantId = await getRestaurantAdmin();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
         const restaurantData = restaurantSnapshot.data();
         const categories = restaurantData.FoodCategories;
-        delete categories[categoryName];
+        //Remove the category from the array. The array is indexed by numbers, and item.Title is a string.
+        for (const key in categories) {
+            if (categories[key].Title === categoryName) {
+                categories.splice(key, 1);
+            }
+        }
         await updateDoc(restaurantRef, {
             FoodCategories: categories
         });
@@ -309,18 +320,24 @@ export const deleteCategory = async (categoryName) => {
 
 /**
  * Update a category in the restaurant.
- * @param categoryName
- * @param categoryData
  * @returns {Promise<void>}
+ * @param Title
+ * @param Description
+ * @param Image
  */
-export const updateCategory = async (categoryName, categoryData) => {
-    const restaurantId = await getRestaurantOwner();
+export const updateCategory = async (Title, Description, Image) => {
+    let dishes = [];
+    const restaurantId = await getRestaurantAdmin();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
         const restaurantData = restaurantSnapshot.data();
         const categories = restaurantData.FoodCategories;
-        categories[categoryName] = categoryData;
+        //add the category to the array
+        categories.push({Title: Title, Description: Description, Image: Image, dishes: dishes});
+        for (const key in categories) {
+            console.log(categories[key]);
+        }
         await updateDoc(restaurantRef, {
             FoodCategories: categories
         });
@@ -333,24 +350,46 @@ export const updateCategory = async (categoryName, categoryData) => {
 
 /**
  * Add a dish to a category in the restaurant.
- * @param categoryName
- * @param dishName
- * @param dishData
  * @returns {Promise<void>}
+ * @param CategoryName
+ * @param Title
+ * @param Description
+ * @param Image
+ * @param ApproxTime
+ * @param Ingredients
+ * @param Price
  */
-export const addDish = async (categoryName, dishName, dishData) => {
-    const restaurantId = await getRestaurantOwner();
+export const addDish = async (CategoryName, Title, Description, Image, ApproxTime, Ingredients, Price) => {
+    const restaurantId = await getRestaurantAdmin();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
         const restaurantData = restaurantSnapshot.data();
         const categories = restaurantData.FoodCategories;
-        const dishes = categories[categoryName].dishes;
-        dishes[dishName] = dishData;
+        let dishes;
+        let CategoryKey;
+        for (const key in categories) {
+            if (categories[key].Title === CategoryName) {
+                dishes = categories[key].dishes;
+                CategoryKey = key;
+            }
+        }
+        if (dishes === undefined) {
+            throw new Error("Category doesn't exist");
+        }
+        dishes.push({
+            Title: Title,
+            Description: Description,
+            Image: Image,
+            ApproxTime: ApproxTime,
+            Ingredients: Ingredients,
+            Price: Price
+        });
+        console.log(dishes);
+        categories[CategoryKey].dishes = dishes;
         await updateDoc(restaurantRef, {
             FoodCategories: categories
         });
-        FullRestaurantStorage[restaurantId] = restaurantData;
     }
     else{
         throw new Error("Restaurant doesn't exist");
@@ -358,24 +397,36 @@ export const addDish = async (categoryName, dishName, dishData) => {
 }
 /**
  * Delete a dish from a category in the restaurant.
- * @param restaurantId
  * @param categoryName
  * @param dishName
  * @returns {Promise<void>}
  */
 export const deleteDish = async (categoryName, dishName) => {
-    const restaurantId = await getRestaurantOwner();
+    console.log("Deleting dish" + dishName + " from category " + categoryName);
+    const restaurantId = await getRestaurantAdmin();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
         const restaurantData = restaurantSnapshot.data();
         const categories = restaurantData.FoodCategories;
-        const dishes = categories[categoryName].dishes;
-        delete dishes[dishName];
+        let dishes;
+        for (const key in categories) {
+            if (categories[key].Title === categoryName) {
+                dishes = categories[key].dishes;
+            }
+        }
+        if (dishes === undefined) {
+            throw new Error("Category doesn't exist");
+        }
+        //Remove the dish from the array. The array is indexed by numbers, and item.Title is a string.
+        for (const key in dishes) {
+            if (dishes[key].Title === dishName) {
+                dishes.splice(key, 1);
+            }
+        }
         await updateDoc(restaurantRef, {
             FoodCategories: categories
         });
-        FullRestaurantStorage[restaurantId] = restaurantData;
     }
     else{
         throw new Error("Restaurant doesn't exist");
@@ -383,25 +434,46 @@ export const deleteDish = async (categoryName, dishName) => {
 }
 /**
  * Update a dish in a category in the restaurant.
- * @param restaurantId
- * @param categoryName
- * @param dishName
- * @param dishData
  * @returns {Promise<void>}
+ * @param CategoryName
+ * @param Title
+ * @param Description
+ * @param Image
+ * @param ApproxTime
+ * @param Ingredients
+ * @param Price
  */
-export const updateDish = async (categoryName, dishName, dishData) => {
-    const restaurantId = await getRestaurantOwner();
+export const updateDish = async (CategoryName, Title, Description, Image, ApproxTime, Ingredients, Price) => {
+    const restaurantId = await getRestaurantAdmin();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
     if (restaurantSnapshot.exists()) {
         const restaurantData = restaurantSnapshot.data();
         const categories = restaurantData.FoodCategories;
-        const dishes = categories[categoryName].dishes;
-        dishes[dishName] = dishData;
+        let dishes;
+        let CategoryKey;
+        for (const key in categories) {
+            if (categories[key].Title === CategoryName) {
+                dishes = categories[key].dishes;
+                CategoryKey = key;
+            }
+        }
+        if (dishes === undefined) {
+            throw new Error("Category doesn't exist");
+        }
+        dishes.push({
+            Title: Title,
+            Description: Description,
+            Image: Image,
+            ApproxTime: ApproxTime,
+            Ingredients: Ingredients,
+            Price: Price
+        });
+        console.log(dishes);
+        categories[CategoryKey].dishes = dishes;
         await updateDoc(restaurantRef, {
             FoodCategories: categories
         });
-        FullRestaurantStorage[restaurantId] = restaurantData;
     }
     else{
         throw new Error("Restaurant doesn't exist");
