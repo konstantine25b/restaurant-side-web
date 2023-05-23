@@ -33,7 +33,8 @@ export default function LeftNavbarList(props) {
               navigate(`/HomePage/${item.Name}`, {
                 
                   state: {
-                    restInfo: item?.restInfo
+                    restInfo: item?.restInfo,
+                    restName: item?.restName
                   }
                 }
                 

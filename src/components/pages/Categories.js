@@ -1,8 +1,9 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import COLORS from "../../themes/colors";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
+import { deleteCategory, getRestaurant } from "../../Processing/Database";
 
 export default function Categories() {
 
@@ -10,17 +11,67 @@ export default function Categories() {
   const navigate = useNavigate();
 
   const { state } = useLocation();
-  const {restInfo} = state
+  const {restName} = state
 
-  const handleDelete = () => {
+
+
+  // aq vinaxav restornis mtlian informacia
+  const [restInfo, setRestInfo] = useState();
+
+
+  const getRestaurantInfo = async () => {
+    setRestInfo(await getRestaurant(restName));
+  };
+  useEffect(() => {
+    console.log(restName)
+    // amit saxelis sashualebit momaq restornis info
+    
+    getRestaurantInfo();
+
+    
+
+  }, [restName]);
+
+  
+
+  useEffect(()=>{
+    const handleRefresh = () => {
+      // Function to be executed on each refresh
+      console.log('Page has been refreshed');
+      getRestaurantInfo();
+  
+      
+    };
+
+    handleRefresh(); // Call the function on component mount
+
+    const beforeUnloadListener = () => {
+      handleRefresh(); // Call the function before page refresh
+    
+    };
+
+    window.addEventListener('beforeunload', beforeUnloadListener);
+
+    return () => {
+      window.removeEventListener('beforeunload', beforeUnloadListener);
+    };
+
+  },[])
+
+  const handleDelete = (CategoryName) => {
     // Perform the delete operation here
     // ...
 
     if (window.confirm('Are you sure you want to delete?')) {
       // Delete confirmed, perform the delete operation
       // ...
-      console.log("dssf")
+      deleteCategory(CategoryName);
+      //  setTimeout(()=>{
+      //   window.location.reload(true);
+      //  },[500])
+     
     }
+
   };
   
  
@@ -48,7 +99,7 @@ export default function Categories() {
               <BottomItem1>{item.Title}</BottomItem1>
               <BottomItem1>{item.Title}</BottomItem1>
               <CorrectionButton>Correction</CorrectionButton>
-              <DeleteButton onClick={handleDelete}>Delete</DeleteButton>
+              <DeleteButton onClick={()=>handleDelete(item.Title)}>Delete</DeleteButton>
             </Bottom1>
           );
         })}

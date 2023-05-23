@@ -9,15 +9,26 @@ import { addCategory } from "../../Processing/Database";
 
 export default function AddCategories() {
   const { register, handleSubmit , formState: { errors }} = useForm();
+  const navigate = useNavigate();
 
   const onSubmit = (data) => {
-    console.log(data)
-     addCategory(data.NameEng , {Image: data.img , Description: "sfkdfks"} )
+    
+     addCategory(data.NameEng , "sfkdfks" , "https://www.shorturl.at/img/shorturl-icon.png"  )
+    //  setTimeout(()=>{
+    //   window.location.reload(true);
+  
+    //  },[500])
+  
+
+      navigate(-1)
+     
+   
+     
   
   }
   
   ;
-  const navigate = useNavigate();
+  
 
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -28,6 +39,8 @@ export default function AddCategories() {
   useEffect(()=>{
     console.log(selectedFile)
   },[selectedFile])
+
+ 
 
   return (
     <MainDiv>

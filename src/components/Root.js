@@ -7,6 +7,7 @@ import { UserContext } from "../App";
 import {
   getRestaurant,
   getRestaurantAdmin,
+  getRestaurantOwner,
   signOut,
   subscribeToLogInEvent,
 } from "../Processing/Database";
@@ -59,15 +60,44 @@ export default function Root() {
    
    }
   }, [data, dataIsUploaded]);
+  
+  // const getRestaurantInfo = async () => {
+  //   setRestInfo(await getRestaurant(restName));
+  // };
 
-  useEffect(() => {
-    console.log(restName)
-    // amit saxelis sashualebit momaq restornis info
-    const getRestaurantInfo = async () => {
-      setRestInfo(await getRestaurant(restName));
-    };
-    getRestaurantInfo();
-  }, [restName]);
+  // useEffect(() => {
+  //   console.log(restName)
+  //   // amit saxelis sashualebit momaq restornis info
+    
+  //   getRestaurantInfo();
+
+    
+
+  // }, [restName]);
+
+  
+
+  // useEffect(()=>{
+  //   const handleRefresh = () => {
+  //     // Function to be executed on each refresh
+  //     console.log('Page has been refreshed');
+  //     getRestaurantInfo();
+      
+  //   };
+
+  //   handleRefresh(); // Call the function on component mount
+
+  //   const beforeUnloadListener = () => {
+  //     handleRefresh(); // Call the function before page refresh
+  //   };
+
+  //   window.addEventListener('beforeunload', beforeUnloadListener);
+
+  //   return () => {
+  //     window.removeEventListener('beforeunload', beforeUnloadListener);
+  //   };
+
+  // },[])
 
   // console.log(restInfo)
 
@@ -95,8 +125,8 @@ export default function Root() {
             <LeftNavbarList
               title={"Products & Categories"}
               data={[
-                { Name: "Products", restInfo: restInfo },
-                { Name: "Categories", restInfo: restInfo },
+                { Name: "Products", restName: restName },
+                { Name: "Categories", restName: restName },
               ]}
             />
           </LeftSideList>

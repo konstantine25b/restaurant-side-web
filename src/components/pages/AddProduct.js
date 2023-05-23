@@ -16,7 +16,25 @@ export default function AddProduct() {
     control
   } = useForm();
   const onSubmit = (data) => {
-    addDish(data.Category , data.NameEng , {})
+    addDish(
+      data.Category, 
+      data.NameEng, 
+      data.Description, 
+      "https://article.innovadatabase.com/articleimgs/article_images/e27313ad-05da-4e58-8bc9-fcfc75118f65articleimage.jpg", 
+      data.AproxTime, 
+      data.ingredients!==undefined?data.ingredients:[],//Undefined check
+      data.Price)
+
+      // setTimeout(()=>{
+      //   window.location.reload(true);
+       
+      //  },[200])
+  
+  
+        
+      navigate(-1)
+       
+      
   };
   const navigate = useNavigate();
 
