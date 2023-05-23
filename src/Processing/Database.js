@@ -78,8 +78,9 @@ export const getUser = ()=>{
  * @param callback {function} - function to be called when user logs in
  */
 export const subscribeToLogInEvent = (callback)=>{
-    auth.onAuthStateChanged((usr)=>{ user = usr; callback(usr)});
+    auth.onAuthStateChanged((usr)=>{callback(usr)});
 }
+
 /**
  * Reset password. Send a reset password email to the user
  * @param email - email address
@@ -679,5 +680,6 @@ export const createUserFromData= async (name, email, phone, image) => {
 }
 
 //endregion
-
 //endregion
+
+auth.onAuthStateChanged((usr)=>{ user = usr; });
