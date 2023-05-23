@@ -7,41 +7,65 @@ import COLORS from "../../themes/colors";
 import { signIn, subscribeToLogInEvent } from "../../Processing/Database";
 
 export default function LoginPage() {
-  const context = useContext(UserContext);
+  // const context = useContext(UserContext);
 
   const navigate = useNavigate();
 
   const[user, setUser] =useState(null)
 
-  // am metods vamateb imitom rom ise iloopeboda da amitom check rom gaketdes
-  const[tempUser, setTempUser]= useState(null)
+
+  // es aris localstorageshi shenaxuli data
+  const [data, setData] = useState(null);
+
+  const [dataIsUploaded, setDataIsUploaded] = useState(false);
+
+  // // am metods vamateb imitom rom ise iloopeboda da amitom check rom gaketdes
+  // const[tempUser, setTempUser]= useState(null)
 
   const { register, handleSubmit, formState: { errors }} = useForm();
   const onSubmit = data => {
     // console.log(data);
     signIn(data.Email, data.Password);
-    setTempUser(tempUser);
+    // setTempUser(tempUser);
   }
 
   
   useEffect(() => {
     subscribeToLogInEvent((user) => {
       setUser(user);
-      context.setMainUser(user.email);
-     
+      // context.setMainUser(user.email);
+      localStorage.setItem('User', JSON.stringify(user))
+    
       // kotem daamata
       // console.log(user)
       
     });
+    const savedData = localStorage.getItem("User");
+    if (savedData) {
+      setData(JSON.parse(savedData));
+      setDataIsUploaded(true);
+    }
+
+
     // console.log(user)
-    if(user){
-      context.setIsLoggedIn(true);
-      // console.log(context)
-    }
-    if (context?.isLoggedIn) {
-      navigate(`/HomePage`);
-    }
-  }, [user,tempUser,context.isLoggedIn]);
+    // if(user){
+    //   context.setIsLoggedIn(true);
+    //   // console.log(context)
+    // }
+    // if (context?.isLoggedIn) {
+    //   navigate(`/HomePage`);
+    // }
+  }, [user]);
+
+  useEffect(()=>{
+
+    if (dataIsUploaded && data) {
+      setTimeout(()=>{
+        navigate(`/HomePage`);
+      },[500])
+     
+     }
+  },[dataIsUploaded , data])
 
   return (
     

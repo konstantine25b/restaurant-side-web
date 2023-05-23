@@ -4,72 +4,100 @@ import COLORS from "../themes/colors";
 import LeftNavbarList from "./pageComponents/LeftNavbarList";
 import { Outlet, useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
-import { getRestaurant, getRestaurantAdmin, signOut } from "../Processing/Database";
-
+import {
+  getRestaurant,
+  getRestaurantAdmin,
+  signOut,
+  subscribeToLogInEvent,
+} from "../Processing/Database";
 
 export default function Root() {
   const navigate = useNavigate();
 
-  // amit xdeba shesulia tu ara useris shemowmeba
-  const context = useContext(UserContext)
+  // // amit xdeba shesulia tu ara useris shemowmeba
+  // const context = useContext(UserContext);
 
-  // restornis axels vwer aq  
-  const[restName , setRestName] = useState()
+  // restornis axels vwer aq
+  const [restName, setRestName] = useState();
 
   // aq vinaxav restornis mtlian informacia
-  const [restInfo , setRestInfo] = useState()
-  
+  const [restInfo, setRestInfo] = useState();
 
-// amit tavidanve momaq restornis saxeli
-  useLayoutEffect(()=>{
-    const getRestaurantName = async ()=>{
-      setRestName(await getRestaurantAdmin())
+  // es aris localstorageshi shenaxuli data
+  const [data, setData] = useState(null);
+
+  const [dataIsUploaded, setDataIsUploaded] = useState(false);
+
+  // amit tavidanve momaq restornis saxeli
+  useLayoutEffect(() => {
+   
+
+    const getRestaurantName = async () => {
+      setRestName(await getRestaurantAdmin());
+    };
+    getRestaurantName();
+    // aq vsetavt local stoaragedan wamogebul datas
+    const savedData = localStorage.getItem("User");
+    if (savedData) {
+      setData(JSON.parse(savedData));
+      setDataIsUploaded(true);
     }
-    getRestaurantName()
-    
-    
+  }, []);
 
-    
-  },[])
-  
+  // setTimeout(()=>{
+  //   if(data!=null){
+  //     console.log(data)
+  //   }
+  // },[3000])
 
-  useEffect(()=>{
-    
+  useEffect(() => {
+
+   if (dataIsUploaded && data == null) {
+    setTimeout(()=>{
+      navigate(`/`);
+    },[500])
+   
+   }
+  }, [data, dataIsUploaded]);
+
+  useEffect(() => {
+    console.log(restName)
     // amit saxelis sashualebit momaq restornis info
-    const getRestaurantInfo = async()=>{
-      setRestInfo(await getRestaurant(restName))
-    }
-    getRestaurantInfo()
+    const getRestaurantInfo = async () => {
+      setRestInfo(await getRestaurant(restName));
+    };
+    getRestaurantInfo();
+  }, [restName]);
 
-  },[restName])
-
-  console.log(restInfo)
-  
-
-  
+  // console.log(restInfo)
 
   //tu user gamosvlas daachers mashin mas ushvebs log inshi isev
-  useEffect(()=>{
-    if(!context?.isLoggedIn){
-      navigate(`/`)
-    }
-  },[context])
+  // useEffect(() => {
+  //   if (!context?.isLoggedIn) {
+  //     navigate(`/`);
+  //   }
+  // }, [context]);
 
   return (
     <Main>
       <Page>
         <LeftSide>
           <LeftSideTop>
-            <CompanyName onClick={() => navigate(`/HomePage`)}>Fast Order</CompanyName>
+            <CompanyName onClick={() => navigate(`/HomePage`)}>
+              Fast Order
+            </CompanyName>
           </LeftSideTop>
           <LeftSideList>
             <LeftNavbarList
               title={"Restaurant Info"}
-              data={[{Name: "Address"}, {Name: "MainImage"}]}
+              data={[{ Name: "Address" }, { Name: "MainImage" }]}
             />
             <LeftNavbarList
               title={"Products & Categories"}
-              data={[{Name:"Products" , restInfo: restInfo}, {Name: "Categories" , restInfo: restInfo}]}
+              data={[
+                { Name: "Products", restInfo: restInfo },
+                { Name: "Categories", restInfo: restInfo },
+              ]}
             />
           </LeftSideList>
         </LeftSide>
@@ -77,16 +105,19 @@ export default function Root() {
           <UpperSideIn>
             <UserTitle
               onClick={() => {
-                context?.setIsLoggedIn(false);
-               
-                signOut()
+                // context?.setIsLoggedIn(false);
+                localStorage.removeItem('User')
+                setData(null)
+
+                signOut();
               }}
             >
-              {context?.mainUser}
+              {data?.email}
+              {/* {context?.mainUser} */}
             </UserTitle>
           </UpperSideIn>
           <OutletSpace>
-            <Outlet/>
+            <Outlet />
           </OutletSpace>
         </RightSide>
       </Page>
