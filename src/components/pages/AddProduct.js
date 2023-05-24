@@ -25,10 +25,10 @@ export default function AddProduct() {
       data.ingredients!==undefined?data.ingredients:[],//Undefined check
       data.Price)
 
-      // setTimeout(()=>{
-      //   window.location.reload(true);
+      setTimeout(()=>{
+        window.location.reload(true);
        
-      //  },[200])
+       },[500])
   
   
         

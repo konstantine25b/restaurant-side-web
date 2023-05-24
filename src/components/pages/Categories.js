@@ -66,9 +66,9 @@ export default function Categories() {
       // Delete confirmed, perform the delete operation
       // ...
       deleteCategory(CategoryName);
-      //  setTimeout(()=>{
-      //   window.location.reload(true);
-      //  },[500])
+       setTimeout(()=>{
+        window.location.reload(true);
+       },[500])
      
     }
 

@@ -62,9 +62,9 @@ export default function Products() {
         console.log("dssf")
         deleteDish( Category,Dish)
 
-        // setTimeout(()=>{
-        //   window.location.reload(true);
-        //  },[500])
+        setTimeout(()=>{
+          window.location.reload(true);
+         },[500])
       }
     };
 

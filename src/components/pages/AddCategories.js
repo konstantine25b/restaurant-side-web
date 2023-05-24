@@ -14,10 +14,10 @@ export default function AddCategories() {
   const onSubmit = (data) => {
     
      addCategory(data.NameEng , "sfkdfks" , "https://www.shorturl.at/img/shorturl-icon.png"  )
-    //  setTimeout(()=>{
-    //   window.location.reload(true);
+     setTimeout(()=>{
+      window.location.reload(true);
   
-    //  },[500])
+     },[500])
   
 
       navigate(-1)
