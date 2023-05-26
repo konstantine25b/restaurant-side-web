@@ -6,75 +6,57 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { deleteCategory, getRestaurant } from "../../Processing/Database";
 
 export default function Categories() {
-
-
   const navigate = useNavigate();
 
   const { state } = useLocation();
-  const {restName} = state
-
-
+  const { restName } = state;
 
   // aq vinaxav restornis mtlian informacia
   const [restInfo, setRestInfo] = useState();
-
 
   const getRestaurantInfo = async () => {
     setRestInfo(await getRestaurant(restName));
   };
   useEffect(() => {
-    console.log(restName)
+    console.log(restName);
     // amit saxelis sashualebit momaq restornis info
-    
+
     getRestaurantInfo();
-
-    
-
   }, [restName]);
 
-  
-
-  useEffect(()=>{
+  useEffect(() => {
     const handleRefresh = () => {
       // Function to be executed on each refresh
-      console.log('Page has been refreshed');
+      console.log("Page has been refreshed");
       getRestaurantInfo();
-  
-      
     };
 
     handleRefresh(); // Call the function on component mount
 
     const beforeUnloadListener = () => {
       handleRefresh(); // Call the function before page refresh
-    
     };
 
-    window.addEventListener('beforeunload', beforeUnloadListener);
+    window.addEventListener("beforeunload", beforeUnloadListener);
 
     return () => {
-      window.removeEventListener('beforeunload', beforeUnloadListener);
+      window.removeEventListener("beforeunload", beforeUnloadListener);
     };
-
-  },[])
+  }, []);
 
   const handleDelete = (CategoryName) => {
     // Perform the delete operation here
     // ...
 
-    if (window.confirm('Are you sure you want to delete?')) {
+    if (window.confirm("Are you sure you want to delete?")) {
       // Delete confirmed, perform the delete operation
       // ...
       deleteCategory(CategoryName);
-       setTimeout(()=>{
+      setTimeout(() => {
         window.location.reload(true);
-       },[500])
-     
+      }, [500]);
     }
-
   };
-  
- 
 
   return (
     <MainDiv>
@@ -95,11 +77,26 @@ export default function Categories() {
       <BottomList>
         {restInfo?.FoodCategories?.map((item, index) => {
           return (
-            <Bottom1 key = {index}>
+            <Bottom1 key={index}>
               <BottomItem1>{item.Title}</BottomItem1>
               <BottomItem1>{item.Title}</BottomItem1>
-              <CorrectionButton>Correction</CorrectionButton>
-              <DeleteButton onClick={()=>handleDelete(item.Title)}>Delete</DeleteButton>
+              <CorrectionButton
+                onClick={() => {
+                  navigate(`/HomePage/Categories/CorrectCategories`, {
+                    state: {
+                      NameEng: item.Title,
+                      NameGeo: item.Title,
+                    },
+                  });
+                  deleteCategory(item.Title);
+
+                }}
+              >
+                Correction
+              </CorrectionButton>
+              <DeleteButton onClick={() => handleDelete(item.Title)}>
+                Delete
+              </DeleteButton>
             </Bottom1>
           );
         })}
@@ -198,17 +195,17 @@ const CorrectionButton = styled.li`
     cursor: pointer;
     opacity: 0.8;
   }
-`
+`;
 const DeleteButton = styled.li`
-all: unset;
-padding: 15px;
-background-color: ${COLORS.red};
-border-right: 0.5px solid ${COLORS.insideBlue};
-width: 25%;
-text-align: center;
-color: white;
-&:hover {
-  cursor: pointer;
-  opacity: 0.8;
-}
-`
+  all: unset;
+  padding: 15px;
+  background-color: ${COLORS.red};
+  border-right: 0.5px solid ${COLORS.insideBlue};
+  width: 25%;
+  text-align: center;
+  color: white;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
+`;

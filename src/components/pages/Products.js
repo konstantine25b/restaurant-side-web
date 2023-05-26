@@ -90,7 +90,7 @@ export default function Products() {
         {restInfo?.FoodCategories?.map((item) => {
           return(<Bottom2>
             
-           <BottomItem2 >{item.Title}</BottomItem2>
+           <BottomItem2 key ={item.Title}>{item.Title}</BottomItem2>
            <Bottom3>
             {item.dishes.map((dish , index)=>{
             console.log(dish.Title , item.Title)

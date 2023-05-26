@@ -14,6 +14,8 @@ import Products from "./components/pages/Products";
 import AddProduct from "./components/pages/AddProduct";
 import LoginPage from "./components/pages/LoginPage";
 import { createContext, useState } from "react";
+import CorrectCategories from "./components/pages/CorrectCategories";
+
 
 export const UserContext = createContext(null);
 const router = createBrowserRouter(
@@ -28,6 +30,11 @@ const router = createBrowserRouter(
           path="/HomePage/Categories/AddCategories"
           element={<AddCategories />}
         />
+        <Route
+          path="/HomePage/Categories/CorrectCategories"
+          element={<CorrectCategories />}
+        />
+
         <Route path="/HomePage/Products" element={<Products />} />
         <Route path="/HomePage/Products/AddProduct" element={<AddProduct />} />
       </Route>

@@ -18,12 +18,8 @@ export default function AddCategories() {
       window.location.reload(true);
   
      },[500])
-  
-
       navigate(-1)
-     
-   
-     
+        
   
   }
   
