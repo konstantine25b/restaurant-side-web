@@ -73,6 +73,7 @@ export const signOut = ()=>{
 export const getUser = ()=>{
     return user
 }
+
 /**
  * Subscribe to user login/out event and call the callback function
  * @param callback {function} - function to be called when user logs in
@@ -242,6 +243,26 @@ export const getRestaurantOwner = async () => {
     }
     return null;
 }
+
+export const editRestaurant = async (restaurantId, Address, Genre, MainImage, ShortDescription, Tags) => {
+    await getRestaurantOwner();
+    if(OwnedRestaurant === null || OwnedRestaurant === undefined){
+        throw new Error("You do not own a restaurant.");
+    }
+    const restaurantRef = doc(db, "Restaurants", restaurantId);
+    const restaurantSnapshot = await getDoc(restaurantRef);
+    if (restaurantSnapshot.exists()) {
+        await updateDoc(restaurantRef, {
+            Address: Address,
+            Genre: Genre,
+            MainImage: MainImage,
+            ShortDescription: ShortDescription,
+            Tags: Tags,
+            Title: restaurantId
+        });
+    }
+}
+
 /**
  * Adds a SuperUser to the restaurant.
  * @param email
@@ -359,8 +380,9 @@ export const updateCategory = async (Title, Description, Image) => {
  * @param ApproxTime
  * @param Ingredients
  * @param Price
+ * @param availability
  */
-export const addDish = async (CategoryName, Title, Description, Image, ApproxTime, Ingredients, Price) => {
+export const addDish = async (CategoryName, Title, Description, Image, ApproxTime, Ingredients, Price, Availability) => {
     const restaurantId = await getRestaurantAdmin();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
@@ -384,7 +406,8 @@ export const addDish = async (CategoryName, Title, Description, Image, ApproxTim
             Image: Image,
             ApproxTime: ApproxTime,
             Ingredients: Ingredients,
-            Price: Price
+            Price: Price,
+            Availability: Availability
         });
         console.log(dishes);
         categories[CategoryKey].dishes = dishes;
@@ -443,8 +466,9 @@ export const deleteDish = async (categoryName, dishName) => {
  * @param ApproxTime
  * @param Ingredients
  * @param Price
+ * @param Availability
  */
-export const updateDish = async (CategoryName, Title, Description, Image, ApproxTime, Ingredients, Price) => {
+export const updateDish = async (CategoryName, Title, Description, Image, ApproxTime, Ingredients, Price, Availability) => {
     const restaurantId = await getRestaurantAdmin();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
@@ -468,7 +492,8 @@ export const updateDish = async (CategoryName, Title, Description, Image, Approx
             Image: Image,
             ApproxTime: ApproxTime,
             Ingredients: Ingredients,
-            Price: Price
+            Price: Price,
+            Availability: Availability
         });
         console.log(dishes);
         categories[CategoryKey].dishes = dishes;
@@ -621,7 +646,7 @@ export const getDish = async (restaurantId, categoryId, dishId) => {
 
 //region User
 /**
- * UNIMPLEMENTED - Get all Users
+ * Get User Data
  * @param userId
  * @returns {Promise<DocumentData>}
  */
