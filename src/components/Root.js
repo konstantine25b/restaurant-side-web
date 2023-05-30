@@ -31,8 +31,6 @@ export default function Root() {
 
   // amit tavidanve momaq restornis saxeli
   useLayoutEffect(() => {
-   
-
     const getRestaurantName = async () => {
       setRestName(await getRestaurantAdmin());
     };
@@ -52,15 +50,13 @@ export default function Root() {
   // },[3000])
 
   useEffect(() => {
-
-   if (dataIsUploaded && data == null) {
-    setTimeout(()=>{
-      navigate(`/`);
-    },[500])
-   
-   }
+    if (dataIsUploaded && data == null) {
+      setTimeout(() => {
+        navigate(`/`);
+      }, [500]);
+    }
   }, [data, dataIsUploaded]);
-  
+
   // const getRestaurantInfo = async () => {
   //   setRestInfo(await getRestaurant(restName));
   // };
@@ -68,21 +64,17 @@ export default function Root() {
   // useEffect(() => {
   //   console.log(restName)
   //   // amit saxelis sashualebit momaq restornis info
-    
+
   //   getRestaurantInfo();
 
-    
-
   // }, [restName]);
-
-  
 
   // useEffect(()=>{
   //   const handleRefresh = () => {
   //     // Function to be executed on each refresh
   //     console.log('Page has been refreshed');
   //     getRestaurantInfo();
-      
+
   //   };
 
   //   handleRefresh(); // Call the function on component mount
@@ -133,18 +125,21 @@ export default function Root() {
         </LeftSide>
         <RightSide>
           <UpperSideIn>
-            <UserTitle
+            <UserTitle>
+              User: {data?.email}
+              {/* {context?.mainUser} */}
+            </UserTitle>
+            <LogOutButton
               onClick={() => {
                 // context?.setIsLoggedIn(false);
-                localStorage.removeItem('User')
-                setData(null)
+                localStorage.removeItem("User");
+                setData(null);
 
                 signOut();
               }}
             >
-              {data?.email}
-              {/* {context?.mainUser} */}
-            </UserTitle>
+              Log Out
+            </LogOutButton>
           </UpperSideIn>
           <OutletSpace>
             <Outlet />
@@ -230,4 +225,16 @@ const OutletSpace = styled.div`
   width: calc(100% - 300px);
   margin-left: 400px;
   margin-top: 80px;
+`;
+
+const LogOutButton = styled.div`
+  margin: 10px;
+  background-color: ${COLORS.insideBlue};
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: white;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.9;
+  }
 `;
