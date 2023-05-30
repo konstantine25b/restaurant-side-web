@@ -92,7 +92,7 @@ export default function Categories() {
 
                 }}
               >
-                Correction
+                Correcting
               </CorrectionButton>
               <DeleteButton onClick={() => handleDelete(item.Title)}>
                 Delete
@@ -186,11 +186,11 @@ const BottomList = styled.ul`
 const CorrectionButton = styled.li`
   all: unset;
   padding: 15px;
-  background-color: ${COLORS.green};
+  background-color: ${COLORS.lightBlue};
   border-right: 0.5px solid ${COLORS.insideBlue};
   width: 25%;
   text-align: center;
-  color: ${COLORS.lightBlue};
+  color: white;
   &:hover {
     cursor: pointer;
     opacity: 0.8;

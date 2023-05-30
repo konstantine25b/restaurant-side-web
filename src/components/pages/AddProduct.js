@@ -23,7 +23,9 @@ export default function AddProduct() {
       "https://article.innovadatabase.com/articleimgs/article_images/e27313ad-05da-4e58-8bc9-fcfc75118f65articleimage.jpg", 
       data.AproxTime, 
       data.ingredients!==undefined?data.ingredients:[],//Undefined check
-      data.Price)
+      data.Price,
+      true
+      )
 
       setTimeout(()=>{
         window.location.reload(true);
