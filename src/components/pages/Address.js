@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getRestaurant } from "../../Processing/Database";
+import { editRestaurant, getRestaurant } from "../../Processing/Database";
 import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
 import { useForm } from "react-hook-form";
@@ -23,19 +23,22 @@ export default function Address() {
 
     getRestaurantInfo();
   }, [restName]);
+//   console.log(restInfo)
 
   const onSubmit = (data) => {
-    console.log('ki');
+    console.log(restInfo, data)
+    editRestaurant(restInfo.Title , data.Address, restInfo.Genre, restInfo.MainImage, restInfo.ShortDescription, restInfo.Tags)
+    
   };
 
   return (
     <MainDiv>
       <Bottom onSubmit={handleSubmit(onSubmit)}>
-        <NameP>Correct Address</NameP>
-        <NameInput {...register("NameEng", { required: true })} />
-        {errors.NameEng?.type === "required" && (
+        <NameP>Address Correction:</NameP>
+        <NameInput defaultValue={restInfo?.Address}{...register("Address", { required: true })} />
+        {errors.Address?.type === "required" && (
           <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
-            English Name is required
+             Address is required
           </p>
         )}
           <SubmitInput type="submit" />
@@ -79,7 +82,7 @@ const SubmitInput = styled.input`
    all: unset;
    width: 80px;
   height: 40px;
-  background-color: ${COLORS.green};
+  background-color: ${COLORS.lightBlue};
   color: white;
   display: flex;
   justify-content: center;
