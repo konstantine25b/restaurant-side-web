@@ -112,13 +112,33 @@ export default function Root() {
           <LeftSideList>
             <LeftNavbarList
               title={"Restaurant Info"}
-              data={[{ Name: "Address" }, { Name: "MainImage" }]}
+              data={[
+                {
+                  Title: "Full Restaurant Information",
+                  Name: "FullRestInfo",
+                  restName: restName,
+                },
+                {
+                  Title: "Address",
+                  Name: "Address",
+                  restName: restName,
+                },
+                { Title: "MainImage", Name: "MainImage" },
+              ]}
             />
             <LeftNavbarList
               title={"Products & Categories"}
               data={[
-                { Name: "Products", restName: restName },
-                { Name: "Categories", restName: restName },
+                {
+                  Title: "Products",
+                  Name: "Products",
+                  restName: restName,
+                },
+                {
+                  Title: "Categories",
+                  Name: "Categories",
+                  restName: restName,
+                },
               ]}
             />
           </LeftSideList>

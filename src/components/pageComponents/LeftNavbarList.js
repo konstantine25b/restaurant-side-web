@@ -42,7 +42,7 @@ export default function LeftNavbarList(props) {
             }
             key={index}
           >
-            <ListContentItemP> {item.Name}</ListContentItemP>
+            <ListContentItemP> {item.Title}</ListContentItemP>
           </ListContentItem>
         ))}
       </ListContent>

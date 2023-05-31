@@ -17,6 +17,8 @@ import { createContext, useState } from "react";
 import CorrectProduct from "./components/pages/CorrectProducts";
 import CorrectCategories from "./components/pages/CorrectCategories";
 import DetailsPage from "./components/pages/DetailsPage";
+import Address from "./components/pages/Address";
+import FullRestInfo from "./components/pages/FullRestInfo";
 
 
 
@@ -42,6 +44,10 @@ const router = createBrowserRouter(
         <Route path="/HomePage/Products/AddProduct" element={<AddProduct />} />
         <Route path="/HomePage/Products/Details" element={<DetailsPage />} />
         <Route path="/HomePage/Products/CorrectProduct" element={<CorrectProduct />} />
+
+
+        <Route path="/HomePage/FullRestInfo" element={<FullRestInfo />} />
+        <Route path="/HomePage/Address" element={<Address />} />
       </Route>
     </Route>
   )
