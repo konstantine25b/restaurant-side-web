@@ -9,6 +9,7 @@ import {
     updateEmail,
     reauthenticateWithCredential} from "firebase/auth";
 import {collection, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc} from 'firebase/firestore/lite';
+import {getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL} from 'firebase/storage'
 
 //region Firebase Config
 const firebaseConfig = {
@@ -22,6 +23,7 @@ const firebaseConfig = {
 };
 
 const app= initializeApp(firebaseConfig);
+const storage = getStorage(app);
 
 //endregion
 
@@ -204,7 +206,6 @@ let OwnedRestaurant;
  */
 export const getRestaurantAdmin = async () => {
     if (EditableRestaurant !== null && EditableRestaurant !== undefined) {
-        console.log(EditableRestaurant + " is the editable restaurant.");
         return EditableRestaurant;
     }
     const superUsersCol = collection(db, 'SuperUsers');
@@ -720,4 +721,23 @@ export const createUserFromData= async (name, email, phone, image) => {
 //endregion
 //endregion
 
+//#region Firebase Storage
+
+export const uploadImage = async (file) => {
+    if (file === null) {
+        throw new Error("No file selected");
+    }
+    else {
+        return getDownloadURL(
+            uploadBytesResumable(
+                ref(
+                    storage,
+                    (await getRestaurantAdmin()) + "/" + file.name),
+                file
+            ).snapshot.ref
+        );
+    }
+}
+
+//##endregion
 auth.onAuthStateChanged((usr)=>{ user = usr; });
