@@ -251,8 +251,21 @@ export const editRestaurant = async (restaurantId, Address, Genre, MainImage, Sh
     }
     const restaurantRef = doc(db, "Restaurants", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
+    const resaurantRefFull = doc(db, "RestaurantsFull", restaurantId);
+    const restaurantSnapshotFull = await getDoc(resaurantRefFull);
+    console.log(restaurantSnapshot.exists());
     if (restaurantSnapshot.exists()) {
         await updateDoc(restaurantRef, {
+            Address: Address,
+            Genre: Genre,
+            MainImage: MainImage,
+            ShortDescription: ShortDescription,
+            Tags: Tags,
+            Title: restaurantId
+        });
+    }
+    if (restaurantSnapshotFull.exists()) {
+        await updateDoc(resaurantRefFull, {
             Address: Address,
             Genre: Genre,
             MainImage: MainImage,
@@ -380,7 +393,7 @@ export const updateCategory = async (Title, Description, Image) => {
  * @param ApproxTime
  * @param Ingredients
  * @param Price
- * @param availability
+ * @param Availability
  */
 export const addDish = async (CategoryName, Title, Description, Image, ApproxTime, Ingredients, Price, Availability) => {
     const restaurantId = await getRestaurantAdmin();
