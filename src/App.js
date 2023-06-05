@@ -19,6 +19,8 @@ import CorrectCategories from "./components/pages/CorrectCategories";
 import DetailsPage from "./components/pages/DetailsPage";
 import Address from "./components/pages/Address";
 import FullRestInfo from "./components/pages/FullRestInfo";
+import Description from "./components/pages/Description";
+import Tags from "./components/pages/Tags";
 
 
 
@@ -48,6 +50,8 @@ const router = createBrowserRouter(
 
         <Route path="/HomePage/FullRestInfo" element={<FullRestInfo />} />
         <Route path="/HomePage/Address" element={<Address />} />
+        <Route path="/HomePage/Description" element={<Description />} />
+        <Route path="/HomePage/RestaurantTags" element={<Tags/>} />
       </Route>
     </Route>
   )

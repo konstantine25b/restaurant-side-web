@@ -123,7 +123,17 @@ export default function Root() {
                   Name: "Address",
                   restName: restName,
                 },
-                { Title: "MainImage", Name: "MainImage" },
+                {
+                  Title: "Description",
+                  Name: "Description",
+                  restName: restName,
+                },
+                {
+                  Title: "Tags",
+                  Name: "RestaurantTags",
+                  restName: restName,
+                },
+                { Title: "Restaurant Main Image", Name: "MainImage", restName: restName },
               ]}
             />
             <LeftNavbarList
