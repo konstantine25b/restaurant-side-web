@@ -20,6 +20,7 @@ export default function DetailsPage() {
     AproxTime: dishInfo.ApproxTime,
     Ingredients: dishInfo.Ingredients,
     Price: dishInfo.Price,
+    Img: dishInfo.Image
   };
   return (
     <MainDiv>
@@ -55,6 +56,10 @@ export default function DetailsPage() {
         {firstData.Ingredients.map(item=>{
             return  item? <TopP>{item} ,</TopP>: null
         })}
+      </Top>
+      <Top>
+        <TopP>Product Image :</TopP>
+        <ProductImage src = {dishInfo.Image}/>
       </Top>
     </MainDiv>
   );
@@ -96,4 +101,9 @@ const BackButton = styled.div`
     cursor: pointer;
     opacity: 0.8;
   }
+`;
+
+const ProductImage = styled.img`
+ width: 240px;
+ 
 `;

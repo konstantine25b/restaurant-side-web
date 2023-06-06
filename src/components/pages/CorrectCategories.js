@@ -5,7 +5,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import "./MainImage.css";
-import { addCategory, deleteCategory } from "../../Processing/Database";
+import { addCategory, deleteCategory, updateCategory } from "../../Processing/Database";
 
 export default function CorrectCategories() {
   const {
@@ -23,11 +23,12 @@ export default function CorrectCategories() {
     NameGeo: NameGeo,
 
   }
+  
 
   
 
   const onSubmit = (data) => {
-    addCategory(
+    updateCategory(
       data.NameEng,
       "sfkdfks",
       "https://www.shorturl.at/img/shorturl-icon.png"

@@ -1,53 +1,52 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
 import COLORS from "../../themes/colors";
 import styled from "@emotion/styled";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useForm,useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import "./MainImage.css";
-import { addDish } from "../../Processing/Database";
-
+import { addDish, uploadImage } from "../../Processing/Database";
 
 export default function AddProduct() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    control
+    control,
   } = useForm();
-  const onSubmit = (data) => {
-    addDish(
-      data.Category, 
-      data.NameEng, 
-      data.Description, 
-      "https://article.innovadatabase.com/articleimgs/article_images/e27313ad-05da-4e58-8bc9-fcfc75118f65articleimage.jpg", 
-      data.AproxTime, 
-      data.ingredients!==undefined?data.ingredients:[],//Undefined check
-      data.Price,
-      true
-      )
 
-      setTimeout(()=>{
+  const newUrl = useRef("");
+
+  const onSubmit = (data) => {
+    uploadImage(selectedFile).then((url) => (newUrl.current = url));
+    setTimeout(() => {
+      addDish(
+        data.Category,
+        data.NameEng,
+        data.Description,
+        newUrl.current,
+        data.AproxTime,
+        data.ingredients !== undefined ? data.ingredients : [], //Undefined check
+        data.Price,
+        true
+      );
+
+      setTimeout(() => {
         window.location.reload(true);
-       
-       },[500])
-  
-  
-        
-      navigate(-1)
-       
-      
+      }, [500]);
+
+      navigate(-1);
+    }, [500]);
   };
   const navigate = useNavigate();
 
   const { state } = useLocation();
   const { restInfo } = state;
 
- 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'items',
-    
+    name: "items",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -141,31 +140,29 @@ export default function AddProduct() {
           {...register("Description", {})}
         />
 
-
-
         <NameP>Category Name</NameP>
-        <Select valueData={categories} {...register("Category")} />
-
+        <Select
+          valueData={categories}
+          {...register("Category", { required: true })}
+        />
 
         <NameP>Ingredients</NameP>
         {fields.map((item, index) => (
-        <div key={item.id} style = {{display: 'flex'}}>
-          <IngrInput
-            {...register(`ingredients.${index}`)}
-            placeholder="Ingredient Name"
-            defaultValue={item.name}
-          />
-       
-          <DeleteIngr type="button" onClick={() => remove(index)}>
-            Remove
-          </DeleteIngr>
-        </div>
-      ))}
-      <IngredientButton type="button" onClick={() => append({})}>
-        Add Ingredients
-      </IngredientButton>
-     
+          <div key={item.id} style={{ display: "flex" }}>
+            <IngrInput
+              {...register(`ingredients.${index}`)}
+              placeholder="Ingredient Name"
+              defaultValue={item.name}
+            />
 
+            <DeleteIngr type="button" onClick={() => remove(index)}>
+              Remove
+            </DeleteIngr>
+          </div>
+        ))}
+        <IngredientButton type="button" onClick={() => append({})}>
+          Add Ingredients
+        </IngredientButton>
 
         <NameP style={{ marginBottom: -10 }}>Picture</NameP>
         <div className="image-uploader">
@@ -173,7 +170,7 @@ export default function AddProduct() {
             <input
               className="file-input"
               type="file"
-              {...register("img")}
+              {...register("img", { required: true })}
               onChange={handleFileInputChange}
             />
             <span className="file-cta">
@@ -188,6 +185,14 @@ export default function AddProduct() {
               )}
             </span>
           </label>
+          {errors.img?.type === "required" && (
+            <p
+              style={{ color: "red", margin: 0, paddingLeft: 18 }}
+              role="alert"
+            >
+              Product Image is required
+            </p>
+          )}
           {selectedFile && (
             <img
               className="selected-file-preview"
@@ -196,19 +201,6 @@ export default function AddProduct() {
             />
           )}
         </div>
-        {!selectedFile?.name && (
-          <p
-            style={{
-              color: "yellow",
-              margin: 0,
-              marginTop: -10,
-              paddingLeft: 18,
-            }}
-            role="alert"
-          >
-            picture is not selected
-          </p>
-        )}
 
         <SubmitInput type="submit" />
       </Bottom>
@@ -264,7 +256,6 @@ const Bottom = styled.form`
   justify-content: center;
 `;
 
-
 const NameP = styled.p`
   padding: 10px 0px 0px 10px;
   margin: 8px;
@@ -278,10 +269,10 @@ const NameInput = styled.input`
 `;
 
 const IngrInput = styled.input`
-padding: 10px;
-width: 40%;
-margin: 0px 0 10px 18px;
-outline: none;
+  padding: 10px;
+  width: 40%;
+  margin: 0px 0 10px 18px;
+  outline: none;
 `;
 
 const SubmitInput = styled.input`
@@ -304,7 +295,7 @@ const SubmitInput = styled.input`
 `;
 
 const IngredientButton = styled.button`
-   all: unset;
+  all: unset;
   width: 80px;
   height: 40px;
   background-color: ${COLORS.lightBlue};
@@ -322,7 +313,7 @@ const IngredientButton = styled.button`
     cursor: pointer;
     opacity: 0.8;
   }
-`
+`;
 const DeleteIngr = styled.button`
   all: unset;
   width: 60px;
@@ -334,16 +325,14 @@ const DeleteIngr = styled.button`
   align-items: center;
   padding: 5px;
   border-radius: 5px;
-  
+
   margin-left: 4px;
 
   &:hover {
     cursor: pointer;
     opacity: 0.8;
   }
-`
-
-
+`;
 
 const Select1 = styled.select`
   outline: none;

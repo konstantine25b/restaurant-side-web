@@ -162,6 +162,7 @@ export default function Products() {
                               restInfo: restInfo,
                               categoryIndex: index1,
                               dishIndex: index,
+                              Img : dish.Image
                             },
                           });
 

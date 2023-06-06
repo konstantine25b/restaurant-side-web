@@ -88,7 +88,7 @@ export default function Categories() {
                       NameGeo: item.Title,
                     },
                   });
-                  deleteCategory(item.Title);
+                  
 
                 }}
               >

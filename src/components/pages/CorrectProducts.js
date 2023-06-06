@@ -3,87 +3,85 @@ import COLORS from "../../themes/colors";
 import styled from "@emotion/styled";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useForm,useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import "./MainImage.css";
-import { addDish } from "../../Processing/Database";
-
+import { addDish, updateDish, uploadImage } from "../../Processing/Database";
 
 export default function CorrectProduct() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    control
+    control,
   } = useForm();
-  const onSubmit = (data) => {
-    addDish(
-      data.Category, 
-      data.NameEng, 
-      data.Description, 
-      "https://article.innovadatabase.com/articleimgs/article_images/e27313ad-05da-4e58-8bc9-fcfc75118f65articleimage.jpg", 
-      data.AproxTime, 
-      data.ingredients!==undefined?data.ingredients:[],//Undefined check
-      data.Price,
-      true)
 
-      setTimeout(()=>{
-        window.location.reload(true);
-       
-       },[500])
-  
-  
-        
-      navigate(-1)
-   
+  const newUrl = useRef("");
+
+  const onSubmit = (data) => {
+    uploadImage(selectedFile).then((url) => (newUrl.current = url));
+
+
+    setTimeout(() => {
+      let imgLink = newUrl.current == "" ? dishInfo.Image : newUrl.current 
       
+      updateDish(
+        data.Category,
+        data.NameEng,
+        data.Description,
+        imgLink,
+        data.AproxTime,
+        data.ingredients !== undefined ? data.ingredients : [], //Undefined check
+        data.Price,
+        dishInfo.Availability
+
+      );
+
+      setTimeout(() => {
+        window.location.reload(true);
+      }, [500]);
+
+      navigate(-1);
+    }, [500]);
   };
   const navigate = useNavigate();
   const { state } = useLocation();
 
   // aq indexebit momaqvs imitom rom mere martivad vipovo restionfos categoriebshi
-  const { restInfo, categoryIndex , dishIndex  } = state;
-   // es konkretulad dishes mtel infos igebs
-   const dishInfo = restInfo.FoodCategories[categoryIndex].dishes[dishIndex]
-
+  const { restInfo, categoryIndex, dishIndex } = state;
+  // es konkretulad dishes mtel infos igebs
+  const dishInfo = restInfo.FoodCategories[categoryIndex].dishes[dishIndex];
 
   //  console.log(dishInfo)
 
+  const firstData = {
+    Category: restInfo.FoodCategories[categoryIndex].Title,
+    NameEng: dishInfo.Title,
+    img: dishInfo.Image,
+    Description: dishInfo.Description,
+    AproxTime: dishInfo.ApproxTime,
+    ingredients: dishInfo.Ingredients,
+    Price: dishInfo.Price,
+    Availability : dishInfo.Availability
+  };
+  console.log(dishInfo)
 
-  const firstData ={
-     Category: restInfo.FoodCategories[categoryIndex].Title,
-     NameEng : dishInfo.Title,
-     Description: dishInfo.Description,
-     AproxTime: dishInfo.ApproxTime,
-     ingredients: dishInfo.Ingredients,
-     Price: dishInfo.Price
-  }
-
-
-
- 
-
-  
-
- 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'items',
-    
+    name: "items",
   });
 
-  
-
   const defaultItemsGenerated = useRef(false);
-  
 
   // amit xdeba damateba ingredientebis tu aqvs ukve ogond defaultebis
   useEffect(() => {
-    if (dishInfo.Ingredients.length > 0 && defaultItemsGenerated.current==false) {
+    if (
+      dishInfo.Ingredients.length > 0 &&
+      defaultItemsGenerated.current == false
+    ) {
       dishInfo.Ingredients.forEach((item) => {
-        
-        append({name: item});
+        append({ name: item });
       });
-      defaultItemsGenerated.current=true;
+      defaultItemsGenerated.current = true;
     }
   }, [dishInfo]);
 
@@ -103,7 +101,13 @@ export default function CorrectProduct() {
   const Select = React.forwardRef(
     ({ onChange, onBlur, name, valueData }, ref) => (
       <>
-        <Select1 defaultValue={restInfo.FoodCategories[categoryIndex].Title} name={name} ref={ref} onChange={onChange} onBlur={onBlur}>
+        <Select1
+          defaultValue={restInfo.FoodCategories[categoryIndex].Title}
+          name={name}
+          ref={ref}
+          onChange={onChange}
+          onBlur={onBlur}
+        >
           {valueData?.map((value, index) => {
             return (
               <option key={index} value={value}>
@@ -121,7 +125,7 @@ export default function CorrectProduct() {
       <Top>
         <BackButton
           onClick={() => {
-            onSubmit(firstData)
+            onSubmit(firstData);
             // console.log(firstData)
           }}
         >
@@ -130,9 +134,9 @@ export default function CorrectProduct() {
         <TopP>Add or Correct Product Info</TopP>
       </Top>
       <Bottom onSubmit={handleSubmit(onSubmit)}>
-        <NameP >Name (English)</NameP>
-        <NameInput defaultValue={dishInfo.Title}
-         
+        <NameP>Name (English)</NameP>
+        <NameInput
+          defaultValue={dishInfo.Title}
           {...register("NameEng", { required: true })}
         />
         {errors.NameEng?.type === "required" && (
@@ -141,7 +145,8 @@ export default function CorrectProduct() {
           </p>
         )}
         <NameP>Name (Georgian)</NameP>
-        <NameInput defaultValue={dishInfo.Title}
+        <NameInput
+          defaultValue={dishInfo.Title}
           placeholder="Add Product Name (Georgian)"
           {...register("NameGeo", { required: true })}
         />
@@ -152,7 +157,8 @@ export default function CorrectProduct() {
         )}
 
         <NameP>Price (Gel)</NameP>
-        <NameInput defaultValue={dishInfo.Price}
+        <NameInput
+          defaultValue={dishInfo.Price}
           placeholder="0"
           {...register("Price", { required: true, pattern: /^\d+$/ })}
         />
@@ -163,7 +169,8 @@ export default function CorrectProduct() {
         )}
 
         <NameP>Aprroximate Time (Minutes)</NameP>
-        <NameInput defaultValue={dishInfo.ApproxTime}
+        <NameInput
+          defaultValue={dishInfo.ApproxTime}
           placeholder="0"
           {...register("AproxTime", { required: true, pattern: /^\d+$/ })}
         />
@@ -174,36 +181,32 @@ export default function CorrectProduct() {
         )}
 
         <NameP> Desctiption</NameP>
-        <NameInput defaultValue={dishInfo.Description}
+        <NameInput
+          defaultValue={dishInfo.Description}
           placeholder="Add small description"
           {...register("Description", {})}
         />
 
-
-
         <NameP>Category Name</NameP>
         <Select valueData={categories} {...register("Category")} />
 
-
         <NameP>Ingredients</NameP>
         {fields.map((item, index) => (
-        <div key={item.id} style = {{display: 'flex'}}>
-          <IngrInput
-            {...register(`ingredients.${index}`)}
-            placeholder="Ingredient Name"
-            defaultValue={item.name}
-          />
-       
-          <DeleteIngr type="button" onClick={() => remove(index)}>
-            Remove
-          </DeleteIngr>
-        </div>
-      ))}
-      <IngredientButton type="button" onClick={() => append({})}>
-        Add Ingredients
-      </IngredientButton>
-     
+          <div key={item.id} style={{ display: "flex" }}>
+            <IngrInput
+              {...register(`ingredients.${index}`)}
+              placeholder="Ingredient Name"
+              defaultValue={item.name}
+            />
 
+            <DeleteIngr type="button" onClick={() => remove(index)}>
+              Remove
+            </DeleteIngr>
+          </div>
+        ))}
+        <IngredientButton type="button" onClick={() => append({})}>
+          Add Ingredients
+        </IngredientButton>
 
         <NameP style={{ marginBottom: -10 }}>Picture</NameP>
         <div className="image-uploader">
@@ -233,20 +236,10 @@ export default function CorrectProduct() {
               alt={selectedFile.name}
             />
           )}
+          {!selectedFile?.name && (
+            <img className="selected-file-preview" src={dishInfo.Image} />
+          )}
         </div>
-        {!selectedFile?.name && (
-          <p
-            style={{
-              color: "yellow",
-              margin: 0,
-              marginTop: -10,
-              paddingLeft: 18,
-            }}
-            role="alert"
-          >
-            picture is not selected
-          </p>
-        )}
 
         <SubmitInput type="submit" />
       </Bottom>
@@ -302,7 +295,6 @@ const Bottom = styled.form`
   justify-content: center;
 `;
 
-
 const NameP = styled.p`
   padding: 10px 0px 0px 10px;
   margin: 8px;
@@ -316,10 +308,10 @@ const NameInput = styled.input`
 `;
 
 const IngrInput = styled.input`
-padding: 10px;
-width: 40%;
-margin: 0px 0 10px 18px;
-outline: none;
+  padding: 10px;
+  width: 40%;
+  margin: 0px 0 10px 18px;
+  outline: none;
 `;
 
 const SubmitInput = styled.input`
@@ -342,7 +334,7 @@ const SubmitInput = styled.input`
 `;
 
 const IngredientButton = styled.button`
-   all: unset;
+  all: unset;
   width: 80px;
   height: 40px;
   background-color: ${COLORS.lightBlue};
@@ -360,7 +352,7 @@ const IngredientButton = styled.button`
     cursor: pointer;
     opacity: 0.8;
   }
-`
+`;
 const DeleteIngr = styled.button`
   all: unset;
   width: 60px;
@@ -372,16 +364,14 @@ const DeleteIngr = styled.button`
   align-items: center;
   padding: 5px;
   border-radius: 5px;
-  
+
   margin-left: 4px;
 
   &:hover {
     cursor: pointer;
     opacity: 0.8;
   }
-`
-
-
+`;
 
 const Select1 = styled.select`
   outline: none;
