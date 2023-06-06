@@ -364,7 +364,7 @@ export const deleteCategory = async (categoryName) => {
  */
 export const updateCategory = async (Title, NewTitle, Description, Image) => {
     let dishes = [];
-    console.log("Updating category "+Title)
+    console.log("Full category update info "+Title+" "+NewTitle+" "+Description+" "+Image)
     const restaurantId = await getRestaurantAdmin();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
@@ -375,15 +375,16 @@ export const updateCategory = async (Title, NewTitle, Description, Image) => {
         for (const key in categories) {
             if (categories[key].Title === Title) {
                 console.log("Found the category " + Title + ", updating it.");
+                dishes = categories[key].dishes;
                 categories.splice(key, 1);
             }
         }
         categories.push({Title: NewTitle, Description: Description, Image: Image, dishes: dishes});
-        console.log("Updated the category " + Title + " at "+restaurantId);
-        await updateDoc(restaurantRef, {
+        FullRestaurantStorage[restaurantId] = restaurantData;
+
+        return await updateDoc(restaurantRef, {
             FoodCategories: categories
         });
-        FullRestaurantStorage[restaurantId] = restaurantData;
     }
     else{
         throw new Error("Restaurant doesn't exist");
@@ -507,6 +508,7 @@ export const updateDish = async (CategoryName, Title, NewTitle, Description, Ima
         if (dishes === undefined) {
             throw new Error("Category doesn't exist");
         }
+        //Not a particularly efficient way to do this, firebase has better ways to do this. Optimize later.
         for (const key in dishes) {
             if (dishes[key].Title === Title) {
                 dishes.splice(key, 1);
