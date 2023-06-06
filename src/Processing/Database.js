@@ -358,11 +358,13 @@ export const deleteCategory = async (categoryName) => {
  * Update a category in the restaurant.
  * @returns {Promise<void>}
  * @param Title
+ * @param NewTitle
  * @param Description
  * @param Image
  */
-export const updateCategory = async (Title, Description, Image) => {
+export const updateCategory = async (Title, NewTitle, Description, Image) => {
     let dishes = [];
+    console.log("Updating category "+Title)
     const restaurantId = await getRestaurantAdmin();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
@@ -370,10 +372,14 @@ export const updateCategory = async (Title, Description, Image) => {
         const restaurantData = restaurantSnapshot.data();
         const categories = restaurantData.FoodCategories;
         //add the category to the array
-        categories.push({Title: Title, Description: Description, Image: Image, dishes: dishes});
         for (const key in categories) {
-            console.log(categories[key]);
+            if (categories[key].Title === Title) {
+                console.log("Found the category " + Title + ", updating it.");
+                categories.splice(key, 1);
+            }
         }
+        categories.push({Title: NewTitle, Description: Description, Image: Image, dishes: dishes});
+        console.log("Updated the category " + Title + " at "+restaurantId);
         await updateDoc(restaurantRef, {
             FoodCategories: categories
         });
@@ -475,6 +481,7 @@ export const deleteDish = async (categoryName, dishName) => {
  * @returns {Promise<void>}
  * @param CategoryName
  * @param Title
+ * @param NewTitle
  * @param Description
  * @param Image
  * @param ApproxTime
@@ -482,7 +489,7 @@ export const deleteDish = async (categoryName, dishName) => {
  * @param Price
  * @param Availability
  */
-export const updateDish = async (CategoryName, Title, Description, Image, ApproxTime, Ingredients, Price, Availability) => {
+export const updateDish = async (CategoryName, Title, NewTitle, Description, Image, ApproxTime, Ingredients, Price, Availability) => {
     const restaurantId = await getRestaurantAdmin();
     const restaurantRef = doc(db, "RestaurantsFull", restaurantId);
     const restaurantSnapshot = await getDoc(restaurantRef);
@@ -500,8 +507,13 @@ export const updateDish = async (CategoryName, Title, Description, Image, Approx
         if (dishes === undefined) {
             throw new Error("Category doesn't exist");
         }
+        for (const key in dishes) {
+            if (dishes[key].Title === Title) {
+                dishes.splice(key, 1);
+            }
+        }
         dishes.push({
-            Title: Title,
+            Title: NewTitle,
             Description: Description,
             Image: Image,
             ApproxTime: ApproxTime,
