@@ -18,14 +18,17 @@ export default function CorrectProduct() {
   const newUrl = useRef("");
 
   const onSubmit = (data) => {
-    uploadImage(selectedFile).then((url) => (newUrl.current = url));
+    uploadImage(selectedFile).then((url) => (
+      
+      newUrl.current = url));
 
 
     setTimeout(() => {
       let imgLink = newUrl.current == "" ? dishInfo.Image : newUrl.current 
-      
+      console.log(imgLink)
       updateDish(
         data.Category,
+        firstData.NameEng,
         data.NameEng,
         data.Description,
         imgLink,

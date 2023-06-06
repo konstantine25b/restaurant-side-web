@@ -166,7 +166,7 @@ export default function Products() {
                             },
                           });
 
-                          deleteDish(item.Title, dish.Title);
+                         
                         }}
                       >
                         Correcting

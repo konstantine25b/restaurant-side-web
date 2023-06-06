@@ -28,7 +28,9 @@ export default function CorrectCategories() {
   
 
   const onSubmit = (data) => {
+    console.log(data.NameEng)
     updateCategory(
+      firstData.NameEng,
       data.NameEng,
       "sfkdfks",
       "https://www.shorturl.at/img/shorturl-icon.png"
