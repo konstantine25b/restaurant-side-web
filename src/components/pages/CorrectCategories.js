@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import COLORS from "../../themes/colors";
 import styled from "@emotion/styled";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
@@ -9,6 +9,7 @@ import {
   addCategory,
   deleteCategory,
   updateCategory,
+  uploadImage,
 } from "../../Processing/Database";
 
 export default function CorrectCategories() {
@@ -20,27 +21,42 @@ export default function CorrectCategories() {
   const navigate = useNavigate();
 
   const { state } = useLocation();
-  const { NameEng, NameGeo } = state;
+  const { NameEng, NameGeo ,Image } = state;
 
   const firstData = {
     NameEng: NameEng,
     NameGeo: NameGeo,
+    img : Image
   };
 
+
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const newUrl = useRef("");
+
+  useEffect(()=>{
+    uploadImage(selectedFile).then((url) => {
+      newUrl.current = url;
+      
+    })
+  },[selectedFile])
+
   const onSubmit = (data) => {
-    console.log(data.NameEng);
+
+    let imgLink = newUrl.current == "" ? firstData.img : newUrl.current;
+    
     updateCategory(
       firstData.NameEng,
       data.NameEng,
       "sfkdfks",
-      "https://www.shorturl.at/img/shorturl-icon.png"
+      imgLink
     ).then(() => {
       window.location.reload(true);
       navigate(-1);
     });
   };
 
-  const [selectedFile, setSelectedFile] = useState(null);
+ 
 
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -103,6 +119,14 @@ export default function CorrectCategories() {
               )}
             </span>
           </label>
+          {!selectedFile &&
+              <img
+              className="selected-file-preview"
+              src={firstData.img}
+              
+            />
+
+          }
           {selectedFile && (
             <img
               className="selected-file-preview"
@@ -111,19 +135,7 @@ export default function CorrectCategories() {
             />
           )}
         </div>
-        {!selectedFile?.name && (
-          <p
-            style={{
-              color: "yellow",
-              margin: 0,
-              marginTop: -10,
-              paddingLeft: 18,
-            }}
-            role="alert"
-          >
-            picture is not selected
-          </p>
-        )}
+
 
         <SubmitInput type="submit" />
       </Bottom>

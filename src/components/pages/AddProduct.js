@@ -17,10 +17,15 @@ export default function AddProduct() {
   } = useForm();
 
   const newUrl = useRef("");
+  const [selectedFile, setSelectedFile] = useState(null);
+
+
+  // useEffect(()=>{
+
+  // },[selectedFile])
 
   const onSubmit = (data) => {
-    uploadImage(selectedFile).then((url) => (newUrl.current = url));
-    setTimeout(() => {
+    uploadImage(selectedFile).then((url) => (newUrl.current = url)).then(()=>{
       addDish(
         data.Category,
         data.NameEng,
@@ -30,14 +35,18 @@ export default function AddProduct() {
         data.ingredients !== undefined ? data.ingredients : [], //Undefined check
         data.Price,
         true
-      );
+      ).then(()=>{
+         window.location.reload(true);
+        navigate(-1)
 
-      setTimeout(() => {
-        window.location.reload(true);
-      }, [500]);
+      })
 
-      navigate(-1);
-    }, [500]);
+    })
+   
+
+
+    
+
   };
   const navigate = useNavigate();
 
@@ -49,14 +58,12 @@ export default function AddProduct() {
     name: "items",
   });
 
-  const [selectedFile, setSelectedFile] = useState(null);
+ 
 
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
-  useEffect(() => {
-    console.log(selectedFile);
-  }, [selectedFile]);
+ 
 
   const categories = restInfo.FoodCategories.map((item) => {
     return item.Title;

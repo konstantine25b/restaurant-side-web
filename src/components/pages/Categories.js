@@ -86,6 +86,7 @@ export default function Categories() {
                     state: {
                       NameEng: item.Title,
                       NameGeo: item.Title,
+                      Image: item.Image
                     },
                   });
                   

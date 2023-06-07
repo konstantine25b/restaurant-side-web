@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import COLORS from "../../themes/colors";
 import styled from "@emotion/styled";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import "./MainImage.css";
-import { addCategory } from "../../Processing/Database";
+import { addCategory, uploadImage } from "../../Processing/Database";
 
 export default function AddCategories() {
   const {
@@ -14,19 +14,24 @@ export default function AddCategories() {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
-
-  const onSubmit = (data) => {
-    addCategory(
-      data.NameEng,
-      "sfkdfks",
-      "https://www.shorturl.at/img/shorturl-icon.png"
-    ).then(() => {
-   
-      navigate(-1);
-    });
-  };
+  const newUrl = useRef("");
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const onSubmit = (data) => {
+    uploadImage(selectedFile).then((url) => (newUrl.current = url)).then(()=>{
+
+      addCategory(
+        data.NameEng,
+        "sfkdfks",
+        newUrl.current
+      ).then(() => {
+        navigate(-1);
+      });
+    })
+    
+  };
+
+
 
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -68,7 +73,7 @@ export default function AddCategories() {
             <input
               className="file-input"
               type="file"
-              {...register("img")}
+              {...register("img", { required: true })}
               onChange={handleFileInputChange}
             />
             <span className="file-cta">
@@ -91,17 +96,9 @@ export default function AddCategories() {
             />
           )}
         </div>
-        {!selectedFile?.name && (
-          <p
-            style={{
-              color: "yellow",
-              margin: 0,
-              marginTop: -10,
-              paddingLeft: 18,
-            }}
-            role="alert"
-          >
-            picture is not selected
+        {errors.img?.type === "required" && (
+          <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
+            Category Image is required
           </p>
         )}
 
