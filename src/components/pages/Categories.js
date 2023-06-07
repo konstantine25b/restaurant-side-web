@@ -51,10 +51,10 @@ export default function Categories() {
     if (window.confirm("Are you sure you want to delete?")) {
       // Delete confirmed, perform the delete operation
       // ...
-      deleteCategory(CategoryName);
-      setTimeout(() => {
+      deleteCategory(CategoryName).then(()=>{
         window.location.reload(true);
-      }, [500]);
+      })
+    
     }
   };
 

@@ -4,39 +4,36 @@ import styled from "@emotion/styled";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import './MainImage.css';
+import "./MainImage.css";
 import { addCategory } from "../../Processing/Database";
 
 export default function AddCategories() {
-  const { register, handleSubmit , formState: { errors }} = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
 
   const onSubmit = (data) => {
-    
-     addCategory(data.NameEng , "sfkdfks" , "https://www.shorturl.at/img/shorturl-icon.png"  )
-     setTimeout(()=>{
-      window.location.reload(true);
-  
-     },[500])
-      navigate(-1)
-        
-  
-  }
-  
-  ;
-  
+    addCategory(
+      data.NameEng,
+      "sfkdfks",
+      "https://www.shorturl.at/img/shorturl-icon.png"
+    ).then(() => {
+   
+      navigate(-1);
+    });
+  };
 
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);
-    
   };
-  useEffect(()=>{
-    console.log(selectedFile)
-  },[selectedFile])
-
- 
+  useEffect(() => {
+    console.log(selectedFile);
+  }, [selectedFile]);
 
   return (
     <MainDiv>
@@ -50,52 +47,65 @@ export default function AddCategories() {
         </BackButton>
         <TopP>Categories Correction</TopP>
       </Top>
-      <Bottom  onSubmit={handleSubmit(onSubmit)}>
-      
-      <NameP>Name (English)</NameP>
-      <NameInput {...register("NameEng", { required: true})} />
-      {errors.NameEng?.type === 'required' && <p style={{color:'red' ,margin: 0 , paddingLeft: 18,}} role="alert">English Name is required</p>}
-      <NameP>Name (Georgian)</NameP>
-      <NameInput {...register("NameGeo", { required: true})} />
-      {errors.NameGeo?.type === 'required' && <p style={{color:'red' ,margin: 0 , paddingLeft: 18,}} role="alert">Georgian Name is required</p>}
-      
-      <div className="image-uploader">
-    <label className="file-label">
-      <input
-        className="file-input"
-        type="file"
-        {...register("img")}
-        onChange={handleFileInputChange}
-        
-      />
-      <span className="file-cta">
-        <span className="file-icon">
-          <i className="fas fa-upload"></i>
-        </span>
-        {!selectedFile && (
-        <span className="file-label-text">Choose a file…</span>
+      <Bottom onSubmit={handleSubmit(onSubmit)}>
+        <NameP>Name (English)</NameP>
+        <NameInput {...register("NameEng", { required: true })} />
+        {errors.NameEng?.type === "required" && (
+          <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
+            English Name is required
+          </p>
         )}
-         {selectedFile && (
-        <span className="file-label-text">Switch uploaded file…</span>
+        <NameP>Name (Georgian)</NameP>
+        <NameInput {...register("NameGeo", { required: true })} />
+        {errors.NameGeo?.type === "required" && (
+          <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
+            Georgian Name is required
+          </p>
         )}
-        
-      </span>
-      
-    </label>
-    {selectedFile && (
-      <img
-        className="selected-file-preview"
-        src={URL.createObjectURL(selectedFile)}
-        alt={selectedFile.name}
-      />
-    )}
-  </div>
-  {!selectedFile?.name && <p style={{color:"yellow" ,margin: 0 , marginTop: -10, paddingLeft: 18,}} role="alert">picture is not selected</p>}
-      
-      <SubmitInput type="submit" />
-     
-        
-        
+
+        <div className="image-uploader">
+          <label className="file-label">
+            <input
+              className="file-input"
+              type="file"
+              {...register("img")}
+              onChange={handleFileInputChange}
+            />
+            <span className="file-cta">
+              <span className="file-icon">
+                <i className="fas fa-upload"></i>
+              </span>
+              {!selectedFile && (
+                <span className="file-label-text">Choose a file…</span>
+              )}
+              {selectedFile && (
+                <span className="file-label-text">Switch uploaded file…</span>
+              )}
+            </span>
+          </label>
+          {selectedFile && (
+            <img
+              className="selected-file-preview"
+              src={URL.createObjectURL(selectedFile)}
+              alt={selectedFile.name}
+            />
+          )}
+        </div>
+        {!selectedFile?.name && (
+          <p
+            style={{
+              color: "yellow",
+              margin: 0,
+              marginTop: -10,
+              paddingLeft: 18,
+            }}
+            role="alert"
+          >
+            picture is not selected
+          </p>
+        )}
+
+        <SubmitInput type="submit" />
       </Bottom>
     </MainDiv>
   );
@@ -145,7 +155,6 @@ const Bottom = styled.form`
   display: flex;
   flex-direction: column;
   justify-content: center;
- 
 `;
 
 const NameP = styled.p`
@@ -161,8 +170,8 @@ const NameInput = styled.input`
 `;
 
 const SubmitInput = styled.input`
-   all: unset;
-   width: 80px;
+  all: unset;
+  width: 80px;
   height: 40px;
   background-color: ${COLORS.green};
   color: white;

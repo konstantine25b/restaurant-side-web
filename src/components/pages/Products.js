@@ -3,7 +3,12 @@ import React, { useEffect, useState } from "react";
 import COLORS from "../../themes/colors";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
-import { addDish, deleteDish, getRestaurant } from "../../Processing/Database";
+import {
+  addDish,
+  deleteDish,
+  getRestaurant,
+  updateDish,
+} from "../../Processing/Database";
 
 export default function Products() {
   const navigate = useNavigate();
@@ -51,11 +56,9 @@ export default function Products() {
       // Delete confirmed, perform the delete operation
       // ...
 
-      deleteDish(Category, Dish);
-
-      setTimeout(() => {
+      deleteDish(Category, Dish).then(() => {
         window.location.reload(true);
-      }, [500]);
+      });
     }
   };
 
@@ -66,25 +69,22 @@ export default function Products() {
     if (window.confirm("Are you sure you want to change avaibility status?")) {
       // Delete confirmed, perform the delete operation
       // ...
-      setTimeout(() => {
-        deleteDish(Category, dish.Title);
 
-        setTimeout(() => {
-          addDish(
-            Category,
-            dish.Title,
-            dish.Description,
-            dish.Image,
-            dish.ApproxTime,
-            dish.Ingredients, //Undefined check
-            dish.Price,
-            Avaibility
-          );
-          setTimeout(() => {
-            window.location.reload(true);
-          }, [500]);
-        }, [400]);
-      }, [300]);
+      
+        updateDish(
+          Category,
+          dish.Title,
+          dish.Title,
+          dish.Description,
+          dish.Image,
+          dish.ApproxTime,
+          dish.Ingredients, //Undefined check
+          dish.Price,
+          Avaibility
+        ).then(()=>{
+          window.location.reload(true);
+        })
+       
     }
   };
 
@@ -124,7 +124,8 @@ export default function Products() {
                   return (
                     <Bottom1 key={index + dish.Title}>
                       <BottomItem1>{dish.Title}</BottomItem1>
-                      <CorrectionButton onClick={() => {
+                      <CorrectionButton
+                        onClick={() => {
                           navigate(`/HomePage/Products/Details`, {
                             state: {
                               restInfo: restInfo,
@@ -132,12 +133,12 @@ export default function Products() {
                               dishIndex: index,
                             },
                           });
-
-                         
-                        }}>See full details</CorrectionButton>
+                        }}
+                      >
+                        See full details
+                      </CorrectionButton>
                       {dish.Availability ? (
                         <BottomItemAvaible1
-                        
                           onClick={() =>
                             handleChangeAvaibility(dish, item.Title, false)
                           }
@@ -146,7 +147,6 @@ export default function Products() {
                         </BottomItemAvaible1>
                       ) : (
                         <BottomItemAvaible2
-                     
                           onClick={() =>
                             handleChangeAvaibility(dish, item.Title, true)
                           }
@@ -162,11 +162,9 @@ export default function Products() {
                               restInfo: restInfo,
                               categoryIndex: index1,
                               dishIndex: index,
-                              Img : dish.Image
+                              Img: dish.Image,
                             },
                           });
-
-                         
                         }}
                       >
                         Correcting

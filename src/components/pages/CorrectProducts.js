@@ -16,16 +16,36 @@ export default function CorrectProduct() {
   } = useForm();
 
   const newUrl = useRef("");
+  const navigate = useNavigate();
+  const { state } = useLocation();
+    // aq indexebit momaqvs imitom rom mere martivad vipovo restionfos categoriebshi
+    const { restInfo, categoryIndex, dishIndex } = state;
+    // es konkretulad dishes mtel infos igebs
+    const dishInfo = restInfo.FoodCategories[categoryIndex].dishes[dishIndex];
+
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  useEffect(()=>{
+    uploadImage(selectedFile).then((url) => {
+      newUrl.current = url;
+      
+    })
+  },[selectedFile])
+  const firstData = {
+    Category: restInfo.FoodCategories[categoryIndex].Title,
+    NameEng: dishInfo.Title,
+    img: dishInfo.Image,
+    Description: dishInfo.Description,
+    AproxTime: dishInfo.ApproxTime,
+    ingredients: dishInfo.Ingredients,
+    Price: dishInfo.Price,
+    Availability: dishInfo.Availability,
+  };
 
   const onSubmit = (data) => {
-    uploadImage(selectedFile).then((url) => (
-      
-      newUrl.current = url));
-
-
-    setTimeout(() => {
-      let imgLink = newUrl.current == "" ? dishInfo.Image : newUrl.current 
-      console.log(imgLink)
+    
+    let imgLink = newUrl.current == "" ? dishInfo.Image : newUrl.current;
+    
       updateDish(
         data.Category,
         firstData.NameEng,
@@ -36,37 +56,20 @@ export default function CorrectProduct() {
         data.ingredients !== undefined ? data.ingredients : [], //Undefined check
         data.Price,
         dishInfo.Availability
-
-      );
-
-      setTimeout(() => {
+      ).then(() => {
         window.location.reload(true);
-      }, [500]);
-
-      navigate(-1);
-    }, [500]);
+        navigate(-1);
+      });
+      
+      
+    
   };
-  const navigate = useNavigate();
-  const { state } = useLocation();
 
-  // aq indexebit momaqvs imitom rom mere martivad vipovo restionfos categoriebshi
-  const { restInfo, categoryIndex, dishIndex } = state;
-  // es konkretulad dishes mtel infos igebs
-  const dishInfo = restInfo.FoodCategories[categoryIndex].dishes[dishIndex];
 
-  //  console.log(dishInfo)
 
-  const firstData = {
-    Category: restInfo.FoodCategories[categoryIndex].Title,
-    NameEng: dishInfo.Title,
-    img: dishInfo.Image,
-    Description: dishInfo.Description,
-    AproxTime: dishInfo.ApproxTime,
-    ingredients: dishInfo.Ingredients,
-    Price: dishInfo.Price,
-    Availability : dishInfo.Availability
-  };
-  console.log(dishInfo)
+
+  
+  console.log(dishInfo);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -88,7 +91,7 @@ export default function CorrectProduct() {
     }
   }, [dishInfo]);
 
-  const [selectedFile, setSelectedFile] = useState(null);
+
 
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);

@@ -5,7 +5,11 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import "./MainImage.css";
-import { addCategory, deleteCategory, updateCategory } from "../../Processing/Database";
+import {
+  addCategory,
+  deleteCategory,
+  updateCategory,
+} from "../../Processing/Database";
 
 export default function CorrectCategories() {
   const {
@@ -19,26 +23,21 @@ export default function CorrectCategories() {
   const { NameEng, NameGeo } = state;
 
   const firstData = {
-    NameEng : NameEng,
+    NameEng: NameEng,
     NameGeo: NameGeo,
-
-  }
-  
-
-  
+  };
 
   const onSubmit = (data) => {
-    console.log(data.NameEng)
+    console.log(data.NameEng);
     updateCategory(
       firstData.NameEng,
       data.NameEng,
       "sfkdfks",
       "https://www.shorturl.at/img/shorturl-icon.png"
-    );
-    setTimeout(() => {
+    ).then(() => {
       window.location.reload(true);
-    }, [500]);
-    navigate(-1);
+      navigate(-1);
+    });
   };
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -53,10 +52,9 @@ export default function CorrectCategories() {
   return (
     <MainDiv>
       <Top>
-        <BackButton 
+        <BackButton
           onClick={() => {
-            onSubmit(firstData)
-          
+            onSubmit(firstData);
           }}
         >
           <ArrowLeftIcon style={{ width: 20, color: "white" }} />
