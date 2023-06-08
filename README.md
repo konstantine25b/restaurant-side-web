@@ -1,3 +1,19 @@
+<img width="1440" alt="Screenshot 2023-06-08 at 23 29 02" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/8d7b7b30-f8c7-4c24-96cf-5b86d5a886c9">
+<img width="1440" alt="Screenshot 2023-06-08 at 23 29 15" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/d363684f-fc59-496d-a059-d0133c875787">
+<img width="1440" alt="Screenshot 2023-06-08 at 23 29 26" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/1248c56d-d4f8-4077-9f67-2f50fa1cfe27">
+<img width="1440" alt="Screenshot 2023-06-08 at 23 31 21" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/075debdb-a79d-4b4b-b935-82bb0cc2693b"><img width="1440" alt="Screenshot 2023-06-08 at 23 31 26" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/4693c802-423a-486c-b683-5b8eb1e72a4b"><img width="1440" alt="Screenshot 2023-06-08 at 23 32 00" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/f40dc98e-3ca1-4c9d-8c5b-b27e180c51f4">
+
+<img width="1440" alt="Screenshot 2023-06-08 at 23 31 30" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/a69e6804-ed62-48ce-8ed3-b6506bdbb3a6"><img width="1440" alt="Screenshot 2023-06-08 at 23 31 42" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/193a91c6-438d-4aee-b9a8-424957dd0bfe">
+
+<img width="1440" alt="Screenshot 2023-06-08 at 23 31 50" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/b4247c4e-a5ee-45f6-8905-404c94810e43">
+
+<img width="1440" alt="Screenshot 2023-06-08 at 23 31 34" src="https://github.com/konstantine25b/restaurant-side-web/assets/1022<img width="1440" alt="Screenshot 2023-06-08 at 23 32 32" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/91521d66-e80b-418f-bb8b-7393eebe03e3">
+45292/68dd743c-4a36-4449-9a9f-6cae66f7f506">
+<img width="1440" alt="Screenshot 2023-06-08 at 23 32 14" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/b0b5e9c7-02a8-4153-a2af-ba4edcb2ea5c">
+<img width="1440" alt="Screenshot 2023-06-08 at 23 32 49" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/570c7fbd-daa2-42d9-9b45-ee6b666f132b">
+<img width="1440" alt="Screenshot 2023-06-08 at 23 33 01" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/3a9c7e18-2984-42a9-8843-7ee83493298e">
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
