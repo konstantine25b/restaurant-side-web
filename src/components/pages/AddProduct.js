@@ -25,6 +25,11 @@ export default function AddProduct() {
   // },[selectedFile])
 
   const onSubmit = (data) => {
+    let arr = []
+
+    for(let i = 0 ; i < fields.length ; i++){
+       arr.push(data.ingredients[i])
+    }
     uploadImage(selectedFile).then((url) => (newUrl.current = url)).then(()=>{
       addDish(
         data.Category,
@@ -32,7 +37,7 @@ export default function AddProduct() {
         data.Description,
         newUrl.current,
         data.AproxTime,
-        data.ingredients !== undefined ? data.ingredients : [], //Undefined check
+        data.ingredients !== undefined ? arr : [], //Undefined check
         data.Price,
         true
       ).then(()=>{

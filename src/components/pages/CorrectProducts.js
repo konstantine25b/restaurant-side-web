@@ -45,6 +45,11 @@ export default function CorrectProduct() {
   const onSubmit = (data) => {
     
     let imgLink = newUrl.current == "" ? dishInfo.Image : newUrl.current;
+    let arr = []
+
+    for(let i = 0 ; i < fields.length ; i++){
+       arr.push(data.ingredients[i])
+    }
     
       updateDish(
         data.Category,
@@ -53,7 +58,7 @@ export default function CorrectProduct() {
         data.Description,
         imgLink,
         data.AproxTime,
-        data.ingredients !== undefined ? data.ingredients : [], //Undefined check
+        data.ingredients !== undefined ? arr : [], //Undefined check
         data.Price,
         dishInfo.Availability
       ).then(() => {

@@ -50,8 +50,13 @@ export default function Tags() {
   }, [restInfo , removeClicked]);
 
   const onSubmit = (data) => {
-    console.log(data);
+    console.log(data.Tags);
     console.log(fields);
+    let arr = []
+
+    for(let i = 0 ; i < fields.length ; i++){
+       arr.push(data.Tags[i])
+    }
 
     editRestaurant(
       restInfo.Title,
@@ -59,7 +64,7 @@ export default function Tags() {
       restInfo.Genre,
       restInfo.MainImage,
       restInfo.ShortDescription,
-      data.Tags
+      arr
     );
   };
 
