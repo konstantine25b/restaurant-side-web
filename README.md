@@ -1,3 +1,13 @@
+One of my most impressive work accomplishments is the creation of a comprehensive app system that revolutionized the food ordering experience. This system consisted of a food ordering app built in React Native, a web version of the app built in React, and a restaurant-side platform.
+
+In the food ordering app, built using React Native, I focused on delivering a seamless and user-friendly interface. I implemented features such as real-time menu browsing, personalized recommendations, and a smooth ordering process. This ensured that customers could effortlessly explore various food options and place their orders efficiently. (https://github.com/konstantine25b/Menu-Mobile-App)
+
+Simultaneously, I developed the web version of the app using React, catering to users who preferred accessing the service through their desktop browsers. I ensured a consistent user experience across platforms while leveraging the advantages of web technologies to provide additional functionalities.   (https://github.com/konstantine25b/restaurant-app-web)
+
+To streamline the entire process, I created a restaurant-side platform built in React. This platform enabled restaurants to manage their menu items. (https://github.com/konstantine25b/restaurant-side-web)
+
+This app system showcased my ability to create cohesive cross-platform solutions using React and React Native. By combining my skills in frontend development with a focus on user experience and incorporating robust features, I successfully developed an innovative and comprehensive food ordering system that benefited both customers and restaurant owners.
+
 <img width="1440" alt="Screenshot 2023-06-08 at 23 29 02" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/8d7b7b30-f8c7-4c24-96cf-5b86d5a886c9">
 <img width="1440" alt="Screenshot 2023-06-08 at 23 29 15" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/d363684f-fc59-496d-a059-d0133c875787">
 <img width="1440" alt="Screenshot 2023-06-08 at 23 29 26" src="https://github.com/konstantine25b/restaurant-side-web/assets/102245292/1248c56d-d4f8-4077-9f67-2f50fa1cfe27">
