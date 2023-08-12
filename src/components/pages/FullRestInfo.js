@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getRestaurant } from "../../Processing/Database";
+// import { getRestaurant } from "../../Processing/Database";
 import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { API } from "../../Processing/PrestoAPI";
 
 export default function FullRestInfo() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function FullRestInfo() {
   const [restInfo, setRestInfo] = useState();
 
   const getRestaurantInfo = async () => {
-    setRestInfo(await getRestaurant(restName));
+    handleGetRestaurantByTitle(restName)
   };
   useEffect(() => {
     console.log(restName);
@@ -21,39 +22,41 @@ export default function FullRestInfo() {
 
     getRestaurantInfo();
   }, [restName]);
+  const handleGetRestaurantByTitle = async (restaurantTitle) => {
+    const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
+    setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)))
+  };
 
   console.log(restInfo);
 
   return (
     <MainDiv>
-      
       <Top>
         <TopP>Restaurant Name: </TopP>
-        <TopP>{restInfo?.Title}</TopP>
+        <TopP>{restInfo?.title}</TopP>
       </Top>
       <Top>
         <TopP>Genre: </TopP>
-        <TopP>{restInfo?.Genre} </TopP>
+        <TopP>{restInfo?.genre} </TopP>
       </Top>
       <Top>
         <TopP>Address: </TopP>
-        <TopP>{restInfo?.Address} </TopP>
+        <TopP>{restInfo?.address} </TopP>
       </Top>
       <Top>
         <TopP>Description:</TopP>
-        <TopP>{restInfo?.FullDescription} </TopP>
+        <TopP>{restInfo?.shortdescription} </TopP>
       </Top>
       <Top>
         <TopP>Tags:</TopP>
-        {restInfo?.Tags.map(item=>{
-            return  item? <TopP>{item} ,</TopP>: null
+        {restInfo?.tags==null ? console.log("no tags" ) : restInfo?.tags.map((item) => {
+          return item ? <TopP>{item} ,</TopP> : null;
         })}
       </Top>
       <Top>
         <TopP>Main Image:</TopP>
-        <MainImage src={restInfo?.MainImage} alt={restInfo?.Title}/>
+        <MainImage src={restInfo?.images} alt={restInfo?.Title} />
       </Top>
-      
     </MainDiv>
   );
 }
@@ -96,9 +99,8 @@ const BackButton = styled.div`
   }
 `;
 
-
 const MainImage = styled.img`
   width: 100px;
   height: 100px;
-  border: 0.5px solid ${COLORS.insideBlue}; 
-`
+  border: 0.5px solid ${COLORS.insideBlue};
+`;

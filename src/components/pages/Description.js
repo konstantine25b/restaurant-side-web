@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { editRestaurant, getRestaurant } from "../../Processing/Database";
+// import { editRestaurant, getRestaurant } from "../../Processing/Database";
 import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
 import { useForm } from "react-hook-form";
+import { API } from "../../Processing/RestaurantAPI";
 
 export default function Description() {
  
@@ -15,7 +16,7 @@ export default function Description() {
   const [restInfo, setRestInfo] = useState();
 
   const getRestaurantInfo = async () => {
-    setRestInfo(await getRestaurant(restName));
+    handleGetRestaurantByTitle(restName);
   };
   useEffect(() => {
     console.log(restName);
@@ -27,15 +28,35 @@ export default function Description() {
 
   const onSubmit = (data) => {
     console.log(restInfo, data)
-    editRestaurant(restInfo.Title , restInfo.Address, restInfo.Genre, restInfo.MainImage, data.ShortDescription, restInfo.Tags)
+    handleUpdateRestaurant(data.ShortDescription);
+    // editRestaurant(restInfo.Title , restInfo.Address, restInfo.Genre, restInfo.MainImage, data.ShortDescription, restInfo.Tags)
     
+  };
+  const handleGetRestaurantByTitle = async (restaurantTitle) => {
+    const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
+    setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)));
+  };
+  const handleUpdateRestaurant = async (updateShortDescription) => {
+    const updateRestaurantData = {
+      shortdescription: updateShortDescription,
+      address: restInfo.address,
+    };
+    const updateRestaurantSuccess = await API.updateRestaurant(
+      restInfo.id,
+      updateRestaurantData
+    );
+    alert(
+      updateRestaurantSuccess
+        ? "Restaurant updated successfully!"
+        : "Restaurant update failed."
+    );
   };
 
   return (
     <MainDiv>
       <Bottom onSubmit={handleSubmit(onSubmit)}>
         <NameP>Description Correction:</NameP>
-        <NameInput defaultValue={restInfo?.ShortDescription}{...register("ShortDescription", { required: true })} />
+        <NameInput defaultValue={restInfo?.shortdescription}{...register("ShortDescription", { required: true })} />
         {errors.ShortDescription?.type === "required" && (
           <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
              ShortDescription is required

@@ -4,90 +4,122 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
-import { signIn, subscribeToLogInEvent } from "../../Processing/Database";
+// import { signIn, subscribeToLogInEvent } from "../../Processing/Database";
+import { API } from "../../Processing/RestaurantAPI";
 
 export default function LoginPage() {
   // const context = useContext(UserContext);
 
   const navigate = useNavigate();
 
-  const[user, setUser] =useState(null)
+  // const [user, setUser] = useState(null);
 
+  // // es aris localstorageshi shenaxuli data
+  // const [data, setData] = useState(null);
 
-  // es aris localstorageshi shenaxuli data
-  const [data, setData] = useState(null);
-
-  const [dataIsUploaded, setDataIsUploaded] = useState(false);
+  // const [dataIsUploaded, setDataIsUploaded] = useState(false);
 
   // // am metods vamateb imitom rom ise iloopeboda da amitom check rom gaketdes
   // const[tempUser, setTempUser]= useState(null)
 
-  const { register, handleSubmit, formState: { errors }} = useForm();
-  const onSubmit = data => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const onSubmit = (data) => {
     // console.log(data);
-    signIn(data.Email, data.Password);
+    // signIn(data.Email, data.Password);
     // setTempUser(tempUser);
-  }
+    handleLogin(data.Email, data.Password);
 
-  
-  useEffect(() => {
-    subscribeToLogInEvent((user) => {
-      setUser(user);
-      // context.setMainUser(user.email);
-      localStorage.setItem('User', JSON.stringify(user))
-    
-      // kotem daamata
-      // console.log(user)
-      
-    });
-    const savedData = localStorage.getItem("User");
-    if (savedData) {
-      setData(JSON.parse(savedData));
-      setDataIsUploaded(true);
-    }
-
-
-    // console.log(user)
-    // if(user){
-    //   context.setIsLoggedIn(true);
-    //   // console.log(context)
+    // const success = await API.login(data.email, data.password);
+    // if (success) {
+    //     console.log("ki")
+    // } else {
+    //   console.log("ara")
     // }
-    // if (context?.isLoggedIn) {
-    //   navigate(`/HomePage`);
-    // }
-  }, [user]);
-
-  useEffect(()=>{
-
-    if (dataIsUploaded && data) {
-      setTimeout(()=>{
+  };
+  const handleLogin = async (email, password) => {
+    const success = await API.login(email, password);
+    if (success) {
+      setTimeout(() => {
         navigate(`/HomePage`);
-      },[500])
+      }, [500]);
      
-     }
-  },[dataIsUploaded , data])
+    } else {
+      console.log("ara");
+    }
+  };
+
+  // useEffect(() => {
+    
+  //     setUser(user);
+  //     // context.setMainUser(user.email);
+  //     // localStorage.setItem("User", JSON.stringify(user));
+
+  //     // kotem daamata
+  //     // console.log(user)
+    
+  //   // const savedData = localStorage.getItem("user_email");
+  //   // if (savedData) {
+  //   //   setData(savedData);
+  //   //   setDataIsUploaded(true);
+  //   // }
+
+  //   // console.log(user)
+  //   // if(user){
+  //   //   context.setIsLoggedIn(true);
+  //   //   // console.log(context)
+  //   // }
+  //   // if (context?.isLoggedIn) {
+  //   //   navigate(`/HomePage`);
+  //   // }
+  // }, [user]);
+
+  // useEffect(() => {
+  //   if (dataIsUploaded && data) {
+     
+  //     setTimeout(() => {
+  //       navigate(`/HomePage`);
+  //     }, [500]);
+  //   }
+  // }, [dataIsUploaded, data]);
 
   return (
-    
     <MainDiv>
       <FormDiv>
-      <TopP>Sign In to the Fast Order</TopP>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <NameInput type="email" placeholder="Enter Your Email" {...register("Email", { required: true })} />
-        {errors.Email?.type === "required" && (
-          <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
-            Email is required
-          </p>
-        )}
-        <NameInput type="password"  placeholder="Enter Your Password" {...register("Password", { required: true })} />
-        {errors.Password?.type === "required" && (
-          <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
-            Password is required
-          </p>
-        )}
-        <SubmitInput  type="submit" value={"Sign In"}/>
-      </Form>
-      {/* <button
+        <TopP>Sign In to the Fast Order</TopP>
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <NameInput
+            type="email"
+            placeholder="Enter Your Email"
+            {...register("Email", { required: true })}
+          />
+          {errors.Email?.type === "required" && (
+            <p
+              style={{ color: "red", margin: 0, paddingLeft: 18 }}
+              role="alert"
+            >
+              Email is required
+            </p>
+          )}
+          <NameInput
+            type="password"
+            placeholder="Enter Your Password"
+            {...register("Password", { required: true })}
+          />
+          {errors.Password?.type === "required" && (
+            <p
+              style={{ color: "red", margin: 0, paddingLeft: 18 }}
+              role="alert"
+            >
+              Password is required
+            </p>
+          )}
+          <SubmitInput type="submit" value={"Sign In"} />
+        </Form>
+        {/* <button
         onClick={() => {
           context?.setIsLoggedIn((current) => !current);
           console.log(context);
@@ -96,17 +128,15 @@ export default function LoginPage() {
         {context?.isLoggedIn ? "log in" : "log out"}
       </button> */}
       </FormDiv>
-      </MainDiv>
-
+    </MainDiv>
   );
 }
 
 const MainDiv = styled.div`
-
-width: 100%;
-display: flex; 
-align-items: center;
-justify-content: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const FormDiv = styled.div`
@@ -146,8 +176,7 @@ const SubmitInput = styled.input`
   }
 `;
 
-
-const Form= styled.form`
+const Form = styled.form`
   width: 100%;
   margin-top: 40px;
   display: flex;

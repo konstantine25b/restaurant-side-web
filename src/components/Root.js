@@ -11,6 +11,7 @@ import {
   signOut,
   subscribeToLogInEvent,
 } from "../Processing/Database";
+import { API } from "../Processing/RestaurantAPI";
 
 export default function Root() {
   const navigate = useNavigate();
@@ -29,16 +30,33 @@ export default function Root() {
 
   const [dataIsUploaded, setDataIsUploaded] = useState(false);
 
+  const handleGetOwnedRestaurant = async () => {
+    var result = await API.getOwnedRestaurant();
+
+    if (result) {
+      handleGetRestaurantById(result);
+    } else {
+      console.log("no owned restaurants");
+    }
+  };
+  const handleGetRestaurantById = async (restaurantId) => {
+    const restaurantById = await API.getRestaurantById(parseInt(restaurantId));
+    setRestName(JSON.parse(JSON.stringify(restaurantById))?.title)
+    
+    
+  };
+
   // amit tavidanve momaq restornis saxeli
   useLayoutEffect(() => {
     const getRestaurantName = async () => {
-      setRestName(await getRestaurantAdmin());
+      handleGetOwnedRestaurant();
+      // setRestName(await getRestaurantAdmin());
     };
     getRestaurantName();
     // aq vsetavt local stoaragedan wamogebul datas
-    const savedData = localStorage.getItem("User");
+    const savedData = localStorage.getItem("user_email");
     if (savedData) {
-      setData(JSON.parse(savedData));
+      setData(savedData);
       setDataIsUploaded(true);
     }
   }, []);
@@ -133,7 +151,11 @@ export default function Root() {
                   Name: "RestaurantTags",
                   restName: restName,
                 },
-                { Title: "Restaurant Main Image", Name: "MainImage", restName: restName },
+                {
+                  Title: "Restaurant Main Image",
+                  Name: "MainImage",
+                  restName: restName,
+                },
               ]}
             />
             <LeftNavbarList
@@ -156,16 +178,16 @@ export default function Root() {
         <RightSide>
           <UpperSideIn>
             <UserTitle>
-              User: {data?.email}
+              User: {data}
               {/* {context?.mainUser} */}
             </UserTitle>
             <LogOutButton
               onClick={() => {
                 // context?.setIsLoggedIn(false);
-                localStorage.removeItem("User");
+                localStorage.removeItem("user_email");
+                localStorage.removeItem("user_password");
                 setData(null);
-
-                signOut();
+                // signOut();
               }}
             >
               Log Out
