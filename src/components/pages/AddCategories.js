@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import COLORS from "../../themes/colors";
 import styled from "@emotion/styled";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import "./MainImage.css";
 import { addCategory, uploadImage } from "../../Processing/Database";
+import { API } from "../../Processing/RestaurantAPI";
 
 export default function AddCategories() {
   const {
@@ -14,22 +15,61 @@ export default function AddCategories() {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
-  const newUrl = useRef("");
-
+  const uploadLink = useRef("");
+  const { state } = useLocation();
+  const { restName,restInfo } = state;
   const [selectedFile, setSelectedFile] = useState(null);
-  const onSubmit = (data) => {
-    uploadImage(selectedFile).then((url) => (newUrl.current = url)).then(()=>{
 
-      addCategory(
-        data.NameEng,
-        "sfkdfks",
-        newUrl.current
-      ).then(() => {
+  useEffect(() => {
+    console.log(restName);
+    console.log(restInfo)
+    // amit saxelis sashualebit momaq restornis info
+
+   
+  }, [restName,restInfo]);
+
+  const handleFileUpload = async (image) => {
+    if (image) {
+      const uploadSuccess = await API.uploadImage(restInfo.id, image); // Replace with the correct restaurant ID
+      if (uploadSuccess !== "") {
+        console.log("success upload image");
+        uploadLink.current = uploadSuccess;
+      } else {
+        console.log("failed upload image");
+      }
+    }
+  };
+
+
+  useEffect(()=>{
+    console.log(uploadLink)
+  },[uploadLink])
+  const onSubmit = (data) => {
+    handleFileUpload(selectedFile).then(()=>{
+      console.log(uploadLink.current)
+
+      // addCategory(
+      //   data.NameEng,
+      //   "sfkdfks",
+      //   newUrl.current
+      // ).then(() => {
+      //   navigate(-1);
+      // });
+      handleCreateCategory(data.NameEng,uploadLink.current).then(() => {
         navigate(-1);
       });
     })
     
   };
+  const handleCreateCategory = async (createCategoryTitle ,categoryImage) => {
+    const createCategoryData = {
+        title: createCategoryTitle,
+        description: "rame",
+        image:categoryImage
+    };
+    const createCategorySuccess = await API.addCategoryToRestaurant(restInfo.id, createCategoryData);
+    alert(createCategorySuccess ? 'Category created successfully!' : 'Category creation failed.');
+  }
 
 
 

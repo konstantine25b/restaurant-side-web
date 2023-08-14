@@ -33,7 +33,7 @@ export default function MainImage() {
 
   const handleFileUpload = async (image) => {
     if (image) {
-      const uploadSuccess = await API.uploadImage(4, image); // Replace with the correct restaurant ID
+      const uploadSuccess = await API.uploadImage(restInfo.id, image); // Replace with the correct restaurant ID
       if (uploadSuccess !== "") {
         console.log("success upload image");
         setUploadLink(uploadSuccess);

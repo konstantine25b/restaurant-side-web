@@ -4,6 +4,7 @@ import COLORS from "../../themes/colors";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { deleteCategory, getRestaurant } from "../../Processing/Database";
+import { API } from "../../Processing/RestaurantAPI";
 
 export default function Categories() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function Categories() {
   const [restInfo, setRestInfo] = useState();
 
   const getRestaurantInfo = async () => {
-    setRestInfo(await getRestaurant(restName));
+    handleGetRestaurantByTitle(restName);
   };
   useEffect(() => {
     console.log(restName);
@@ -23,6 +24,23 @@ export default function Categories() {
 
     getRestaurantInfo();
   }, [restName]);
+
+  const handleGetRestaurantByTitle = async (restaurantTitle) => {
+    const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
+    setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)));
+  };
+
+  const handleDeleteCategory = async (deleteCategoryID, deleteCategoryName) => {
+    const deleteCategorySuccess = await API.deleteCategory(
+      deleteCategoryID,
+      deleteCategoryName
+    );
+    alert(
+      deleteCategorySuccess
+        ? "Category deleted successfully!"
+        : "Category deletion failed."
+    );
+  };
 
   useEffect(() => {
     const handleRefresh = () => {
@@ -44,17 +62,16 @@ export default function Categories() {
     };
   }, []);
 
-  const handleDelete = (CategoryName) => {
+  const handleDelete = (deleteCategoryID,CategoryName) => {
     // Perform the delete operation here
     // ...
 
     if (window.confirm("Are you sure you want to delete?")) {
       // Delete confirmed, perform the delete operation
       // ...
-      deleteCategory(CategoryName).then(()=>{
+      handleDeleteCategory(deleteCategoryID,CategoryName).then(() => {
         window.location.reload(true);
-      })
-    
+      });
     }
   };
 
@@ -63,7 +80,13 @@ export default function Categories() {
       <Top>
         <TopP>Categories</TopP>
         <AddButton
-          onClick={() => navigate(`/HomePage/Categories/AddCategories`)}
+          onClick={() => navigate(`/HomePage/Categories/AddCategories`,{
+                
+            state: {
+              restInfo: restInfo,
+              restName: restName
+            }
+          })}
         >
           <PlusIcon style={{ width: 30, color: "white" }} />
         </AddButton>
@@ -75,27 +98,25 @@ export default function Categories() {
         <BottomItem>Delete</BottomItem>
       </Bottom>
       <BottomList>
-        {restInfo?.FoodCategories?.map((item, index) => {
+        {restInfo?.categories?.map((item, index) => {
           return (
             <Bottom1 key={index}>
-              <BottomItem1>{item.Title}</BottomItem1>
-              <BottomItem1>{item.Title}</BottomItem1>
+              <BottomItem1>{item.title}</BottomItem1>
+              <BottomItem1>{item.title}</BottomItem1>
               <CorrectionButton
                 onClick={() => {
                   navigate(`/HomePage/Categories/CorrectCategories`, {
                     state: {
                       NameEng: item.Title,
                       NameGeo: item.Title,
-                      Image: item.Image
+                      Image: item.Image,
                     },
                   });
-                  
-
                 }}
               >
                 Correcting
               </CorrectionButton>
-              <DeleteButton onClick={() => handleDelete(item.Title)}>
+              <DeleteButton onClick={() => handleDelete(item.id,item.title)}>
                 Delete
               </DeleteButton>
             </Bottom1>
