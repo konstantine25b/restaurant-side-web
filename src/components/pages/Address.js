@@ -43,7 +43,8 @@ export default function Address() {
     const updateRestaurantData = {
       shortdescription: restInfo.shortdescription,
       address: updateRestaurantAddress,
-      tags: restInfo.tags
+      tags: restInfo.tags,
+      images: restInfo.images
     };
     const updateRestaurantSuccess = await API.updateRestaurant(
       restInfo.id,

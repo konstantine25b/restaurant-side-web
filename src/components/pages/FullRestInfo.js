@@ -27,7 +27,7 @@ export default function FullRestInfo() {
     setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)))
   };
 
-  console.log(restInfo);
+ 
 
   return (
     <MainDiv>
@@ -50,7 +50,7 @@ export default function FullRestInfo() {
       <Top>
         <TopP>Tags:</TopP>
         {restInfo?.tags==null ? console.log("no tags" ) : restInfo?.tags.map((item) => {
-          return item ? <TopP>{item} ,</TopP> : null;
+          return item ? <TopP key = {item}>{item} ,</TopP> : null;
         })}
       </Top>
       <Top>

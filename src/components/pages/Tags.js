@@ -59,7 +59,8 @@ export default function Tags() {
     const updateRestaurantData = {
       shortdescription: restInfo.shortdescription,
       address: restInfo.address,
-      tags:tagsArray
+      tags:tagsArray,
+      images: restInfo.images
     };
     const updateRestaurantSuccess = await API.updateRestaurant(
       restInfo.id,

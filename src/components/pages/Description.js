@@ -40,7 +40,8 @@ export default function Description() {
     const updateRestaurantData = {
       shortdescription: updateShortDescription,
       address: restInfo.address,
-      tags: restInfo.tags
+      tags: restInfo.tags,
+      images: restInfo.images
     };
     const updateRestaurantSuccess = await API.updateRestaurant(
       restInfo.id,
