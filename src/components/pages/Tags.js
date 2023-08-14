@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { editRestaurant, getRestaurant } from "../../Processing/Database";
+// import { editRestaurant, getRestaurant } from "../../Processing/Database";
 import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
 import { useForm, useFieldArray } from "react-hook-form";
+import { API } from "../../Processing/RestaurantAPI";
 
 export default function Tags() {
   const { state } = useLocation();
@@ -19,7 +20,11 @@ export default function Tags() {
   const [restInfo, setRestInfo] = useState();
 
   const getRestaurantInfo = async () => {
-    setRestInfo(await getRestaurant(restName));
+    handleGetRestaurantByTitle(restName)
+  };
+  const handleGetRestaurantByTitle = async (restaurantTitle) => {
+    const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
+    setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)))
   };
   useEffect(() => {
     console.log(restName);
@@ -40,14 +45,30 @@ export default function Tags() {
 
   // amit xdeba damateba ingredientebis tu aqvs ukve ogond defaultebis
   useEffect(() => {
-    if (restInfo?.Tags.length > 0 && defaultItemsGenerated.current == false) {
-      restInfo.Tags.forEach((item) => {
+    console.log(restInfo)
+    if (restInfo?.tags==null? "" : restInfo?.tags.length > 0 && defaultItemsGenerated.current == false) {
+      restInfo.tags.forEach((item) => {
         append({ name: item });
       });
       defaultItemsGenerated.current = true;
     }
    
   }, [restInfo , removeClicked]);
+
+  const handleUpdateRestaurant = async (tagsArray) => {
+    const updateRestaurantData = {
+      tags:tagsArray
+    };
+    const updateRestaurantSuccess = await API.updateRestaurant(
+      restInfo.id,
+      updateRestaurantData
+    );
+    alert(
+      updateRestaurantSuccess
+        ? "Restaurant updated successfully!"
+        : "Restaurant update failed."
+    );
+  };
 
   const onSubmit = (data) => {
     console.log(data.Tags);
@@ -57,15 +78,9 @@ export default function Tags() {
     for(let i = 0 ; i < fields.length ; i++){
        arr.push(data.Tags[i])
     }
+    handleUpdateRestaurant(arr)
 
-    editRestaurant(
-      restInfo.Title,
-      restInfo.Address,
-      restInfo.Genre,
-      restInfo.MainImage,
-      restInfo.ShortDescription,
-      arr
-    );
+    
   };
 
   return (
