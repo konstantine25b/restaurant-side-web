@@ -33,12 +33,21 @@ export const App = () => {
     const [updateCategoryTitle, setUpdateCategoryTitle] = useState('');
     const [updateCategoryDescription, setUpdateCategoryDescription] = useState('');
 
+    const [createCategoryRestaurantID, setcreateCategoryRestaurantID] = useState(0);
+    const [createCategoryTitle, setcreateCategoryTitle] = useState('');
+    const [createCategoryDescription, setcreateCategoryDescription] = useState('');
+
     const [deleteCategoryID, setDeleteCategoryID] = useState(0);
     const [deleteCategoryName, setDeleteCategoryName] = useState('');
 
     const [updateDishID, setUpdateDishID] = useState(0);
     const [updateDishTitle, setUpdateDishTitle] = useState('');
     const [updateDishPrice, setUpdateDishPrice] = useState('');
+
+    const [createDishCategoryID, setcreateDishCategoryID] = useState(0);
+    const [createDishTitle, setcreateDishTitle] = useState('');
+    const [createDishPrice, setcreateDishPrice] = useState('');
+
 
     const [deleteDishID, setDeleteDishID] = useState(0);
     const [deleteDishTitle, setDeleteDishTitle] = useState('');
@@ -182,6 +191,15 @@ export const App = () => {
         alert(updateCategorySuccess ? 'Category updated successfully!' : 'Category update failed.');
     };
 
+    const handleCreateCategory = async () => {
+        const createCategoryData = {
+            title: createCategoryTitle,
+            description: createCategoryDescription,
+        };
+        const createCategorySuccess = await API.addCategoryToRestaurant(createCategoryRestaurantID, createCategoryData);
+        alert(createCategorySuccess ? 'Category created successfully!' : 'Category creation failed.');
+    }
+
     const handleDeleteCategory = async () => {
         const deleteCategorySuccess = await API.deleteCategory(deleteCategoryID, deleteCategoryName);
         alert(deleteCategorySuccess ? 'Category deleted successfully!' : 'Category deletion failed.');
@@ -191,10 +209,21 @@ export const App = () => {
         const updateDishData = {
             title: updateDishTitle,
             price: parseInt(updateDishPrice),
+            image: uploadLink
         };
         const updateDishSuccess = await API.updateDish(updateDishID, updateDishData);
         alert(updateDishSuccess ? 'Dish updated successfully!' : 'Dish update failed.');
     };
+
+    const handleCreateDish = async () => {
+        const createDishData = {
+            title: createDishTitle,
+            price: parseInt(createDishPrice),
+            image: uploadLink
+        };
+        const createDishSuccess = await API.addDishToCategory(createDishCategoryID, createDishData);
+        alert(createDishSuccess ? 'Dish created successfully!' : 'Dish creation failed.');
+    }
 
     const handleDeleteDish = async () => {
         const deleteDishSuccess = await API.deleteDish(deleteDishID, deleteDishTitle);
@@ -432,6 +461,29 @@ export const App = () => {
                 <button onClick={handleUpdateCategory}>Update Category</button>
             </div>
 
+            <h1>Create Category</h1>
+            <div>
+                <input
+                    type="number"
+                    placeholder="Restaurant ID"
+                    value={createCategoryRestaurantID}
+                    onChange={(e)=>setcreateCategoryRestaurantID(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Category Title"
+                    value={createCategoryTitle}
+                    onChange={(e) => setcreateCategoryTitle(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Category Description"
+                    value={createCategoryDescription}
+                    onChange={(e) => setcreateCategoryDescription(e.target.value)}
+                />
+                <button onClick={handleCreateCategory}>Create Category</button>
+            </div>
+
             <h1>Delete Category</h1>
             <div>
                 <input
@@ -469,8 +521,44 @@ export const App = () => {
                     value={updateDishPrice}
                     onChange={(e) => setUpdateDishPrice(e.target.value)}
                 />
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setImage(e.target.files[0])}
+                />
+                <button onClick={handleFileUpload}>Upload Dish Image</button>
                 <button onClick={handleUpdateDish}>Update Dish</button>
             </div>
+
+            <h1>Create Dish</h1>
+            <div>
+                <input
+                    type="number"
+                    placeholder="Category ID"
+                    value={createDishCategoryID}
+                    onChange={(e) => setcreateDishCategoryID(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Dish Title"
+                    value={createDishTitle}
+                    onChange={(e) => setcreateDishTitle(e.target.value)}
+                />
+                <input
+                    type="number"
+                    placeholder="Dish Price"
+                    value={createDishPrice}
+                    onChange={(e) => setcreateDishPrice(e.target.value)}
+                />
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setImage(e.target.files[0])}
+                />
+                <button onClick={handleFileUpload}>Upload Dish Image</button>
+                <button onClick={handleCreateDish}>Create Dish</button>
+            </div>
+
 
             <h1>Delete Dish</h1>
             <div>
