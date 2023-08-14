@@ -57,6 +57,8 @@ export default function Tags() {
 
   const handleUpdateRestaurant = async (tagsArray) => {
     const updateRestaurantData = {
+      shortdescription: restInfo.shortdescription,
+      address: restInfo.address,
       tags:tagsArray
     };
     const updateRestaurantSuccess = await API.updateRestaurant(
