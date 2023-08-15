@@ -107,9 +107,12 @@ export default function Categories() {
                 onClick={() => {
                   navigate(`/HomePage/Categories/CorrectCategories`, {
                     state: {
-                      NameEng: item.Title,
-                      NameGeo: item.Title,
-                      Image: item.Image,
+                      NameEng: item.title,
+                      NameGeo: item.title,
+                      Image: item.image,
+                      categoryInfo: item,
+                      restId :restInfo.id
+
                     },
                   });
                 }}

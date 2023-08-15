@@ -5,7 +5,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import "./MainImage.css";
-import { addCategory, uploadImage } from "../../Processing/Database";
+
 import { API } from "../../Processing/RestaurantAPI";
 
 export default function AddCategories() {

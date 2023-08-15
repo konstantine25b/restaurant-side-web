@@ -124,7 +124,7 @@ export default function Root() {
         <LeftSide>
           <LeftSideTop>
             <CompanyName onClick={() => navigate(`/HomePage`)}>
-              Fast Order
+              Presto Reserve
             </CompanyName>
           </LeftSideTop>
           <LeftSideList>

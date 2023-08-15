@@ -5,12 +5,14 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import "./MainImage.css";
-import {
-  addCategory,
-  deleteCategory,
-  updateCategory,
-  uploadImage,
-} from "../../Processing/Database";
+// import {
+//   addCategory,
+//   deleteCategory,
+//   updateCategory,
+//   uploadImage,
+// } from "../../Processing/Database";
+import { API } from "../../Processing/RestaurantAPI";
+
 
 export default function CorrectCategories() {
   const {
@@ -19,23 +21,36 @@ export default function CorrectCategories() {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
-
+  const uploadLink = useRef("");
   const { state } = useLocation();
-  const { NameEng, NameGeo ,Image } = state;
+  const { NameEng, NameGeo ,Image ,categoryInfo,restId } = state;
 
   const firstData = {
     NameEng: NameEng,
     NameGeo: NameGeo,
-    img : Image
+    img : Image,
+    categoryInfo : categoryInfo
   };
+  useEffect(()=>{
+    console.log(categoryInfo , NameEng, NameGeo, Image)
+  },[categoryInfo])
 
+  const handleUpdateCategory = async (updateCategoryTitle , image) => {
+    const updateCategoryData = {
+        title: updateCategoryTitle,
+        description: "rame",
+        image: image
+    };
+    const updateCategorySuccess = await API.updateCategory(categoryInfo.id, updateCategoryData);
+    alert(updateCategorySuccess ? 'Category updated successfully!' : 'Category update failed.');
+};
 
   const [selectedFile, setSelectedFile] = useState(null);
 
   const newUrl = useRef("");
 
   useEffect(()=>{
-    uploadImage(selectedFile).then((url) => {
+    handleFileUpload(selectedFile).then((url) => {
       newUrl.current = url;
       
     })
@@ -43,17 +58,29 @@ export default function CorrectCategories() {
 
   const onSubmit = (data) => {
 
-    let imgLink = newUrl.current == "" ? firstData.img : newUrl.current;
+    let imgLink = uploadLink.current == "" ? firstData.img : uploadLink.current;
     
-    updateCategory(
-      firstData.NameEng,
+    
+    handleUpdateCategory(
       data.NameEng,
-      "sfkdfks",
       imgLink
     ).then(() => {
+      console.log(data,imgLink)
       window.location.reload(true);
       navigate(-1);
     });
+  };
+
+  const handleFileUpload = async (image) => {
+    if (image) {
+      const uploadSuccess = await API.uploadImage(restId, image); // Replace with the correct restaurant ID
+      if (uploadSuccess !== "") {
+        console.log("success upload image");
+        uploadLink.current = uploadSuccess;
+      } else {
+        console.log("failed upload image");
+      }
+    }
   };
 
  
