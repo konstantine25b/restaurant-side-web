@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import "./MainImage.css";
 import { addDish, uploadImage } from "../../Processing/Database";
+import { API } from "../../Processing/RestaurantAPI";
 
 export default function AddProduct() {
   const {
@@ -15,63 +16,119 @@ export default function AddProduct() {
     formState: { errors },
     control,
   } = useForm();
+  const navigate = useNavigate();
+
+  const { state } = useLocation();
+  const { restInfo } = state;
+  const uploadLink = useRef("");
 
   const newUrl = useRef("");
   const [selectedFile, setSelectedFile] = useState(null);
 
+  // amas viyeneb rom titoeuli categois saxelis id gavigo
+  let categoryMap = new Map()
+   //am metodit xdeba categoriebis ids gagaeba romelic unda gadavce dishebis damatebis funqcias
+   restInfo?.categories?.forEach((item) => {
+    
+    categoryMap.set(item.title, item.id);
+    // Force a render by setting the state.
+    
+    
+  });
+
+  const handleCreateDish = async (
+    createDishCategoryID,
+    createDishTitle,
+    productImage,
+    createDishPrice,
+    approxtime,
+    description,
+    ingredients
+  ) => {
+    const createDishData = {
+      title: createDishTitle,
+      price: parseInt(createDishPrice),
+      image: productImage,
+      approxtime: approxtime,
+      description: description,
+      ingredients: ingredients
+    };
+    const createDishSuccess = await API.addDishToCategory(
+      createDishCategoryID,
+      createDishData
+    );
+    alert(
+      createDishSuccess ? "Dish created successfully!" : "Dish creation failed."
+    );
+  };
+  const handleFileUpload = async (image) => {
+    if (image) {
+      const uploadSuccess = await API.uploadImage(restInfo.id, image); // Replace with the correct restaurant ID
+      if (uploadSuccess !== "") {
+        console.log("success upload image");
+        uploadLink.current = uploadSuccess;
+      } else {
+        console.log("failed upload image");
+      }
+    }
+  };
 
   // useEffect(()=>{
 
   // },[selectedFile])
 
   const onSubmit = (data) => {
-    let arr = []
+    let arr = [];
 
-    for(let i = 0 ; i < fields.length ; i++){
-       arr.push(data.ingredients[i])
+    for (let i = 0; i < fields.length; i++) {
+      arr.push(data.ingredients[i]);
     }
-    uploadImage(selectedFile).then((url) => (newUrl.current = url)).then(()=>{
-      addDish(
-        data.Category,
-        data.NameEng,
-        data.Description,
-        newUrl.current,
-        data.AproxTime,
-        data.ingredients !== undefined ? arr : [], //Undefined check
-        data.Price,
-        true
-      ).then(()=>{
-         window.location.reload(true);
-        navigate(-1)
-
-      })
-
-    })
-   
-
-
-    
-
+    handleFileUpload(selectedFile)
+      .then(() => {
+        // addDish(
+        //   data.Category,
+        //   data.NameEng,
+        //   data.Description,
+        //   newUrl.current,
+        //   data.AproxTime,
+        //   data.ingredients !== undefined ? arr : [], //Undefined check
+        //   data.Price,
+        //   true
+        // ).then(() => {
+        //   window.location.reload(true);
+        //   navigate(-1);
+        // });
+        // console.log(data,  categoryMap)
+        handleCreateDish (
+          categoryMap.get(data.Category),
+          data.NameEng,
+          uploadLink.current,
+          data.Price,
+          data.AproxTime,
+          data.Description,
+          data.ingredients !== undefined ? arr : [] //Undefined check
+          
+        ).then(() => {
+          navigate(-1);
+          window.location.reload(true);
+         
+        });
+      });
   };
-  const navigate = useNavigate();
-
-  const { state } = useLocation();
-  const { restInfo } = state;
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items",
   });
 
- 
-
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
- 
+  
 
-  const categories = restInfo.FoodCategories.map((item) => {
-    return item.Title;
+  const categories = restInfo.categories.map((item) => {
+    // addEntry(item.title, item.id)
+    return item.title;
   });
 
   const Select = React.forwardRef(

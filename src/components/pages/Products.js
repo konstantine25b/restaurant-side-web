@@ -13,40 +13,43 @@ import {
 export default function Products() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { restName } = state;
+  const { restName , restInfo} = state;
 
   // aq vinaxav restornis mtlian informacia
-  const [restInfo, setRestInfo] = useState();
+  
 
-  const getRestaurantInfo = async () => {
-    setRestInfo(await getRestaurant(restName));
-  };
-  useEffect(() => {
-    console.log(restName);
-    // amit saxelis sashualebit momaq restornis info
+  // const getRestaurantInfo = async () => {
+  //   setRestInfo(await getRestaurant(restName));
+  // };
+  // useEffect(() => {
+  //   console.log(restName);
+  //   // amit saxelis sashualebit momaq restornis info
 
-    getRestaurantInfo();
-  }, [restName]);
+  //   getRestaurantInfo();
+  // }, [restName]);
 
-  useEffect(() => {
-    const handleRefresh = () => {
-      // Function to be executed on each refresh
-      console.log("Page has been refreshed");
-      getRestaurantInfo();
-    };
+  // useEffect(() => {
+  //   const handleRefresh = () => {
+  //     // Function to be executed on each refresh
+  //     console.log("Page has been refreshed");
+  //     getRestaurantInfo();
+  //   };
 
-    handleRefresh(); // Call the function on component mount
+  //   handleRefresh(); // Call the function on component mount
 
-    const beforeUnloadListener = () => {
-      handleRefresh(); // Call the function before page refresh
-    };
+  //   const beforeUnloadListener = () => {
+  //     handleRefresh(); // Call the function before page refresh
+  //   };
 
-    window.addEventListener("beforeunload", beforeUnloadListener);
+  //   window.addEventListener("beforeunload", beforeUnloadListener);
 
-    return () => {
-      window.removeEventListener("beforeunload", beforeUnloadListener);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", beforeUnloadListener);
+  //   };
+  // }, []);
+  useEffect(()=>{
+    console.log(restInfo)
+  },[restInfo])
 
   const handleDelete = (Dish, Category) => {
     // Perform the delete operation here
@@ -71,19 +74,19 @@ export default function Products() {
       // ...
 
       
-        updateDish(
-          Category,
-          dish.Title,
-          dish.Title,
-          dish.Description,
-          dish.Image,
-          dish.ApproxTime,
-          dish.Ingredients, //Undefined check
-          dish.Price,
-          Avaibility
-        ).then(()=>{
-          window.location.reload(true);
-        })
+        // updateDish(
+        //   Category,
+        //   dish.title,
+        //   dish.title,
+        //   dish.description,
+        //   dish.image,
+        //   dish.approxTime,
+        //   dish.ingredients, //Undefined check
+        //   dish.price,
+        //   Avaibility
+        // ).then(()=>{
+        //   window.location.reload(true);
+        // })
        
     }
   };
@@ -113,17 +116,17 @@ export default function Products() {
         <BottomItem>Delete</BottomItem>
       </Bottom>
       <BottomList>
-        {restInfo?.FoodCategories?.map((item, index1) => {
+        {restInfo?.categories?.map((item, index1) => {
           return (
-            <Bottom2>
-              <BottomItem2 key={index1}>{item.Title}</BottomItem2>
+            <Bottom2 key={index1}>
+              <BottomItem2 key={index1}>{item.title}</BottomItem2>
               <Bottom3>
                 {item.dishes.map((dish, index) => {
-                  // console.log(dish.Title , item.Title)
+                  // console.log(dish.title , item.title)
                   // console.log(index * 10 + index1 + dish.Title);
                   return (
-                    <Bottom1 key={index + dish.Title}>
-                      <BottomItem1>{dish.Title}</BottomItem1>
+                    <Bottom1 key={index + dish.title}>
+                      <BottomItem1>{dish.title}</BottomItem1>
                       <CorrectionButton
                         onClick={() => {
                           navigate(`/HomePage/Products/Details`, {

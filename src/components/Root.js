@@ -42,9 +42,13 @@ export default function Root() {
   const handleGetRestaurantById = async (restaurantId) => {
     const restaurantById = await API.getRestaurantById(parseInt(restaurantId));
     setRestName(JSON.parse(JSON.stringify(restaurantById))?.title)
+    setRestInfo(JSON.parse(JSON.stringify(restaurantById)))
     
     
   };
+  useEffect(()=>{
+    setRestName(restInfo?.title)
+  },[restInfo])
 
   // amit tavidanve momaq restornis saxeli
   useLayoutEffect(() => {
@@ -165,6 +169,7 @@ export default function Root() {
                   Title: "Products",
                   Name: "Products",
                   restName: restName,
+                  restInfo : restInfo
                 },
                 {
                   Title: "Categories",
