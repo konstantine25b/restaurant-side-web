@@ -16,13 +16,13 @@ interface CategoryUpdateData {
 }
 
 interface DishUpdateData {
+    categoryId?: number;
     title?: string;
     price?: number;
     approxtime?: number;
     description?: string;
     image?: string;
     ingredients?: string[];
-    categoryId?: number;
 }
 
 interface CategoryAddData {
