@@ -9,11 +9,27 @@ import {
   getRestaurant,
   updateDish,
 } from "../../Processing/Database";
+import { API } from "../../Processing/RestaurantAPI";
 
 export default function Products() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { restName , restInfo} = state;
+  const { restName } = state;
+  const [restInfo , setRestInfo] = useState()
+
+  useEffect(() => {
+    console.log(restName);
+    // amit saxelis sashualebit momaq restornis info
+
+    getRestaurantInfo();
+  }, [restName]);
+  const getRestaurantInfo = async () => {
+    handleGetRestaurantByTitle(restName);
+  };
+  const handleGetRestaurantByTitle = async (restaurantTitle) => {
+    const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
+    setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)));
+  };
 
   // aq vinaxav restornis mtlian informacia
   
@@ -51,7 +67,7 @@ export default function Products() {
     console.log(restInfo)
   },[restInfo])
 
-  const handleDelete = (Dish, Category) => {
+  const handleDelete = (deleteDishID, deleteDishTitle) => {
     // Perform the delete operation here
     // ...
 
@@ -59,11 +75,15 @@ export default function Products() {
       // Delete confirmed, perform the delete operation
       // ...
 
-      deleteDish(Category, Dish).then(() => {
+      handleDeleteDish(deleteDishID,deleteDishTitle ).then(() => {
         window.location.reload(true);
       });
     }
   };
+  const handleDeleteDish = async (deleteDishID, deleteDishTitle) => {
+    const deleteDishSuccess = await API.deleteDish(deleteDishID, deleteDishTitle);
+    alert(deleteDishSuccess ? 'Dish deleted successfully!' : 'Dish deletion failed.');
+};
 
   const handleChangeAvaibility = (dish, Category, Avaibility) => {
     // Perform the delete operation here
@@ -173,7 +193,7 @@ export default function Products() {
                         Correcting
                       </CorrectionButton>
                       <DeleteButton
-                        onClick={() => handleDelete(dish.Title, item.Title)}
+                        onClick={() => handleDelete(dish.id, dish.title)}
                       >
                         Delete
                       </DeleteButton>

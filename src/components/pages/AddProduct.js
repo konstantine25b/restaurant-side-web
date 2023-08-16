@@ -110,7 +110,7 @@ export default function AddProduct() {
           
         ).then(() => {
           navigate(-1);
-          window.location.reload(true);
+          // window.location.reload(true);
          
         });
       });

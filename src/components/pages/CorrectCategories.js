@@ -47,13 +47,14 @@ export default function CorrectCategories() {
 
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const newUrl = useRef("");
+  // const newUrl = useRef("");
 
   useEffect(()=>{
-    handleFileUpload(selectedFile).then((url) => {
-      newUrl.current = url;
+    handleFileUpload(selectedFile)
+    // .then((url) => {
+    //   newUrl.current = url;
       
-    })
+    // })
   },[selectedFile])
 
   const onSubmit = (data) => {

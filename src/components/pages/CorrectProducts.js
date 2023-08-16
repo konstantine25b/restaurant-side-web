@@ -5,7 +5,8 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import "./MainImage.css";
-import { addDish, updateDish, uploadImage } from "../../Processing/Database";
+// import { addDish, updateDish, uploadImage } from "../../Processing/Database";
+import { API } from "../../Processing/RestaurantAPI";
 
 export default function CorrectProduct() {
   const {
@@ -18,62 +19,117 @@ export default function CorrectProduct() {
   const newUrl = useRef("");
   const navigate = useNavigate();
   const { state } = useLocation();
-    // aq indexebit momaqvs imitom rom mere martivad vipovo restionfos categoriebshi
-    const { restInfo, categoryIndex, dishIndex } = state;
-    // es konkretulad dishes mtel infos igebs
-    const dishInfo = restInfo.FoodCategories[categoryIndex].dishes[dishIndex];
+  const uploadLink = useRef("");
+  // aq indexebit momaqvs imitom rom mere martivad vipovo restionfos categoriebshi
+  const { restInfo, categoryIndex, dishIndex } = state;
+  // es konkretulad dishes mtel infos igebs
+  const dishInfo = restInfo.categories[categoryIndex].dishes[dishIndex];
 
   const [selectedFile, setSelectedFile] = useState(null);
 
-  useEffect(()=>{
-    uploadImage(selectedFile).then((url) => {
-      newUrl.current = url;
-      
-    })
-  },[selectedFile])
+   // amas viyeneb rom titoeuli categois saxelis id gavigo
+   let categoryMap = new Map()
+   //am metodit xdeba categoriebis ids gagaeba romelic unda gadavce dishebis damatebis funqcias
+   restInfo?.categories?.forEach((item) => {
+    
+    categoryMap.set(item.title, item.id);
+    // Force a render by setting the state.
+    
+    
+  });
+
+  useEffect(() => {
+    handleFileUpload(selectedFile);
+    // .then((url) => {
+    //   newUrl.current = url;
+    // });
+  }, [selectedFile]);
   const firstData = {
-    Category: restInfo.FoodCategories[categoryIndex].Title,
-    NameEng: dishInfo.Title,
-    img: dishInfo.Image,
-    Description: dishInfo.Description,
-    AproxTime: dishInfo.ApproxTime,
-    ingredients: dishInfo.Ingredients,
-    Price: dishInfo.Price,
-    Availability: dishInfo.Availability,
+    Category: restInfo.categories[categoryIndex].title,
+    NameEng: dishInfo.title,
+    dishId: dishInfo.id,
+    img: dishInfo.image,
+    Description: dishInfo.description,
+    AproxTime: dishInfo.approxtime,
+    ingredients: dishInfo.ingredients,
+    Price: dishInfo.price,
+    Availability: dishInfo.availability,
+  };
+  // useEffect(()=>{
+  // console.log(dishInfo)
+  // },[dishInfo])
+
+  const handleUpdateDish = async (
+    updateDishID,
+    updateDishTitle,
+    updateDishPrice,
+    uploadLink,
+    approxtime,
+    description,
+    ingredients,
+    categoryId
+  ) => {
+    const updateDishData = {
+      title: updateDishTitle,
+      price: parseInt(updateDishPrice),
+      image: uploadLink,
+      approxtime: approxtime,
+      description: description,
+      ingredients: ingredients,
+      categoryId: categoryId
+    };
+
+    console.log(updateDishID,updateDishData)
+    const updateDishSuccess = await API.updateDish(
+      updateDishID,
+      updateDishData
+    );
+    alert(
+      updateDishSuccess ? "Dish updated successfully!" : "Dish update failed."
+    );
   };
 
   const onSubmit = (data) => {
-    
-    let imgLink = newUrl.current == "" ? dishInfo.Image : newUrl.current;
-    let arr = []
+    let imgLink = uploadLink.current == "" ? firstData.img : uploadLink.current;
+    let arr = [];
 
-    for(let i = 0 ; i < fields.length ; i++){
-       arr.push(data.ingredients[i])
+    for (let i = 0; i < fields.length; i++) {
+      arr.push(data.ingredients[i]);
     }
-    
-      updateDish(
-        data.Category,
-        firstData.NameEng,
-        data.NameEng,
-        data.Description,
-        imgLink,
-        data.AproxTime,
-        data.ingredients !== undefined ? arr : [], //Undefined check
-        data.Price,
-        dishInfo.Availability
-      ).then(() => {
+    console.log(data.AproxTime)
+    // console.log(dishInfo.id, data.NameEng, data.Price, imgLink )
+    handleUpdateDish(
+      dishInfo.id,
+      data.NameEng,
+      data.Price,
+      imgLink,
+      data.AproxTime,
+      data.Description,
+      data.ingredients !== undefined ? arr : [], //Undefined check
+      categoryMap.get(data.Category)
+      ).then(
+      () => {
         window.location.reload(true);
         navigate(-1);
-      });
-      
-      
-    
+      }
+    );
+
+    // updateDish(
+    //   data.Category,
+    //   firstData.NameEng,
+    //   data.NameEng,
+    //   data.Description,
+    //   imgLink,
+    //   data.AproxTime,
+    //   data.ingredients !== undefined ? arr : [], //Undefined check
+    //   data.Price,
+    //   dishInfo.Availability
+    // ).then(() => {
+    //   window.location.reload(true);
+    //   navigate(-1);
+    // });
   };
 
-
-
-
-  
   console.log(dishInfo);
 
   const { fields, append, remove } = useFieldArray({
@@ -83,20 +139,30 @@ export default function CorrectProduct() {
 
   const defaultItemsGenerated = useRef(false);
 
+  const handleFileUpload = async (image) => {
+    if (image) {
+      const uploadSuccess = await API.uploadImage(restInfo.id, image); // Replace with the correct restaurant ID
+      if (uploadSuccess !== "") {
+        console.log("success upload image");
+        uploadLink.current = uploadSuccess;
+      } else {
+        console.log("failed upload image");
+      }
+    }
+  };
+
   // amit xdeba damateba ingredientebis tu aqvs ukve ogond defaultebis
   useEffect(() => {
     if (
-      dishInfo.Ingredients.length > 0 &&
+      dishInfo?.ingredients?.length > 0 &&
       defaultItemsGenerated.current == false
     ) {
-      dishInfo.Ingredients.forEach((item) => {
+      dishInfo.ingredients.forEach((item) => {
         append({ name: item });
       });
       defaultItemsGenerated.current = true;
     }
   }, [dishInfo]);
-
-
 
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -105,15 +171,15 @@ export default function CorrectProduct() {
     console.log(selectedFile);
   }, [selectedFile]);
 
-  const categories = restInfo.FoodCategories.map((item) => {
-    return item.Title;
+  const categories = restInfo.categories.map((item) => {
+    return item.title;
   });
 
   const Select = React.forwardRef(
     ({ onChange, onBlur, name, valueData }, ref) => (
       <>
         <Select1
-          defaultValue={restInfo.FoodCategories[categoryIndex].Title}
+          defaultValue={restInfo.categories[categoryIndex].title}
           name={name}
           ref={ref}
           onChange={onChange}
@@ -147,7 +213,7 @@ export default function CorrectProduct() {
       <Bottom onSubmit={handleSubmit(onSubmit)}>
         <NameP>Name (English)</NameP>
         <NameInput
-          defaultValue={dishInfo.Title}
+          defaultValue={dishInfo.title}
           {...register("NameEng", { required: true })}
         />
         {errors.NameEng?.type === "required" && (
@@ -157,7 +223,7 @@ export default function CorrectProduct() {
         )}
         <NameP>Name (Georgian)</NameP>
         <NameInput
-          defaultValue={dishInfo.Title}
+          defaultValue={dishInfo.title}
           placeholder="Add Product Name (Georgian)"
           {...register("NameGeo", { required: true })}
         />
@@ -169,7 +235,7 @@ export default function CorrectProduct() {
 
         <NameP>Price (Gel)</NameP>
         <NameInput
-          defaultValue={dishInfo.Price}
+          defaultValue={dishInfo.price}
           placeholder="0"
           {...register("Price", { required: true, pattern: /^\d+$/ })}
         />
@@ -181,7 +247,7 @@ export default function CorrectProduct() {
 
         <NameP>Aprroximate Time (Minutes)</NameP>
         <NameInput
-          defaultValue={dishInfo.ApproxTime}
+          defaultValue={dishInfo.approxtime}
           placeholder="0"
           {...register("AproxTime", { required: true, pattern: /^\d+$/ })}
         />
@@ -193,7 +259,7 @@ export default function CorrectProduct() {
 
         <NameP> Desctiption</NameP>
         <NameInput
-          defaultValue={dishInfo.Description}
+          defaultValue={dishInfo.description}
           placeholder="Add small description"
           {...register("Description", {})}
         />
@@ -248,7 +314,7 @@ export default function CorrectProduct() {
             />
           )}
           {!selectedFile?.name && (
-            <img className="selected-file-preview" src={dishInfo.Image} />
+            <img className="selected-file-preview" src={dishInfo.image} />
           )}
         </div>
 

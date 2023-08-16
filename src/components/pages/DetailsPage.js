@@ -10,18 +10,19 @@ export default function DetailsPage() {
 
   // aq indexebit momaqvs imitom rom mere martivad vipovo restionfos categoriebshi
   const { restInfo, categoryIndex, dishIndex } = state;
-  const dishInfo = restInfo.FoodCategories[categoryIndex].dishes[dishIndex];
+  const dishInfo = restInfo.categories[categoryIndex].dishes[dishIndex];
   console.log(dishInfo)
 
   const firstData = {
-    Category: restInfo.FoodCategories[categoryIndex].Title,
-    NameEng: dishInfo.Title,
-    Description: dishInfo.Description,
-    AproxTime: dishInfo.ApproxTime,
-    Ingredients: dishInfo.Ingredients,
-    Price: dishInfo.Price,
-    Img: dishInfo.Image
+    Category: restInfo.categories[categoryIndex].title,
+    NameEng: dishInfo.title,
+    Description: dishInfo.description,
+    AproxTime: dishInfo.approxtime,
+    Ingredients: dishInfo.ingredients,
+    Price: dishInfo.price,
+    Img: dishInfo.image
   };
+  console.log(firstData)
   return (
     <MainDiv>
          <BackButton
@@ -53,13 +54,13 @@ export default function DetailsPage() {
       </Top>
       <Top>
         <TopP>Ingredients:</TopP>
-        {firstData.Ingredients.map(item=>{
-            return  item? <TopP>{item} ,</TopP>: null
+        {firstData.Ingredients ==null? "": firstData.Ingredients.map(item=>{
+            return  item? <TopP key={item}>{item} ,</TopP>: null
         })}
       </Top>
       <Top>
         <TopP>Product Image :</TopP>
-        <ProductImage src = {dishInfo.Image}/>
+        <ProductImage src = {dishInfo.image}/>
       </Top>
     </MainDiv>
   );
