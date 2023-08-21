@@ -15,7 +15,7 @@ export default function Products() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { restName } = state;
-  const [restInfo , setRestInfo] = useState()
+  const [restInfo, setRestInfo] = useState();
 
   useEffect(() => {
     console.log(restName);
@@ -32,7 +32,6 @@ export default function Products() {
   };
 
   // aq vinaxav restornis mtlian informacia
-  
 
   // const getRestaurantInfo = async () => {
   //   setRestInfo(await getRestaurant(restName));
@@ -63,9 +62,9 @@ export default function Products() {
   //     window.removeEventListener("beforeunload", beforeUnloadListener);
   //   };
   // }, []);
-  useEffect(()=>{
-    console.log(restInfo)
-  },[restInfo])
+  useEffect(() => {
+    console.log(restInfo);
+  }, [restInfo]);
 
   const handleDelete = (deleteDishID, deleteDishTitle) => {
     // Perform the delete operation here
@@ -75,15 +74,52 @@ export default function Products() {
       // Delete confirmed, perform the delete operation
       // ...
 
-      handleDeleteDish(deleteDishID,deleteDishTitle ).then(() => {
+      handleDeleteDish(deleteDishID, deleteDishTitle).then(() => {
         window.location.reload(true);
       });
     }
   };
   const handleDeleteDish = async (deleteDishID, deleteDishTitle) => {
-    const deleteDishSuccess = await API.deleteDish(deleteDishID, deleteDishTitle);
-    alert(deleteDishSuccess ? 'Dish deleted successfully!' : 'Dish deletion failed.');
-};
+    const deleteDishSuccess = await API.deleteDish(
+      deleteDishID,
+      deleteDishTitle
+    );
+    alert(
+      deleteDishSuccess ? "Dish deleted successfully!" : "Dish deletion failed."
+    );
+  };
+
+  const handleUpdateDish = async (
+    updateDishID,
+    updateDishTitle,
+    updateDishPrice,
+    uploadLink,
+    approxtime,
+    description,
+    ingredients,
+    categoryId,
+    available
+  ) => {
+    const updateDishData = {
+      title: updateDishTitle,
+      price: parseInt(updateDishPrice),
+      image: uploadLink,
+      approxtime: approxtime,
+      description: description,
+      ingredients: ingredients,
+      categoryId: categoryId,
+      available: available,
+    };
+
+    console.log(updateDishID, updateDishData);
+    const updateDishSuccess = await API.updateDish(
+      updateDishID,
+      updateDishData
+    );
+    alert(
+      updateDishSuccess ? "Dish updated successfully!" : "Dish update failed."
+    );
+  };
 
   const handleChangeAvaibility = (dish, Category, Avaibility) => {
     // Perform the delete operation here
@@ -92,22 +128,34 @@ export default function Products() {
     if (window.confirm("Are you sure you want to change avaibility status?")) {
       // Delete confirmed, perform the delete operation
       // ...
+      console.log(dish, Category, Avaibility);
+      handleUpdateDish(
+        dish.id,
+        dish.title,
+        dish.price,
+        dish.image,
+        dish.approxtime,
+        dish.description,
+        dish.ingredients !== undefined ? dish.ingredients : [], //Undefined check
+        dish.categoryId,
+        Avaibility
+      ).then(()=>{
+          window.location.reload(true);
+        });
 
-      
-        // updateDish(
-        //   Category,
-        //   dish.title,
-        //   dish.title,
-        //   dish.description,
-        //   dish.image,
-        //   dish.approxTime,
-        //   dish.ingredients, //Undefined check
-        //   dish.price,
-        //   Avaibility
-        // ).then(()=>{
-        //   window.location.reload(true);
-        // })
-       
+      // updateDish(
+      //   Category,
+      //   dish.title,
+      //   dish.title,
+      //   dish.description,
+      //   dish.image,
+      //   dish.approxTime,
+      //   dish.ingredients, //Undefined check
+      //   dish.price,
+      //   Avaibility
+      // ).then(()=>{
+      //   window.location.reload(true);
+      // })
     }
   };
 
@@ -160,7 +208,7 @@ export default function Products() {
                       >
                         See full details
                       </CorrectionButton>
-                      {dish.Availability ? (
+                      {dish.available ? (
                         <BottomItemAvaible1
                           onClick={() =>
                             handleChangeAvaibility(dish, item.Title, false)

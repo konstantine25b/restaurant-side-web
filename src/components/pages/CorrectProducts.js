@@ -76,7 +76,8 @@ export default function CorrectProduct() {
       approxtime: approxtime,
       description: description,
       ingredients: ingredients,
-      categoryId: categoryId
+      categoryId: categoryId,
+      avaible: true
     };
 
     console.log(updateDishID,updateDishData)
