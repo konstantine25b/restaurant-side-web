@@ -209,7 +209,8 @@ export const App = () => {
         const updateDishData = {
             title: updateDishTitle,
             price: parseInt(updateDishPrice),
-            image: uploadLink
+            image: uploadLink,
+            categoryId: 17
         };
         const updateDishSuccess = await API.updateDish(updateDishID, updateDishData);
         alert(updateDishSuccess ? 'Dish updated successfully!' : 'Dish update failed.');

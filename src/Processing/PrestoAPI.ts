@@ -44,6 +44,7 @@ export interface Dish {
     image: string;
     ingredients: string[];
     categoryId: number;
+    available?: boolean;
 }
 
 export interface Category {

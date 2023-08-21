@@ -23,6 +23,7 @@ interface DishUpdateData {
     description?: string;
     image?: string;
     ingredients?: string[];
+    available?: boolean;
 }
 
 interface CategoryAddData {
@@ -39,6 +40,7 @@ interface DishAddData {
     image: string;
     ingredients: string[];
     categoryId: number;
+    available?: boolean;
 }
 
 export class RestaurantAPI extends PrestoAPI{
