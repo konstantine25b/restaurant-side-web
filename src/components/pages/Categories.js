@@ -93,7 +93,7 @@ export default function Categories() {
       </Top>
       <Bottom>
         <BottomItem>Name (English)</BottomItem>
-        <BottomItem>Name (Gerogian)</BottomItem>
+        <BottomItem>Name (Georgian)</BottomItem>
         <BottomItem>Correction</BottomItem>
         <BottomItem>Delete</BottomItem>
       </Bottom>

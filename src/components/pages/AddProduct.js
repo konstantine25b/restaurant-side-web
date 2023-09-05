@@ -192,7 +192,7 @@ export default function AddProduct() {
           </p>
         )}
 
-        <NameP>Aprroximate Time (Minutes)</NameP>
+        <NameP>Approximate Time (Minutes)</NameP>
         <NameInput
           placeholder="0"
           {...register("AproxTime", { required: true, pattern: /^\d+$/ })}

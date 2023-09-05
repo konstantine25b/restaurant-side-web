@@ -246,7 +246,7 @@ export default function CorrectProduct() {
           </p>
         )}
 
-        <NameP>Aprroximate Time (Minutes)</NameP>
+        <NameP>Approximate Time (Minutes)</NameP>
         <NameInput
           defaultValue={dishInfo.approxtime}
           placeholder="0"
@@ -258,7 +258,7 @@ export default function CorrectProduct() {
           </p>
         )}
 
-        <NameP> Desctiption</NameP>
+        <NameP> Description</NameP>
         <NameInput
           defaultValue={dishInfo.description}
           placeholder="Add small description"

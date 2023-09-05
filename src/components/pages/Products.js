@@ -125,7 +125,7 @@ export default function Products() {
     // Perform the delete operation here
     // ...
 
-    if (window.confirm("Are you sure you want to change avaibility status?")) {
+    if (window.confirm("Are you sure you want to change availability status?")) {
       // Delete confirmed, perform the delete operation
       // ...
       console.log(dish, Category, Avaibility);
@@ -179,7 +179,7 @@ export default function Products() {
         <BottomItem>Category</BottomItem>
         <BottomItem>Name (English)</BottomItem>
         <BottomItem>Details</BottomItem>
-        <BottomItem>Avaibility</BottomItem>
+        <BottomItem>Availability</BottomItem>
         <BottomItem>Correction</BottomItem>
         <BottomItem>Delete</BottomItem>
       </Bottom>
@@ -214,7 +214,7 @@ export default function Products() {
                             handleChangeAvaibility(dish, item.Title, false)
                           }
                         >
-                          Avaible
+                          Available
                         </BottomItemAvaible1>
                       ) : (
                         <BottomItemAvaible2
@@ -222,7 +222,7 @@ export default function Products() {
                             handleChangeAvaibility(dish, item.Title, true)
                           }
                         >
-                          Not Avaible
+                          Not Available
                         </BottomItemAvaible2>
                       )}
 

@@ -45,7 +45,7 @@ export default function DetailsPage() {
         <TopP>{firstData.Description} </TopP>
       </Top>
       <Top>
-        <TopP>Aproximate Time:</TopP>
+        <TopP>Approximate Time:</TopP>
         <TopP>{firstData.AproxTime} minute</TopP>
       </Top>
       <Top>

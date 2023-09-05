@@ -28,13 +28,13 @@ async function testBackendClient() {
 
         // Test updateDish
         const updateDishSuccess = await API.updateDish(8, {
-            title: 'New Cheesburger',
+            title: 'New Cheeseburger',
             price: 8,
         });
         console.log('Update Dish:', updateDishSuccess);
 
         // Test deleteDish
-        const deleteDishSuccess = await API.deleteDish(8, 'New Cheesburger');
+        const deleteDishSuccess = await API.deleteDish(8, 'New Cheeseburger');
         console.log('Delete Dish:', deleteDishSuccess);
 
 
