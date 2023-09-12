@@ -36,6 +36,7 @@ export interface OrderItem {
 
 export interface OrderData {
     restaurantId: number;
+    orderRequestedDate: Date;
     orderItems: OrderItem[];
 }
 
@@ -74,7 +75,6 @@ export interface Restaurant {
     ratingquantity: number;
     images: string[];
     tags: string[];
-    genre: string;
     categories: Category[];
 }
 
@@ -162,16 +162,6 @@ export class PrestoAPI {
         }
     }
 
-    /// Logs out the user
-    async logout(): Promise<void> {
-        this.token = null;
-        this.email = null;
-        this.password = null;
-
-        await PrestoStorage.removeItem('user_email');
-        await PrestoStorage.removeItem('user_password');
-    }
-
     /// Returns the user's data
     /// Returns:
     /// User | null;
@@ -249,7 +239,22 @@ export class PrestoAPI {
             });
             return true;
         } catch (error) {
+            console.log(error);
+            return false;
+        }
+    }
 
+    /// Cancels an order
+    /// Arguments:
+    /// orderId - number;
+    async cancelOrder(orderId: number): Promise<boolean> {
+        await this.loginIfNeeded();
+        try {
+            await axios.delete(`${this.baseUrl}/user/cancelorder/${orderId}`, {
+                headers: { Authorization: `Bearer ${this.token}` },
+            });
+            return true;
+        } catch (error) {
             return false;
         }
     }
@@ -479,5 +484,3 @@ export class PrestoAPI {
 
 // Usage
 export const API = new PrestoAPI('https://api.prestoreserve.ge');
-// This is for react native
-export default API;

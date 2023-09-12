@@ -43,8 +43,12 @@ interface DishAddData {
     available?: boolean;
 }
 
+interface OrderDataResponse extends OrderData {
+    isConfirmed: boolean;
+}
+
 export class RestaurantAPI extends PrestoAPI{
-    async getRestaurantOrders(id: number): Promise<OrderData[]> {
+    async getRestaurantOrders(id: number): Promise<OrderDataResponse[]> {
         await this.loginIfNeeded();
         try {
             const response = await axios.get(`${this.baseUrl}/restaurant/${id}/orders`, {
@@ -53,6 +57,30 @@ export class RestaurantAPI extends PrestoAPI{
             return response.data;
         } catch (error) {
             return [];
+        }
+    }
+
+    async confirmRestaurantOrder(orderId: number): Promise<boolean> {
+        await this.loginIfNeeded();
+        try {
+            await axios.patch(`${this.baseUrl}/order/${orderId}`, null, {
+                headers: { Authorization: `Bearer ${this.token}` },
+            });
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async deleteRestaurantOrder(orderId: number): Promise<boolean> {
+        await this.loginIfNeeded();
+        try {
+            await axios.delete(`${this.baseUrl}/order/${orderId}`, {
+                headers: { Authorization: `Bearer ${this.token}` },
+            });
+            return true;
+        } catch (error) {
+            return false;
         }
     }
 
@@ -180,5 +208,4 @@ export class RestaurantAPI extends PrestoAPI{
 }
 
 // Usage
-
-export var API = new RestaurantAPI('https://api.prestoreserve.ge');
+export var API = new RestaurantAPI('https://api.prestoreserve.ge')

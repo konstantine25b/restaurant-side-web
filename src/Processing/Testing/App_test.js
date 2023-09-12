@@ -17,8 +17,32 @@ export const App = () => {
     const [imageName, setImageName] = useState('');
     const [editEmailNew, setEditEmailNew] = useState('');
     const [editPhoneNew, setEditPhoneNew] = useState('');
+
+    const [createOrderRestaurantId, setCreateOrderRestaurantId] = useState(0);
     const [createOrderDishId, setCreateOrderDishId] = useState('');
+    const [createOrderDate, setCreateOrderDate] = useState(new Date());
     const [createOrderNotes, setCreateOrderNotes] = useState('');
+
+    // Get orders.
+    //export interface OrderItem {
+    //     dishId: number;
+    //     notes: string;
+    // }
+    //
+    // export interface OrderData {
+    //     restaurantId: number;
+    //     orderRequestedDate: Date;
+    //     orderItems: OrderItem[];
+    // }
+    const [orderList, setOrderList] = useState([]);
+    const [orderRestaurantId, setOrderRestaurantId] = useState(0);
+
+    // Order confirmation
+    const [orderID, setOrderID] = useState(0);
+
+    // Order deletion
+    const [deleteOrderID, setDeleteOrderID] = useState(0);
+
     const [deleteAccountPassword, setDeleteAccountPassword] = useState('');
 
     const [imageData, setImageData] = useState('');
@@ -47,7 +71,6 @@ export const App = () => {
     const [createDishCategoryID, setcreateDishCategoryID] = useState(0);
     const [createDishTitle, setcreateDishTitle] = useState('');
     const [createDishPrice, setcreateDishPrice] = useState('');
-
 
     const [deleteDishID, setDeleteDishID] = useState(0);
     const [deleteDishTitle, setDeleteDishTitle] = useState('');
@@ -141,7 +164,8 @@ export const App = () => {
             notes: createOrderNotes,
         };
         const orderData = {
-            restaurantId: 1, // Replace with the desired restaurant ID
+            restaurantId: createOrderRestaurantId, // Replace with the desired restaurant ID
+            orderRequestedDate: createOrderDate,
             orderItems: [orderItem],
         };
         const createOrderSuccess = await API.createOrder(orderData);
@@ -386,6 +410,19 @@ export const App = () => {
             <div>
                 <input
                     type="number"
+                    placeholder="Restaurant ID"
+                    value={createOrderRestaurantId}
+                    onChange={(e) => setCreateOrderRestaurantId(e.target.value)}
+                />
+                <input
+                    type="date"
+                    placeholder="Date"
+                    value={createOrderDate}
+
+                    onChange={(e) => setCreateOrderDate(e.target.value)}
+                />
+                <input
+                    type="number"
                     placeholder="Dish ID"
                     value={createOrderDishId}
                     onChange={(e) => setCreateOrderDishId(e.target.value)}
@@ -397,6 +434,49 @@ export const App = () => {
                     onChange={(e) => setCreateOrderNotes(e.target.value)}
                 />
                 <button onClick={handleCreateOrder}>Create Order</button>
+            </div>
+
+            <h1>Get Orders</h1>
+            <div>
+                <input
+                    type="number"
+                    placeholder="Restaurant ID"
+                    value={orderRestaurantId}
+                    onChange={(e) => setOrderRestaurantId(e.target.value)}
+                />
+                <button onClick={async () => {
+                    const orders = await API.getRestaurantOrders(orderRestaurantId);
+                    setOrderList(orders);
+                }}>Get Orders</button>
+                <p>{JSON.stringify(orderList)}</p>
+            </div>
+
+            <h1>Confirm Order</h1>
+            <div>
+                <input
+                    type="number"
+                    placeholder="Order ID"
+                    value={orderID}
+                    onChange={(e) => setOrderID(e.target.value)}
+                />
+                <button onClick={async () => {
+                    const confirmOrderSuccess = await API.confirmRestaurantOrder(orderID);
+                    alert(confirmOrderSuccess ? 'Order confirmed successfully!' : 'Order confirmation failed.');
+                }}>Confirm Order</button>
+            </div>
+
+            <h1>Delete Order</h1>
+            <div>
+                <input
+                    type="number"
+                    placeholder="Order ID"
+                    value={deleteOrderID}
+                    onChange={(e) => setDeleteOrderID(e.target.value)}
+                />
+                <button onClick={async () => {
+                    const deleteOrderSuccess = await API.deleteRestaurantOrder(deleteOrderID);
+                    alert(deleteOrderSuccess ? 'Order deleted successfully!' : 'Order deletion failed.');
+                }}>Delete Order</button>
             </div>
 
             <h1>Delete Account</h1>

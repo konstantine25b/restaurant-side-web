@@ -66,6 +66,7 @@ async function testBackendClient() {
     };
     const orderData = {
         restaurantId: 1,
+        orderRequestedDate: new Date(),
         orderItems: [orderItem],
     };
     const createOrderSuccess = await API.createOrder(orderData);
@@ -80,4 +81,4 @@ async function testBackendClient() {
     console.log('Delete Account:', deleteAccountSuccess);
 }
 
-testBackendClient();
+// testBackendClient();
