@@ -178,6 +178,23 @@ export default function Root() {
                 },
               ]}
             />
+             <LeftNavbarList
+              title={"Orders"}
+              data={[
+                {
+                  Title: "Pending Orders",
+                  Name: "PendingOrders",
+                  restName: restName,
+                  restInfo : restInfo
+                },
+                {
+                  Title: "Confirmed Orders",
+                  Name: "ConfirmedOrders",
+                  restName: restName,
+                },
+               
+              ]}
+            />
           </LeftSideList>
         </LeftSide>
         <RightSide>
