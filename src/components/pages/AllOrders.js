@@ -11,17 +11,15 @@ const OrdersContainer = styled.div`
 
 const OrderSection = styled.div`
   width: 85%;
-
   margin: 20px 0;
   margin-left: -8%;
-  border: 2px solid #007bff;
+  border: 2px solid ${(props) =>
+    props.isConfirmed ? "#FFC100" : "#007bff"};
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
   background-color: ${(props) =>
-    props.isConfirmed
-      ? "#f5f5f5"
-      : "transparent"}; /* Light gray for confirmed */
+    props.isConfirmed ? "#f5f5f5" : "transparent"};
   transition: transform 0.2s;
   cursor: pointer;
 `;
@@ -29,13 +27,13 @@ const OrderSection = styled.div`
 const OrderItem = styled.div`
   margin-bottom: 10px;
   font-size: 18px;
-  border: 1px solid #ccc; /* Border for each order */
+  border: 1px solid #ccc;
   padding: 10px;
   border-radius: 5px;
-  transition: transform 0.2s; /* Add hover effect for individual orders */
+  transition: transform 0.2s;
 
   &:hover {
-    transform: scale(1.02); /* Scale up on hover for individual orders */
+    transform: scale(1.02);
   }
 `;
 
@@ -62,14 +60,12 @@ const OrderDetails = styled.div`
 
 const OrderField = styled.div`
   flex: ${(props) =>
-    props.isConfirmed
-      ? "2"
-      : "1"}; /* Larger for confirmed, smaller for pending */
+    props.isConfirmed ? "2" : "1"};
 `;
 
 const OrderItemContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 items per row */
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -77,7 +73,7 @@ const OrderItemContainer = styled.div`
 
 const OrderItemDetails = styled.div`
   flex: 1;
-  border: 1px solid #ccc; /* Border for each order item */
+  border: 1px solid #ccc;
   padding: 10px;
   border-radius: 5px;
 `;
@@ -102,11 +98,37 @@ const UserId = styled.div`
   margin-bottom: 15px;
 `;
 
+const TimeWarning = styled.div`
+  color: ${(props) => (props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "inherit")};
+  font-size: 14px;
+  margin-top: 5px;
+`;
+
+
+function isTimePassed(requestedDate) {
+  const currentTime = new Date();
+  return currentTime > new Date(requestedDate);
+}
+
+function calculateTimeLeft(requestedDate) {
+  const currentTime = new Date();
+  const endTime = new Date(requestedDate);
+  const timeDiff = endTime - currentTime;
+  const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((timeDiff / 1000 / 60) % 60);
+  const seconds = Math.floor((timeDiff / 1000) % 60);
+
+  return {
+    hours: hours,
+    minutes: minutes,
+    seconds: seconds
+  };
+}
+
 export default function AllOrders() {
   const [allOrders, setAllOrders] = useState();
   const { state } = useLocation();
   const { restName, restInfo } = state;
-  // console.log(restName  , restInfo)
 
   let getOrders = async (id) => {
     const orders = await API.getRestaurantOrders(id);
@@ -117,35 +139,33 @@ export default function AllOrders() {
     getOrders(restInfo.id);
   }, [restInfo]);
 
-  const orderConfirmation = async (id , orderToConfirm) => {
+  const orderConfirmation = async (id, orderToConfirm) => {
     const confirmOrderSuccess = await API.confirmRestaurantOrder(id);
-    alert(confirmOrderSuccess ? 'Order confirmed successfully!' : 'Order confirmation failed.');
-    if(confirmOrderSuccess){
-        const updatedPendingOrders = pendingOrders.filter((order) => order.id !== id);
-        setPendingOrders(updatedPendingOrders);
-  
-        // Add the order to confirmed orders
-        setConfirmedOrders((prevConfirmedOrders) => [...prevConfirmedOrders, orderToConfirm]);
+    alert(
+      confirmOrderSuccess
+        ? "Order confirmed successfully!"
+        : "Order confirmation failed."
+    );
+    if (confirmOrderSuccess) {
+      const updatedPendingOrders = pendingOrders.filter(
+        (order) => order.id !== id
+      );
+      setPendingOrders(updatedPendingOrders);
+
+      setConfirmedOrders((prevConfirmedOrders) => [...prevConfirmedOrders, orderToConfirm]);
     }
-    
-}
+  };
 
-  const [pendingOrders, setPendingOrders] = useState([
-    // Add more pending orders here...
-  ]);
-
-  const [confirmedOrders, setConfirmedOrders] = useState([
-    // Add more confirmed orders here...
-  ]);
+  const [pendingOrders, setPendingOrders] = useState([]);
+  const [confirmedOrders, setConfirmedOrders] = useState([]);
 
   useEffect(() => {
-    console.log(allOrders);
     let confArr = [];
     let pendArr = [];
 
     for (let i = 0; i < allOrders?.length; i++) {
       let eachOrder = allOrders[i];
-      if (eachOrder.isConfirmed == false) {
+      if (eachOrder.isConfirmed === false) {
         let orderItems = [];
         let orderNotes = [];
 
@@ -188,19 +208,36 @@ export default function AllOrders() {
 
     setConfirmedOrders(confArr);
     setPendingOrders(pendArr);
+
+    const timer = setInterval(() => {
+      pendingOrders.forEach((order) => {
+        // Calculate remaining time for each pending order
+        const timeLeft = calculateTimeLeft(order.orderRequestedDate);
+
+        // Update the state with the new remaining time
+        setRemainingTime(timeLeft);
+      });
+    }, 1000);
+
+    // Clean up the timer when the component unmounts
+    return () => {
+      clearInterval(timer);
+    };
+
   }, [allOrders]);
 
-  // Function to confirm a pending order
+  const [remainingTime, setRemainingTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
+
   const confirmOrder = (id) => {
     const orderToConfirm = pendingOrders.find((order) => order.id === id);
-  
+
     if (orderToConfirm) {
-      // Show a confirmation alert before moving the order
-      const confirmConfirmation = window.confirm('Are you sure you want to confirm this order?');
-  
+      const confirmConfirmation = window.confirm(
+        "Are you sure you want to confirm this order?"
+      );
+
       if (confirmConfirmation) {
-        orderConfirmation(id , orderToConfirm)
-        
+        orderConfirmation(id, orderToConfirm);
       }
     }
   };
@@ -208,7 +245,7 @@ export default function AllOrders() {
   return (
     <OrdersContainer>
       <OrderSection isConfirmed>
-        <h2 style={{ color: "#007bff" }}>Pending Orders</h2>
+        <h2 style={{ color: "#FFC100" }}>Pending Orders</h2>
         {pendingOrders.map((order) => (
           <div key={order.id}>
             <OrderItem>
@@ -226,6 +263,14 @@ export default function AllOrders() {
                     ? new Date(order.orderSent).toLocaleString()
                     : ""}
                 </OrderField>
+                <TimeWarning
+                  isTimeWarning={calculateTimeLeft(order.orderRequestedDate).hours === 0 && calculateTimeLeft(order.orderRequestedDate).minutes <= 60}
+                  isTimePassed={isTimePassed(order.orderRequestedDate)}
+                >
+                  {isTimePassed(order.orderRequestedDate)
+                    ? "Time has passed"
+                    : `Time left: ${calculateTimeLeft(order.orderRequestedDate).hours}h ${calculateTimeLeft(order.orderRequestedDate).minutes}m ${calculateTimeLeft(order.orderRequestedDate).seconds}s`}
+                </TimeWarning>
               </OrderDetails>
               <OrderItemContainer>
                 {order.orderItems.map((item, index) => (
@@ -255,7 +300,7 @@ export default function AllOrders() {
         ))}
       </OrderSection>
       <OrderSection>
-        <h2 style={{ color: "#4caf50" }}>Confirmed Orders</h2>
+        <h2 style={{ color: "#007bff" }}>Confirmed Orders</h2>
         {confirmedOrders.map((order) => (
           <div key={order.id}>
             <OrderItem>
@@ -273,6 +318,13 @@ export default function AllOrders() {
                     ? new Date(order.orderSent).toLocaleString()
                     : ""}
                 </OrderField>
+                <TimeWarning
+                  isTimePassed={isTimePassed(order.orderRequestedDate)}
+                >
+                  {isTimePassed(order.orderRequestedDate)
+                    ? "Time has passed"
+                    : `Time left: ${calculateTimeLeft(order.orderRequestedDate).hours}h ${calculateTimeLeft(order.orderRequestedDate).minutes}m ${calculateTimeLeft(order.orderRequestedDate).seconds}s`}
+                </TimeWarning>
               </OrderDetails>
               <OrderItemContainer>
                 {order.orderItems.map((item, index) => (
