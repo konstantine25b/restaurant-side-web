@@ -182,16 +182,25 @@ export default function Root() {
               title={"Orders"}
               data={[
                 {
+                  Title: "All Orders",
+                  Name: "AllOrders",
+                  restName: restName,
+                  restInfo: restInfo
+                },
+                {
                   Title: "Pending Orders",
                   Name: "PendingOrders",
                   restName: restName,
-                  restInfo : restInfo
+                  restInfo: restInfo
+                
                 },
                 {
                   Title: "Confirmed Orders",
                   Name: "ConfirmedOrders",
                   restName: restName,
+                  restInfo: restInfo
                 },
+               
                
               ]}
             />

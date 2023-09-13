@@ -23,6 +23,7 @@ import Description from "./components/pages/Description";
 import Tags from "./components/pages/Tags";
 import PendingOrders from "./components/pages/PendingOrders";
 import ConfirmedOrders from "./components/pages/ConfirmedOrders";
+import AllOrders from "./components/pages/AllOrders";
 
 
 
@@ -57,6 +58,7 @@ const router = createBrowserRouter(
 
         <Route path="/HomePage/PendingOrders" element={<PendingOrders/>} />
         <Route path="/HomePage/ConfirmedOrders" element={<ConfirmedOrders/>} />
+        <Route path="/HomePage/AllOrders" element={<AllOrders/>} />
 
       </Route>
     </Route>
