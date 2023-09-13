@@ -9,6 +9,15 @@ const OrdersContainer = styled.div`
   align-items: center;
 `;
 
+const AllOrdersTitle = styled.h1`
+  font-size: 34px;
+  color: #007bff; /* Blue color */
+  text-align: center;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  /* Add any other styling you desire */
+`;
 const OrderSection = styled.div`
   width: 85%;
   margin: 20px 0;
@@ -27,7 +36,7 @@ const OrderSection = styled.div`
 const OrderItem = styled.div`
   margin-bottom: 10px;
   font-size: 18px;
-  border: 1px solid #ccc;
+  border: 1px solid ${(props) => (props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "#ccc")};;
   padding: 10px;
   border-radius: 5px;
   transition: transform 0.2s;
@@ -244,11 +253,13 @@ export default function AllOrders() {
 
   return (
     <OrdersContainer>
+       <AllOrdersTitle>All Orders</AllOrdersTitle> 
       <OrderSection isConfirmed>
         <h2 style={{ color: "#FFC100" }}>Pending Orders</h2>
         {pendingOrders.map((order) => (
           <div key={order.id}>
-            <OrderItem>
+            <OrderItem isTimeWarning={calculateTimeLeft(order.orderRequestedDate).hours === 0 && calculateTimeLeft(order.orderRequestedDate).minutes <= 60}
+                  isTimePassed={isTimePassed(order.orderRequestedDate)}>
               <OrderDetails>
                 <OrderField isConfirmed={false}>
                   <strong>Order ID:</strong> {order.id}
@@ -303,7 +314,8 @@ export default function AllOrders() {
         <h2 style={{ color: "#007bff" }}>Confirmed Orders</h2>
         {confirmedOrders.map((order) => (
           <div key={order.id}>
-            <OrderItem>
+            <OrderItem isTimeWarning={calculateTimeLeft(order.orderRequestedDate).hours === 0 && calculateTimeLeft(order.orderRequestedDate).minutes <= 60}
+                  isTimePassed={isTimePassed(order.orderRequestedDate)}>
               <OrderDetails>
                 <OrderField isConfirmed={true}>
                   <strong>Order ID:</strong> {order.id}
