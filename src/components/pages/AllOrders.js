@@ -117,6 +117,19 @@ export default function AllOrders() {
     getOrders(restInfo.id);
   }, [restInfo]);
 
+  const orderConfirmation = async (id , orderToConfirm) => {
+    const confirmOrderSuccess = await API.confirmRestaurantOrder(id);
+    alert(confirmOrderSuccess ? 'Order confirmed successfully!' : 'Order confirmation failed.');
+    if(confirmOrderSuccess){
+        const updatedPendingOrders = pendingOrders.filter((order) => order.id !== id);
+        setPendingOrders(updatedPendingOrders);
+  
+        // Add the order to confirmed orders
+        setConfirmedOrders((prevConfirmedOrders) => [...prevConfirmedOrders, orderToConfirm]);
+    }
+    
+}
+
   const [pendingOrders, setPendingOrders] = useState([
     // Add more pending orders here...
   ]);
@@ -179,16 +192,17 @@ export default function AllOrders() {
 
   // Function to confirm a pending order
   const confirmOrder = (id) => {
-    const updatedPendingOrders = pendingOrders.map((order) =>
-      order.id === id
-        ? {
-            ...order,
-            isConfirmed: true,
-            orderSent: new Date().toISOString(),
-          }
-        : order
-    );
-    setPendingOrders(updatedPendingOrders);
+    const orderToConfirm = pendingOrders.find((order) => order.id === id);
+  
+    if (orderToConfirm) {
+      // Show a confirmation alert before moving the order
+      const confirmConfirmation = window.confirm('Are you sure you want to confirm this order?');
+  
+      if (confirmConfirmation) {
+        orderConfirmation(id , orderToConfirm)
+        
+      }
+    }
   };
 
   return (
