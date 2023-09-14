@@ -103,6 +103,22 @@ const TimeWarning = styled.div`
   font-size: 14px;
   margin-top: 5px;
 `;
+const DeleteButton = styled.button`
+  background-color: #ff4d4d; /* Red color */
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-left: 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #ff0000; /* Darker red on hover */
+  }
+`;
 
 
 function isTimePassed(requestedDate) {
@@ -228,6 +244,28 @@ export default function AllOrders() {
 
   const [remainingTime, setRemainingTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
+  const deleteOrder = async (deleteOrderID) => {
+    const deleteOrderSuccess = await API.deleteRestaurantOrder(deleteOrderID);
+    alert(
+      deleteOrderSuccess
+        ? "Order deleted successfully!"
+        : "Order deletion failed."
+    );
+  };
+
+  const handleDeleteOrder = (id) => {
+    const shouldDelete = window.confirm("Are you sure you want to delete this order?");
+    
+    if (shouldDelete) {
+      // Perform the deletion
+      deleteOrder(id);
+  
+      // Update the pending orders list
+      const updatedPendingOrders = pendingOrders.filter((order) => order.id !== id);
+      setPendingOrders(updatedPendingOrders);
+    }
+  };
+
   const confirmOrder = (id) => {
     const orderToConfirm = pendingOrders.find((order) => order.id === id);
 
@@ -290,10 +328,15 @@ export default function AllOrders() {
                 <strong>Customer ID:</strong> {order.userId}
               </UserId>
               <OrderField isConfirmed={false}>
-                {!order.isConfirmed && (
-                  <ConfirmButton onClick={() => confirmOrder(order.id)}>
-                    Confirm Order
-                  </ConfirmButton>
+              {!order.isConfirmed && (
+                  <>
+                    <ConfirmButton onClick={() => confirmOrder(order.id)}>
+                      Confirm Order
+                    </ConfirmButton>
+                    <DeleteButton onClick={() => handleDeleteOrder(order.id)}>
+                      Delete Order
+                    </DeleteButton>
+                  </>
                 )}
               </OrderField>
             </OrderItem>

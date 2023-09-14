@@ -22,8 +22,7 @@ const OrderSection = styled.div`
   width: 85%;
   margin: 20px 0;
   margin-left: -8%;
-  border: 2px solid ${(props) =>
-    props.isConfirmed ? "#FFC100" : "#007bff"};
+  border: 2px solid ${(props) => (props.isConfirmed ? "#FFC100" : "#007bff")};
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
@@ -36,7 +35,9 @@ const OrderSection = styled.div`
 const OrderItem = styled.div`
   margin-bottom: 10px;
   font-size: 18px;
-  border: 1px solid ${(props) => (props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "#ccc")};;
+  border: 1px solid
+    ${(props) =>
+      props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "#ccc"};
   padding: 10px;
   border-radius: 5px;
   transition: transform 0.2s;
@@ -68,8 +69,7 @@ const OrderDetails = styled.div`
 `;
 
 const OrderField = styled.div`
-  flex: ${(props) =>
-    props.isConfirmed ? "2" : "1"};
+  flex: ${(props) => (props.isConfirmed ? "2" : "1")};
 `;
 
 const OrderItemContainer = styled.div`
@@ -108,11 +108,28 @@ const UserId = styled.div`
 `;
 
 const TimeWarning = styled.div`
-  color: ${(props) => (props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "inherit")};
+  color: ${(props) =>
+    props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "inherit"};
   font-size: 14px;
   margin-top: 5px;
 `;
 
+const DeleteButton = styled.button`
+  background-color: #ff4d4d; /* Red color */
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-left: 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #ff0000; /* Darker red on hover */
+  }
+`;
 
 function isTimePassed(requestedDate) {
   const currentTime = new Date();
@@ -130,7 +147,7 @@ function calculateTimeLeft(requestedDate) {
   return {
     hours: hours,
     minutes: minutes,
-    seconds: seconds
+    seconds: seconds,
   };
 }
 
@@ -161,7 +178,10 @@ export default function AllOrders() {
       );
       setPendingOrders(updatedPendingOrders);
 
-      setConfirmedOrders((prevConfirmedOrders) => [...prevConfirmedOrders, orderToConfirm]);
+      setConfirmedOrders((prevConfirmedOrders) => [
+        ...prevConfirmedOrders,
+        orderToConfirm,
+      ]);
     }
   };
 
@@ -232,11 +252,35 @@ export default function AllOrders() {
     return () => {
       clearInterval(timer);
     };
-
   }, [allOrders]);
 
-  const [remainingTime, setRemainingTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [remainingTime, setRemainingTime] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
+  const deleteOrder = async (deleteOrderID) => {
+    const deleteOrderSuccess = await API.deleteRestaurantOrder(deleteOrderID);
+    alert(
+      deleteOrderSuccess
+        ? "Order deleted successfully!"
+        : "Order deletion failed."
+    );
+  };
+
+  const handleDeleteOrder = (id) => {
+    const shouldDelete = window.confirm("Are you sure you want to delete this order?");
+    
+    if (shouldDelete) {
+      // Perform the deletion
+      deleteOrder(id);
+  
+      // Update the pending orders list
+      const updatedPendingOrders = pendingOrders.filter((order) => order.id !== id);
+      setPendingOrders(updatedPendingOrders);
+    }
+  };
   const confirmOrder = (id) => {
     const orderToConfirm = pendingOrders.find((order) => order.id === id);
 
@@ -253,13 +297,18 @@ export default function AllOrders() {
 
   return (
     <OrdersContainer>
-       <AllOrdersTitle>All Orders</AllOrdersTitle> 
+      <AllOrdersTitle>All Orders</AllOrdersTitle>
       <OrderSection isConfirmed>
         <h2 style={{ color: "#FFC100" }}>Pending Orders</h2>
         {pendingOrders.map((order) => (
           <div key={order.id}>
-            <OrderItem isTimeWarning={calculateTimeLeft(order.orderRequestedDate).hours === 0 && calculateTimeLeft(order.orderRequestedDate).minutes <= 60}
-                  isTimePassed={isTimePassed(order.orderRequestedDate)}>
+            <OrderItem
+              isTimeWarning={
+                calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+                calculateTimeLeft(order.orderRequestedDate).minutes <= 60
+              }
+              isTimePassed={isTimePassed(order.orderRequestedDate)}
+            >
               <OrderDetails>
                 <OrderField isConfirmed={false}>
                   <strong>Order ID:</strong> {order.id}
@@ -275,12 +324,21 @@ export default function AllOrders() {
                     : ""}
                 </OrderField>
                 <TimeWarning
-                  isTimeWarning={calculateTimeLeft(order.orderRequestedDate).hours === 0 && calculateTimeLeft(order.orderRequestedDate).minutes <= 60}
+                  isTimeWarning={
+                    calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+                    calculateTimeLeft(order.orderRequestedDate).minutes <= 60
+                  }
                   isTimePassed={isTimePassed(order.orderRequestedDate)}
                 >
                   {isTimePassed(order.orderRequestedDate)
                     ? "Time has passed"
-                    : `Time left: ${calculateTimeLeft(order.orderRequestedDate).hours}h ${calculateTimeLeft(order.orderRequestedDate).minutes}m ${calculateTimeLeft(order.orderRequestedDate).seconds}s`}
+                    : `Time left: ${
+                        calculateTimeLeft(order.orderRequestedDate).hours
+                      }h ${
+                        calculateTimeLeft(order.orderRequestedDate).minutes
+                      }m ${
+                        calculateTimeLeft(order.orderRequestedDate).seconds
+                      }s`}
                 </TimeWarning>
               </OrderDetails>
               <OrderItemContainer>
@@ -301,9 +359,14 @@ export default function AllOrders() {
               </UserId>
               <OrderField isConfirmed={false}>
                 {!order.isConfirmed && (
-                  <ConfirmButton onClick={() => confirmOrder(order.id)}>
-                    Confirm Order
-                  </ConfirmButton>
+                  <>
+                    <ConfirmButton onClick={() => confirmOrder(order.id)}>
+                      Confirm Order
+                    </ConfirmButton>
+                    <DeleteButton onClick={() => handleDeleteOrder(order.id)}>
+                      Delete Order
+                    </DeleteButton>
+                  </>
                 )}
               </OrderField>
             </OrderItem>
@@ -314,8 +377,13 @@ export default function AllOrders() {
         <h2 style={{ color: "#007bff" }}>Confirmed Orders</h2>
         {confirmedOrders.map((order) => (
           <div key={order.id}>
-            <OrderItem isTimeWarning={calculateTimeLeft(order.orderRequestedDate).hours === 0 && calculateTimeLeft(order.orderRequestedDate).minutes <= 60}
-                  isTimePassed={isTimePassed(order.orderRequestedDate)}>
+            <OrderItem
+              isTimeWarning={
+                calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+                calculateTimeLeft(order.orderRequestedDate).minutes <= 60
+              }
+              isTimePassed={isTimePassed(order.orderRequestedDate)}
+            >
               <OrderDetails>
                 <OrderField isConfirmed={true}>
                   <strong>Order ID:</strong> {order.id}
@@ -330,12 +398,19 @@ export default function AllOrders() {
                     ? new Date(order.orderSent).toLocaleString()
                     : ""}
                 </OrderField>
+                
                 <TimeWarning
                   isTimePassed={isTimePassed(order.orderRequestedDate)}
                 >
                   {isTimePassed(order.orderRequestedDate)
                     ? "Time has passed"
-                    : `Time left: ${calculateTimeLeft(order.orderRequestedDate).hours}h ${calculateTimeLeft(order.orderRequestedDate).minutes}m ${calculateTimeLeft(order.orderRequestedDate).seconds}s`}
+                    : `Time left: ${
+                        calculateTimeLeft(order.orderRequestedDate).hours
+                      }h ${
+                        calculateTimeLeft(order.orderRequestedDate).minutes
+                      }m ${
+                        calculateTimeLeft(order.orderRequestedDate).seconds
+                      }s`}
                 </TimeWarning>
               </OrderDetails>
               <OrderItemContainer>
