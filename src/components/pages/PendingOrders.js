@@ -13,8 +13,7 @@ const OrderSection = styled.div`
   width: 85%;
   margin: 20px 0;
   margin-left: -8%;
-  border: 2px solid ${(props) =>
-    props.isConfirmed ? "#FFC100" : "#007bff"};
+  border: 2px solid ${(props) => (props.isConfirmed ? "#FFC100" : "#007bff")};
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
@@ -27,16 +26,23 @@ const OrderSection = styled.div`
 const OrderItem = styled.div`
   margin-bottom: 10px;
   font-size: 18px;
-  border: 1px solid ${(props) => (props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "#ccc")};;
+  border: 1px solid ${(props) => (props.isTimePassed ? "red" : "#ccc")};
   padding: 10px;
   border-radius: 5px;
   transition: transform 0.2s;
+  background-color: ${(props) =>
+    props.isTimeWarning
+      ? props.isTimePassed
+        ? "red"
+        : "#FFFF99"
+      : props.isTimePassed
+      ? "#ff9999"
+      : "transparent"};
 
   &:hover {
     transform: scale(1.02);
   }
 `;
-
 const ConfirmButton = styled.button`
   background-color: #007bff;
   color: #fff;
@@ -59,8 +65,7 @@ const OrderDetails = styled.div`
 `;
 
 const OrderField = styled.div`
-  flex: ${(props) =>
-    props.isConfirmed ? "2" : "1"};
+  flex: ${(props) => (props.isConfirmed ? "2" : "1")};
 `;
 
 const OrderItemContainer = styled.div`
@@ -99,7 +104,8 @@ const UserId = styled.div`
 `;
 
 const TimeWarning = styled.div`
-  color: ${(props) => (props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "inherit")};
+  color: ${(props) =>
+    props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "inherit"};
   font-size: 14px;
   margin-top: 5px;
 `;
@@ -120,7 +126,6 @@ const DeleteButton = styled.button`
   }
 `;
 
-
 function isTimePassed(requestedDate) {
   const currentTime = new Date();
   return currentTime > new Date(requestedDate);
@@ -137,7 +142,7 @@ function calculateTimeLeft(requestedDate) {
   return {
     hours: hours,
     minutes: minutes,
-    seconds: seconds
+    seconds: seconds,
   };
 }
 
@@ -168,7 +173,10 @@ export default function AllOrders() {
       );
       setPendingOrders(updatedPendingOrders);
 
-      setConfirmedOrders((prevConfirmedOrders) => [...prevConfirmedOrders, orderToConfirm]);
+      setConfirmedOrders((prevConfirmedOrders) => [
+        ...prevConfirmedOrders,
+        orderToConfirm,
+      ]);
     }
   };
 
@@ -239,10 +247,13 @@ export default function AllOrders() {
     return () => {
       clearInterval(timer);
     };
-
   }, [allOrders]);
 
-  const [remainingTime, setRemainingTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [remainingTime, setRemainingTime] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   const deleteOrder = async (deleteOrderID) => {
     const deleteOrderSuccess = await API.deleteRestaurantOrder(deleteOrderID);
@@ -254,14 +265,18 @@ export default function AllOrders() {
   };
 
   const handleDeleteOrder = (id) => {
-    const shouldDelete = window.confirm("Are you sure you want to delete this order?");
-    
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete this order?"
+    );
+
     if (shouldDelete) {
       // Perform the deletion
       deleteOrder(id);
-  
+
       // Update the pending orders list
-      const updatedPendingOrders = pendingOrders.filter((order) => order.id !== id);
+      const updatedPendingOrders = pendingOrders.filter(
+        (order) => order.id !== id
+      );
       setPendingOrders(updatedPendingOrders);
     }
   };
@@ -279,15 +294,45 @@ export default function AllOrders() {
       }
     }
   };
+  function groupOrdersByRequestedDate(orders) {
+    const currentTime = new Date();
+    const lessThan1Hour = new Date(currentTime);
+    lessThan1Hour.setHours(currentTime.getHours() - 1);
+  
+    const pendingOrders = [];
+    const pastOrders = [];
+  
+    for (const order of orders) {
+      const orderDate = new Date(order.orderRequestedDate);
+  
+      if (orderDate > currentTime) {
+        pendingOrders.push(order);
+      } else if (orderDate > lessThan1Hour) {
+        pendingOrders.push(order);
+      } else {
+        pastOrders.push(order);
+      }
+    }
+  
+    return [...pendingOrders, ...pastOrders];
+  }
+
+  const sortedPendingOrders = groupOrdersByRequestedDate(pendingOrders);
+  
 
   return (
     <OrdersContainer>
       <OrderSection isConfirmed>
         <h2 style={{ color: "#FFC100" }}>Pending Orders</h2>
-        {pendingOrders.map((order) => (
+        {sortedPendingOrders.map((order) => (
           <div key={order.id}>
-            <OrderItem isTimeWarning={calculateTimeLeft(order.orderRequestedDate).hours === 0 && calculateTimeLeft(order.orderRequestedDate).minutes <= 60}
-                  isTimePassed={isTimePassed(order.orderRequestedDate)}>
+            <OrderItem
+              isTimeWarning={
+                calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+                calculateTimeLeft(order.orderRequestedDate).minutes <= 60
+              }
+              isTimePassed={isTimePassed(order.orderRequestedDate)}
+            >
               <OrderDetails>
                 <OrderField isConfirmed={false}>
                   <strong>Order ID:</strong> {order.id}
@@ -303,12 +348,21 @@ export default function AllOrders() {
                     : ""}
                 </OrderField>
                 <TimeWarning
-                  isTimeWarning={calculateTimeLeft(order.orderRequestedDate).hours === 0 && calculateTimeLeft(order.orderRequestedDate).minutes <= 60}
+                  isTimeWarning={
+                    calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+                    calculateTimeLeft(order.orderRequestedDate).minutes <= 60
+                  }
                   isTimePassed={isTimePassed(order.orderRequestedDate)}
                 >
                   {isTimePassed(order.orderRequestedDate)
                     ? "Time has passed"
-                    : `Time left: ${calculateTimeLeft(order.orderRequestedDate).hours}h ${calculateTimeLeft(order.orderRequestedDate).minutes}m ${calculateTimeLeft(order.orderRequestedDate).seconds}s`}
+                    : `Time left: ${
+                        calculateTimeLeft(order.orderRequestedDate).hours
+                      }h ${
+                        calculateTimeLeft(order.orderRequestedDate).minutes
+                      }m ${
+                        calculateTimeLeft(order.orderRequestedDate).seconds
+                      }s`}
                 </TimeWarning>
               </OrderDetails>
               <OrderItemContainer>
@@ -328,7 +382,7 @@ export default function AllOrders() {
                 <strong>Customer ID:</strong> {order.userId}
               </UserId>
               <OrderField isConfirmed={false}>
-              {!order.isConfirmed && (
+                {!order.isConfirmed && (
                   <>
                     <ConfirmButton onClick={() => confirmOrder(order.id)}>
                       Confirm Order
@@ -343,7 +397,6 @@ export default function AllOrders() {
           </div>
         ))}
       </OrderSection>
-      
     </OrdersContainer>
   );
 }

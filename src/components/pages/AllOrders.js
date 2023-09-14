@@ -35,12 +35,18 @@ const OrderSection = styled.div`
 const OrderItem = styled.div`
   margin-bottom: 10px;
   font-size: 18px;
-  border: 1px solid
-    ${(props) =>
-      props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "#ccc"};
+  border: 1px solid ${(props) => (props.isTimePassed ? "red" : "#ccc")};
   padding: 10px;
   border-radius: 5px;
   transition: transform 0.2s;
+  background-color: ${(props) =>
+    props.isTimeWarning
+      ? props.isTimePassed
+        ? "red"
+        : "#FFFF99"
+      : props.isTimePassed
+      ? "#ff9999"
+      : "transparent"};
 
   &:hover {
     transform: scale(1.02);
@@ -260,6 +266,33 @@ export default function AllOrders() {
     seconds: 0,
   });
 
+  // amit vajgufeb orderebs romeli unda iyos pirveli dabolo
+  function groupOrdersByRequestedDate(orders) {
+    const currentTime = new Date();
+    const lessThan1Hour = new Date(currentTime);
+    lessThan1Hour.setHours(currentTime.getHours() - 1);
+  
+    const pendingOrders = [];
+    const pastOrders = [];
+  
+    for (const order of orders) {
+      const orderDate = new Date(order.orderRequestedDate);
+  
+      if (orderDate > currentTime) {
+        pendingOrders.push(order);
+      } else if (orderDate > lessThan1Hour) {
+        pendingOrders.push(order);
+      } else {
+        pastOrders.push(order);
+      }
+    }
+  
+    return [...pendingOrders, ...pastOrders];
+  }
+
+  const sortedPendingOrders = groupOrdersByRequestedDate(pendingOrders);
+  const sortedConfirmedOrders = groupOrdersByRequestedDate(confirmedOrders);
+
   const deleteOrder = async (deleteOrderID) => {
     const deleteOrderSuccess = await API.deleteRestaurantOrder(deleteOrderID);
     alert(
@@ -300,12 +333,12 @@ export default function AllOrders() {
       <AllOrdersTitle>All Orders</AllOrdersTitle>
       <OrderSection isConfirmed>
         <h2 style={{ color: "#FFC100" }}>Pending Orders</h2>
-        {pendingOrders.map((order) => (
+        {sortedPendingOrders.map((order) => (
           <div key={order.id}>
-            <OrderItem
+            <OrderItem 
               isTimeWarning={
                 calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                calculateTimeLeft(order.orderRequestedDate).minutes <= 60
+                calculateTimeLeft(order.orderRequestedDate).minutes <= 45
               }
               isTimePassed={isTimePassed(order.orderRequestedDate)}
             >
@@ -375,12 +408,12 @@ export default function AllOrders() {
       </OrderSection>
       <OrderSection>
         <h2 style={{ color: "#007bff" }}>Confirmed Orders</h2>
-        {confirmedOrders.map((order) => (
+        {sortedConfirmedOrders.map((order) => (
           <div key={order.id}>
             <OrderItem
               isTimeWarning={
                 calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                calculateTimeLeft(order.orderRequestedDate).minutes <= 60
+                calculateTimeLeft(order.orderRequestedDate).minutes <= 45
               }
               isTimePassed={isTimePassed(order.orderRequestedDate)}
             >

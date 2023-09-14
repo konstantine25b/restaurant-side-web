@@ -22,16 +22,21 @@ const OrderSection = styled.div`
   transition: transform 0.2s;
   cursor: pointer;
 `;
-
 const OrderItem = styled.div`
   margin-bottom: 10px;
   font-size: 18px;
-  border: 1px solid
-    ${(props) =>
-      props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "#ccc"};
+  border: 1px solid ${(props) => (props.isTimePassed ? "red" : "#ccc")};
   padding: 10px;
   border-radius: 5px;
   transition: transform 0.2s;
+  background-color: ${(props) =>
+    props.isTimeWarning
+      ? props.isTimePassed
+        ? "red"
+        : "#FFFF99"
+      : props.isTimePassed
+      ? "#ff9999"
+      : "transparent"};
 
   &:hover {
     transform: scale(1.02);
@@ -234,25 +239,37 @@ export default function AllOrders() {
     seconds: 0,
   });
 
-  const confirmOrder = (id) => {
-    const orderToConfirm = pendingOrders.find((order) => order.id === id);
-
-    if (orderToConfirm) {
-      const confirmConfirmation = window.confirm(
-        "Are you sure you want to confirm this order?"
-      );
-
-      if (confirmConfirmation) {
-        orderConfirmation(id, orderToConfirm);
+  function groupOrdersByRequestedDate(orders) {
+    const currentTime = new Date();
+    const lessThan1Hour = new Date(currentTime);
+    lessThan1Hour.setHours(currentTime.getHours() - 1);
+  
+    const pendingOrders = [];
+    const pastOrders = [];
+  
+    for (const order of orders) {
+      const orderDate = new Date(order.orderRequestedDate);
+  
+      if (orderDate > currentTime) {
+        pendingOrders.push(order);
+      } else if (orderDate > lessThan1Hour) {
+        pendingOrders.push(order);
+      } else {
+        pastOrders.push(order);
       }
     }
-  };
+  
+    return [...pendingOrders, ...pastOrders];
+  }
+
+  
+  const sortedConfirmedOrders = groupOrdersByRequestedDate(confirmedOrders);
 
   return (
     <OrdersContainer>
       <OrderSection>
         <h2 style={{ color: "#007bff" }}>Confirmed Orders</h2>
-        {confirmedOrders.map((order) => (
+        {sortedConfirmedOrders.map((order) => (
           <div key={order.id}>
             <OrderItem
               isTimeWarning={
