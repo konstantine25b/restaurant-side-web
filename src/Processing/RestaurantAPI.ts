@@ -44,11 +44,11 @@ interface DishAddData {
 }
 
 interface OrderDataResponse extends OrderData {
-    isConfirmed: boolean;
+    orderState: number;
 }
 
 export class RestaurantAPI extends PrestoAPI{
-    async getRestaurantOrders(id: number): Promise<OrderDataResponse[]> {
+        async getRestaurantOrders(id: number): Promise<OrderData[]> {
         await this.loginIfNeeded();
         try {
             const response = await axios.get(`${this.baseUrl}/restaurant/${id}/orders`, {
@@ -60,10 +60,10 @@ export class RestaurantAPI extends PrestoAPI{
         }
     }
 
-    async confirmRestaurantOrder(orderId: number): Promise<boolean> {
+    async confirmOrDenyRestaurantOrder(orderId: number, action:boolean): Promise<boolean> {
         await this.loginIfNeeded();
         try {
-            await axios.patch(`${this.baseUrl}/order/${orderId}`, null, {
+            await axios.patch(`${this.baseUrl}/order/${orderId}/${action}`, null, {
                 headers: { Authorization: `Bearer ${this.token}` },
             });
             return true;
