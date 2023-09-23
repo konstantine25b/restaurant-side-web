@@ -517,6 +517,53 @@ export class PrestoAPI {
         }
     }
 
+    // Gets a category by ID
+    // Arguments:
+    // id - number;
+    // Returns:
+    // Category | null;
+    // Which contains:
+    // id - number;
+    // title - string;
+    // description - string;
+    // image - string;
+    // restaurantId - number;
+    // dishes - Dish[];
+    async getCategoryById(id: number): Promise<Category | null> {
+        try {
+            const response = await axios.get(`${this.baseUrl}/category/${id}`);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
+
+    // Gets a dish by ID
+    // Arguments:
+    // id - number;
+    // Returns:
+    // Dish | null;
+    // Which contains:
+    // id - number;
+    // title - string;
+    // price - number;
+    // approxtime - number;
+    // description - string;
+    // image - string;
+    // ingredients - string[];
+    // categoryId - number;
+    // available - boolean;
+    async getDishById(id: number): Promise<Dish | null> {
+        try {
+            const response = await axios.get(`${this.baseUrl}/dish/${id}`);
+            return response.data;
+        } catch (error) {
+
+            return null;
+        }
+    }
+
     // Gets an image
     // Arguments:
     // name - string;

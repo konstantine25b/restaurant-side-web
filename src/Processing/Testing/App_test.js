@@ -68,6 +68,11 @@ export const App = () => {
     const [updateDishTitle, setUpdateDishTitle] = useState('');
     const [updateDishPrice, setUpdateDishPrice] = useState('');
 
+    //getCategoryById
+    const [getCategoryID, setGetCategoryID] = useState(0);
+    //getDishById
+    const [getDishID, setGetDishID] = useState(0);
+
     const [createDishCategoryID, setcreateDishCategoryID] = useState(0);
     const [createDishTitle, setcreateDishTitle] = useState('');
     const [createDishPrice, setcreateDishPrice] = useState('');
@@ -460,9 +465,41 @@ export const App = () => {
                     onChange={(e) => setOrderID(e.target.value)}
                 />
                 <button onClick={async () => {
-                    const confirmOrderSuccess = await API.confirmRestaurantOrder(orderID);
+                    const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(orderID, true);
                     alert(confirmOrderSuccess ? 'Order confirmed successfully!' : 'Order confirmation failed.');
                 }}>Confirm Order</button>
+                <button onClick={async () => {
+                    const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(orderID, false);
+                    alert(confirmOrderSuccess ? 'Order denied successfully!' : 'Order confirmation failed.');
+                }}>Deny Order</button>
+            </div>
+
+            <h1>Get Category by ID</h1>
+            <div>
+                <input
+                    type="number"
+                    placeholder="Category ID"
+                    value={getCategoryID}
+                    onChange={(e) => setGetCategoryID(e.target.value)}
+                />
+                <button onClick={async () => {
+                    const category = await API.getCategoryById(orderID);
+                    alert(category ? 'Category found!' : 'Category not found.');
+                }}>Get Category</button>
+            </div>
+
+            <h1>Get Dish by ID</h1>
+            <div>
+                <input
+                    type="number"
+                    placeholder="Dish ID"
+                    value={getDishID}
+                    onChange={(e) => setGetDishID(e.target.value)}
+                />
+                <button onClick={async () => {
+                    const dish = await API.getDishById(orderID);
+                    alert(dish ? 'Dish found!' : 'Dish not found.');
+                }}>Get Dish</button>
             </div>
 
             <h1>Delete Order</h1>
