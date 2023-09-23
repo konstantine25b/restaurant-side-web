@@ -531,7 +531,7 @@ export class PrestoAPI {
     // dishes - Dish[];
     async getCategoryById(id: number): Promise<Category | null> {
         try {
-            const response = await axios.get(`${this.baseUrl}/category/${id}`);
+            const response = await axios.get(`${this.baseUrl}/category/id/${id}`);
             return response.data;
         } catch (error) {
             console.log(error);
@@ -556,7 +556,7 @@ export class PrestoAPI {
     // available - boolean;
     async getDishById(id: number): Promise<Dish | null> {
         try {
-            const response = await axios.get(`${this.baseUrl}/dish/${id}`);
+            const response = await axios.get(`${this.baseUrl}/dish/id/${id}`);
             return response.data;
         } catch (error) {
 
