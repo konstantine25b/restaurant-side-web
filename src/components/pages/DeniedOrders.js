@@ -117,8 +117,8 @@ const TimeWarning = styled.div`
 `;
 
 const SeeDetailsButton = styled.button`
-  background-color: #007bff;
-  color: #fff;
+  background-color: white;
+  color: #007bff;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -126,10 +126,12 @@ const SeeDetailsButton = styled.button`
   cursor: pointer;
   margin-top: 10px;
   margin-bottom: 10px;
+  margin-right: 20px;
   transition: background-color 0.2s;
 
   &:hover {
     background-color: #0056b3;
+    color: white;
   }
 `;
 

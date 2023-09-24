@@ -228,7 +228,7 @@ function EachOrderDetails() {
              <OrderItem key={index}>
              <OrderItemDetails>
                <div>
-                 <strong>Item ID{index + 1}:</strong> {item.id}
+                 <strong>Item ID{index + 1}:</strong> {item}
                </div>
                <div>
                  <strong>Item Name{index + 1}:</strong>{" "}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { API } from "../../Processing/RestaurantAPI";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 
 const OrdersContainer = styled.div`
@@ -22,7 +22,13 @@ const OrderSection = styled.div`
   width: 85%;
   margin: 20px 0;
   margin-left: -8%;
-  border: 2px solid ${(props) => (props.orderState==0 ? "#FFC100" : props.orderState==1 ?   "#007bff" : "red")};
+  border: 2px solid
+    ${(props) =>
+      props.orderState == 0
+        ? "#FFC100"
+        : props.orderState == 1
+        ? "#007bff"
+        : "red"};
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
@@ -50,8 +56,6 @@ const OrderItem = styled.div`
 
   &:hover {
     transform: scale(1.02);
-   
-    
   }
 `;
 
@@ -135,7 +139,7 @@ const DeleteButton = styled.button`
   transition: background-color 0.2s;
 
   &:hover {
-    opacity: 0.8;/* Darker red on hover */
+    opacity: 0.8; /* Darker red on hover */
   }
 `;
 const DenyButton = styled.button`
@@ -151,6 +155,24 @@ const DenyButton = styled.button`
 
   &:hover {
     background-color: darkred;
+  }
+`;
+const SeeDetailsButton = styled.button`
+  background-color: white;
+  color: #007bff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 20px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #0056b3;
+    color: white;
   }
 `;
 
@@ -178,6 +200,7 @@ export default function AllOrders() {
   const [allOrders, setAllOrders] = useState();
   const { state } = useLocation();
   const { restName, restInfo } = state;
+  const navigate = useNavigate();
 
   let getOrders = async (id) => {
     const orders = await API.getRestaurantOrders(id);
@@ -189,9 +212,11 @@ export default function AllOrders() {
   }, [restInfo]);
 
   const orderConfirmation = async (id, orderToConfirm) => {
-    
-    const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(id,true);
-    console.log(id , confirmOrderSuccess)
+    const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
+      id,
+      true
+    );
+    console.log(id, confirmOrderSuccess);
     alert(
       confirmOrderSuccess
         ? "Order confirmed successfully!"
@@ -210,9 +235,11 @@ export default function AllOrders() {
     }
   };
   const orderDenying = async (id, orderToConfirm) => {
-    
-    const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(id,false);
-    console.log(id , confirmOrderSuccess)
+    const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
+      id,
+      false
+    );
+    console.log(id, confirmOrderSuccess);
     alert(
       confirmOrderSuccess
         ? "Order denied successfully!"
@@ -233,12 +260,12 @@ export default function AllOrders() {
 
   const [pendingOrders, setPendingOrders] = useState([]);
   const [confirmedOrders, setConfirmedOrders] = useState([]);
-  const [deniedOrders, setDeniedOrders] = useState([])
+  const [deniedOrders, setDeniedOrders] = useState([]);
 
   useEffect(() => {
     let confArr = [];
     let pendArr = [];
-    let denArr=[]
+    let denArr = [];
     // console.log(allOrders)
 
     for (let i = 0; i < allOrders?.length; i++) {
@@ -262,7 +289,7 @@ export default function AllOrders() {
           orderItems: orderItems,
           itemNotes: orderNotes,
         });
-      } else if(eachOrder.orderState === 1){
+      } else if (eachOrder.orderState === 1) {
         let orderItems = [];
         let orderNotes = [];
 
@@ -281,8 +308,7 @@ export default function AllOrders() {
           orderItems: orderItems,
           itemNotes: orderNotes,
         });
-      }
-      else{
+      } else {
         let orderItems = [];
         let orderNotes = [];
 
@@ -301,13 +327,12 @@ export default function AllOrders() {
           orderItems: orderItems,
           itemNotes: orderNotes,
         });
-
       }
     }
 
     setConfirmedOrders(confArr);
     setPendingOrders(pendArr);
-    setDeniedOrders(denArr)
+    setDeniedOrders(denArr);
 
     const timer = setInterval(() => {
       pendingOrders.forEach((order) => {
@@ -336,14 +361,14 @@ export default function AllOrders() {
     const currentTime = new Date();
     const lessThan1Hour = new Date(currentTime);
     lessThan1Hour.setHours(currentTime.getHours() - 1);
-  
+
     const pendingOrders = [];
     const pastOrders = [];
-  
+
     for (const order of orders) {
       const orderDate = new Date(order.orderRequestedDate);
-  
-      if (orderDate > currentTime) {
+
+      if (orderDate < currentTime) {
         pendingOrders.push(order);
       } else if (orderDate > lessThan1Hour) {
         pendingOrders.push(order);
@@ -351,13 +376,13 @@ export default function AllOrders() {
         pastOrders.push(order);
       }
     }
-  
+
     return [...pendingOrders, ...pastOrders];
   }
 
-  const sortedPendingOrders = groupOrdersByRequestedDate(pendingOrders);
-  const sortedConfirmedOrders = groupOrdersByRequestedDate(confirmedOrders);
-  const sortedDeniedOrders = groupOrdersByRequestedDate(deniedOrders);
+  const sortedPendingOrders = groupOrdersByRequestedDate(pendingOrders)?.reverse();
+  const sortedConfirmedOrders = groupOrdersByRequestedDate(confirmedOrders)?.reverse();
+  const sortedDeniedOrders = groupOrdersByRequestedDate(deniedOrders)?.reverse();
 
   const deleteOrder = async (deleteOrderID) => {
     const deleteOrderSuccess = await API.deleteRestaurantOrder(deleteOrderID);
@@ -366,18 +391,27 @@ export default function AllOrders() {
         ? "Order deleted successfully!"
         : "Order deletion failed."
     );
+    if (deleteOrderSuccess) {
+      const updatedPendingOrders = pendingOrders.filter(
+        (order) => order.id !== deleteOrderID
+      );
+      setPendingOrders(updatedPendingOrders);
+
+      
+    }
   };
 
   const handleDeleteOrder = (id) => {
-    const shouldDelete = window.confirm("Are you sure you want to delete this order?");
-    
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete this order?"
+    );
+
     if (shouldDelete) {
       // Perform the deletion
       deleteOrder(id);
-  
+
       // Update the pending orders list
-      const updatedPendingOrders = pendingOrders.filter((order) => order.id !== id);
-      setPendingOrders(updatedPendingOrders);
+      
     }
   };
   const confirmOrder = (id) => {
@@ -410,11 +444,11 @@ export default function AllOrders() {
   return (
     <OrdersContainer>
       <AllOrdersTitle>All Orders</AllOrdersTitle>
-      <OrderSection orderState = {0}>
-        <h2 style={{ color: "#FFC100" , marginBottom: 100}}>Pending Orders</h2>
+      <OrderSection orderState={0}>
+        <h2 style={{ color: "#FFC100", marginBottom: 100 }}>Pending Orders</h2>
         {sortedPendingOrders.map((order) => (
           <div key={order.id}>
-            <OrderItem 
+            <OrderItem
               isTimeWarning={
                 calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
                 calculateTimeLeft(order.orderRequestedDate).minutes <= 45
@@ -472,6 +506,24 @@ export default function AllOrders() {
               <OrderField orderState={0}>
                 {!order.orderState && (
                   <>
+                    <SeeDetailsButton
+                      onClick={() => {
+                        navigate("/HomePage/EachOrderDetails", {
+                          state: {
+                            orderItems: order.orderItems,
+                            totalPrice: order.totalPrice?.toFixed(2),
+                            userId: order?.userId,
+                            orderNotes: order.itemNotes,
+                            orderRequestedDate: order.orderRequestedDate,
+                            orderSent: new Date(
+                              order.orderSent
+                            ).toLocaleString(),
+                          },
+                        });
+                      }}
+                    >
+                      See Details
+                    </SeeDetailsButton>
                     <ConfirmButton onClick={() => confirmOrder(order.id)}>
                       Confirm Order
                     </ConfirmButton>
@@ -488,9 +540,11 @@ export default function AllOrders() {
           </div>
         ))}
       </OrderSection>
-      
+
       <OrderSection orderState={1}>
-        <h2 style={{ color: "#007bff" , marginBottom: 100}}>Confirmed Orders</h2>
+        <h2 style={{ color: "#007bff", marginBottom: 100 }}>
+          Confirmed Orders
+        </h2>
         {sortedConfirmedOrders.map((order) => (
           <div key={order.id}>
             <OrderItem
@@ -514,7 +568,7 @@ export default function AllOrders() {
                     ? new Date(order.orderSent).toLocaleString()
                     : ""}
                 </OrderField>
-                
+
                 <TimeWarning
                   isTimePassed={isTimePassed(order.orderRequestedDate)}
                 >
@@ -545,12 +599,28 @@ export default function AllOrders() {
               <UserId>
                 <strong>Customer ID:</strong> {order.userId}
               </UserId>
+              <SeeDetailsButton
+                onClick={() => {
+                  navigate("/HomePage/EachOrderDetails", {
+                    state: {
+                      orderItems: order.orderItems,
+                      totalPrice: order.totalPrice?.toFixed(2),
+                      userId: order?.userId,
+                      orderNotes: order.itemNotes,
+                      orderRequestedDate: order.orderRequestedDate,
+                      orderSent: new Date(order.orderSent).toLocaleString(),
+                    },
+                  });
+                }}
+              >
+                See Details
+              </SeeDetailsButton>
             </OrderItem>
           </div>
         ))}
       </OrderSection>
-      <OrderSection orderState = {2}>
-        <h2 style={{ color: "red" , marginBottom: 100}}>Denied Orders</h2>
+      <OrderSection orderState={2}>
+        <h2 style={{ color: "red", marginBottom: 100 }}>Denied Orders</h2>
         {sortedDeniedOrders.map((order) => (
           <div key={order.id}>
             <OrderItem
@@ -574,7 +644,7 @@ export default function AllOrders() {
                     ? new Date(order.orderSent).toLocaleString()
                     : ""}
                 </OrderField>
-                
+
                 <TimeWarning
                   isTimePassed={isTimePassed(order.orderRequestedDate)}
                 >
@@ -605,6 +675,22 @@ export default function AllOrders() {
               <UserId>
                 <strong>Customer ID:</strong> {order.userId}
               </UserId>
+              <SeeDetailsButton
+                onClick={() => {
+                  navigate("/HomePage/EachOrderDetails", {
+                    state: {
+                      orderItems: order.orderItems,
+                      totalPrice: order.totalPrice?.toFixed(2),
+                      userId: order?.userId,
+                      orderNotes: order.itemNotes,
+                      orderRequestedDate: order.orderRequestedDate,
+                      orderSent: new Date(order.orderSent).toLocaleString(),
+                    },
+                  });
+                }}
+              >
+                See Details
+              </SeeDetailsButton>
             </OrderItem>
           </div>
         ))}
