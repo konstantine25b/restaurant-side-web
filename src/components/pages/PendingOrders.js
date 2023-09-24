@@ -24,7 +24,7 @@ const OrderSection = styled.div`
 `;
 
 const OrderItem = styled.div`
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   font-size: 18px;
   border: 1px solid ${(props) => (props.isTimePassed ? "red" : "#ccc")};
   padding: 10px;
@@ -41,6 +41,8 @@ const OrderItem = styled.div`
 
   &:hover {
     transform: scale(1.02);
+  
+    
   }
 `;
 const ConfirmButton = styled.button`
@@ -323,7 +325,7 @@ export default function AllOrders() {
   return (
     <OrdersContainer>
       <OrderSection isConfirmed>
-        <h2 style={{ color: "#FFC100" }}>Pending Orders</h2>
+        <h2 style={{ color: "#FFC100", marginBottom: 100 }}>Pending Orders</h2>
         {sortedPendingOrders.map((order) => (
           <div key={order.id}>
             <OrderItem

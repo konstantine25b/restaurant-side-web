@@ -33,7 +33,7 @@ const OrderSection = styled.div`
 `;
 
 const OrderItem = styled.div`
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   font-size: 18px;
   border: 1px solid ${(props) => (props.isTimePassed ? "red" : "#ccc")};
   padding: 10px;
@@ -50,6 +50,8 @@ const OrderItem = styled.div`
 
   &:hover {
     transform: scale(1.02);
+   
+    
   }
 `;
 
@@ -82,7 +84,7 @@ const OrderItemContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 20px;
   margin-bottom: 10px;
 `;
 
@@ -334,7 +336,7 @@ export default function AllOrders() {
     <OrdersContainer>
       <AllOrdersTitle>All Orders</AllOrdersTitle>
       <OrderSection orderState>
-        <h2 style={{ color: "#FFC100" }}>Pending Orders</h2>
+        <h2 style={{ color: "#FFC100" , marginBottom: 100}}>Pending Orders</h2>
         {sortedPendingOrders.map((order) => (
           <div key={order.id}>
             <OrderItem 
@@ -409,7 +411,7 @@ export default function AllOrders() {
         ))}
       </OrderSection>
       <OrderSection>
-        <h2 style={{ color: "#007bff" }}>Confirmed Orders</h2>
+        <h2 style={{ color: "#007bff" , marginBottom: 100}}>Confirmed Orders</h2>
         {sortedConfirmedOrders.map((order) => (
           <div key={order.id}>
             <OrderItem

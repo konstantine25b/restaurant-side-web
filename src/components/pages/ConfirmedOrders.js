@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { API } from "../../Processing/RestaurantAPI";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
+
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -23,7 +24,7 @@ const OrderSection = styled.div`
   cursor: pointer;
 `;
 const OrderItem = styled.div`
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   font-size: 18px;
   border: 1px solid ${(props) => (props.isTimePassed ? "red" : "#ccc")};
   padding: 10px;
@@ -40,6 +41,8 @@ const OrderItem = styled.div`
 
   &:hover {
     transform: scale(1.02);
+   
+    
   }
 `;
 
@@ -110,6 +113,23 @@ const TimeWarning = styled.div`
   margin-top: 5px;
 `;
 
+const SeeDetailsButton = styled.button`
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
 function isTimePassed(requestedDate) {
   const currentTime = new Date();
   return currentTime > new Date(requestedDate);
@@ -134,6 +154,7 @@ export default function AllOrders() {
   const [allOrders, setAllOrders] = useState();
   const { state } = useLocation();
   const { restName, restInfo } = state;
+  const navigate = useNavigate();
 
   let getOrders = async (id) => {
     const orders = await API.getRestaurantOrders(id);
@@ -268,7 +289,7 @@ export default function AllOrders() {
   return (
     <OrdersContainer>
       <OrderSection>
-        <h2 style={{ color: "#007bff" }}>Confirmed Orders</h2>
+        <h2 style={{ color: "#007bff" , marginBottom: 100 }}>Confirmed Orders</h2>
         {sortedConfirmedOrders.map((order) => (
           <div key={order.id}>
             <OrderItem
@@ -306,7 +327,7 @@ export default function AllOrders() {
                       }s`}
                 </TimeWarning>
               </OrderDetails>
-              <OrderItemContainer>
+              {/* <OrderItemContainer>
                 {order.orderItems.map((item, index) => (
                   <OrderItemDetails key={index}>
                     <strong>Item {index + 1}:</strong> {item}
@@ -315,13 +336,23 @@ export default function AllOrders() {
                     </OrderItemNote>
                   </OrderItemDetails>
                 ))}
-              </OrderItemContainer>
+              </OrderItemContainer> */}
               <TotalPrice>
-                <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
+                <strong>Total Price:</strong> ₾{order.totalPrice?.toFixed(2)}
               </TotalPrice>
-              <UserId>
+              <SeeDetailsButton
+                onClick={() => {
+                  navigate("/HomePage/EachOrderDetails", {
+                    state: { orderItems: order.orderItems  , totalPrice:order.totalPrice?.toFixed(2) ,userId:order?.userId , orderNotes: order.itemNotes,
+                     orderRequestedDate: order.orderRequestedDate, orderSent :new Date(order.orderSent).toLocaleString() },
+                  });
+                }}
+              >
+                See Details
+              </SeeDetailsButton>
+              {/* <UserId>
                 <strong>Customer ID:</strong> {order.userId}
-              </UserId>
+              </UserId> */}
             </OrderItem>
           </div>
         ))}
