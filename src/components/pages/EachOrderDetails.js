@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { API } from "../../Processing/RestaurantAPI";
 
 const OrderDetailsContainer = styled.div`
   display: flex;
@@ -108,6 +109,19 @@ const BackButton = styled.div`
     opacity: 0.8;
   }
 `;
+const OrderItemImage = styled.img`
+  width: 50px;
+  height: 50px;
+  border: 1px solid black; // You can adjust the border color
+ 
+  object-fit: cover;
+  transition: transform 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.1); // Add a scaling effect on hover
+  }
+`;
 
 function EachOrderDetails() {
   const { state } = useLocation();
@@ -120,20 +134,23 @@ function EachOrderDetails() {
     orderRequestedDate,
   } = state;
   const navigate = useNavigate();
+  const [fetchedDishes, setFetchedDishes] = useState([]);
 
   const requestedTime = new Date(orderRequestedDate);
   // Calculate time remaining till orderRequestedDate
   const calculateTimeRemaining = () => {
     const currentTime = new Date();
 
-    console.log(requestedTime);
+    // console.log(requestedTime);
+
+    
 
     if (isNaN(requestedTime)) {
       return "Invalid Date"; // Handle invalid date
     }
 
     const timeDiff = requestedTime - currentTime;
-    console.log(timeDiff);
+    // console.log(timeDiff);
 
     if (timeDiff <= 0) {
       // If the requested time has already passed, return "Time has passed"
@@ -148,6 +165,24 @@ function EachOrderDetails() {
   };
 
   const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining());
+
+  async function getDishesArr() {
+    
+    const fetchedDishes = [];
+  
+    for (let i = 0; i < orderItems.length; i++) {
+      const dish = await API.getDishById(orderItems[i]);
+      fetchedDishes.push(dish);
+      setFetchedDishes([...fetchedDishes]); // Update the state with the new dish
+    }
+    console.log(fetchedDishes)
+  }
+
+  
+  useEffect(()=>{
+    getDishesArr();
+    
+  },[orderItems])
 
   useEffect(() => {
     // Recalculate and update time remaining every second
@@ -181,7 +216,7 @@ function EachOrderDetails() {
                 : timeRemaining.startsWith("0:") ||
                   timeRemaining.startsWith("00:")
                 ? "warning"
-                : "blue"
+                : "black"
             }
           >
             Time Remaining: {timeRemaining}
@@ -190,19 +225,26 @@ function EachOrderDetails() {
 
         <OrderItemContainer>
           {orderItems.map((item, index) => (
-            <OrderItem key={index}>
-              <OrderItemDetails>
-                <div>
-                  <strong>Item ID{index + 1}:</strong> {item.id}
-                </div>
-                <div>
-                  <strong>Item Name{index + 1}:</strong> {item.name}
-                </div>
-                <OrderItemNote>
-                  <strong>Notes:</strong> {orderNotes[index]}
-                </OrderItemNote>
-              </OrderItemDetails>
-            </OrderItem>
+             <OrderItem key={index}>
+             <OrderItemDetails>
+               <div>
+                 <strong>Item ID{index + 1}:</strong> {item.id}
+               </div>
+               <div>
+                 <strong>Item Name{index + 1}:</strong>{" "}
+                 {fetchedDishes[index]?.title}
+               </div>
+               <OrderItemNote>
+                 <strong>Notes:</strong> {orderNotes[index]}
+               </OrderItemNote>
+             </OrderItemDetails>
+             <div>
+               <OrderItemImage
+                 src={fetchedDishes[index]?.image}
+                 alt={fetchedDishes[index]?.title}
+               />
+             </div>
+           </OrderItem>
           ))}
         </OrderItemContainer>
         <TimeContainer>

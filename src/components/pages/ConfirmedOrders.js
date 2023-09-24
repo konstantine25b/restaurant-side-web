@@ -14,12 +14,12 @@ const OrderSection = styled.div`
   width: 85%;
   margin: 20px 0;
   margin-left: -8%;
-  border: 2px solid ${(props) => (props.isConfirmed ? "#FFC100" : "#007bff")};
+  border: 2px solid ${(props) => (props.orderState ? "#FFC100" : "#007bff")};
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
   background-color: ${(props) =>
-    props.isConfirmed ? "#f5f5f5" : "transparent"};
+    props.orderState ? "#f5f5f5" : "transparent"};
   transition: transform 0.2s;
   cursor: pointer;
 `;
@@ -68,7 +68,7 @@ const OrderDetails = styled.div`
 `;
 
 const OrderField = styled.div`
-  flex: ${(props) => (props.isConfirmed ? "2" : "1")};
+  flex: ${(props) => (props.orderState ? "2" : "1")};
 `;
 
 const OrderItemContainer = styled.div`
@@ -165,25 +165,25 @@ export default function AllOrders() {
     getOrders(restInfo.id);
   }, [restInfo]);
 
-  const orderConfirmation = async (id, orderToConfirm) => {
-    const confirmOrderSuccess = await API.confirmRestaurantOrder(id);
-    alert(
-      confirmOrderSuccess
-        ? "Order confirmed successfully!"
-        : "Order confirmation failed."
-    );
-    if (confirmOrderSuccess) {
-      const updatedPendingOrders = pendingOrders.filter(
-        (order) => order.id !== id
-      );
-      setPendingOrders(updatedPendingOrders);
+  // const orderConfirmation = async (id, orderToConfirm) => {
+  //   const confirmOrderSuccess = await API.confirmRestaurantOrder(id);
+  //   alert(
+  //     confirmOrderSuccess
+  //       ? "Order confirmed successfully!"
+  //       : "Order confirmation failed."
+  //   );
+  //   if (confirmOrderSuccess) {
+  //     const updatedPendingOrders = pendingOrders.filter(
+  //       (order) => order.id !== id
+  //     );
+  //     setPendingOrders(updatedPendingOrders);
 
-      setConfirmedOrders((prevConfirmedOrders) => [
-        ...prevConfirmedOrders,
-        orderToConfirm,
-      ]);
-    }
-  };
+  //     setConfirmedOrders((prevConfirmedOrders) => [
+  //       ...prevConfirmedOrders,
+  //       orderToConfirm,
+  //     ]);
+  //   }
+  // };
 
   const [pendingOrders, setPendingOrders] = useState([]);
   const [confirmedOrders, setConfirmedOrders] = useState([]);
@@ -194,7 +194,7 @@ export default function AllOrders() {
 
     for (let i = 0; i < allOrders?.length; i++) {
       let eachOrder = allOrders[i];
-      if (eachOrder.isConfirmed === false) {
+      if (eachOrder.orderState === 0) {
         let orderItems = [];
         let orderNotes = [];
 
@@ -209,11 +209,11 @@ export default function AllOrders() {
           orderSent: eachOrder.orderSent,
           totalPrice: eachOrder.totalPrice,
           userId: eachOrder.userId,
-          isConfirmed: eachOrder.isConfirmed,
+          orderState: eachOrder.orderState,
           orderItems: orderItems,
           itemNotes: orderNotes,
         });
-      } else {
+      } else if(eachOrder.orderState === 1){
         let orderItems = [];
         let orderNotes = [];
 
@@ -228,7 +228,7 @@ export default function AllOrders() {
           orderSent: eachOrder.orderSent,
           totalPrice: eachOrder.totalPrice,
           userId: eachOrder.userId,
-          isConfirmed: eachOrder.isConfirmed,
+          orderState: eachOrder.orderState,
           orderItems: orderItems,
           itemNotes: orderNotes,
         });
@@ -300,14 +300,14 @@ export default function AllOrders() {
               isTimePassed={isTimePassed(order.orderRequestedDate)}
             >
               <OrderDetails>
-                <OrderField isConfirmed={true}>
+                <OrderField orderState={true}>
                   <strong>Order ID:</strong> {order.id}
                 </OrderField>
-                <OrderField isConfirmed={true}>
+                <OrderField orderState={true}>
                   <strong>Order Request Date:</strong>{" "}
                   {new Date(order.orderRequestedDate).toLocaleString()}
                 </OrderField>
-                <OrderField isConfirmed={true}>
+                <OrderField orderState={true}>
                   <strong>Order Sent Date:</strong>{" "}
                   {order.orderSent
                     ? new Date(order.orderSent).toLocaleString()

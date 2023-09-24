@@ -25,6 +25,7 @@ import PendingOrders from "./components/pages/PendingOrders";
 import ConfirmedOrders from "./components/pages/ConfirmedOrders";
 import AllOrders from "./components/pages/AllOrders";
 import EachOrderDetails from "./components/pages/EachOrderDetails";
+import DeniedOrders from "./components/pages/DeniedOrders";
 
 
 
@@ -59,6 +60,7 @@ const router = createBrowserRouter(
 
         <Route path="/HomePage/PendingOrders" element={<PendingOrders/>} />
         <Route path="/HomePage/ConfirmedOrders" element={<ConfirmedOrders/>} />
+        <Route path="/HomePage/DeniedOrders" element={<DeniedOrders/>} />
         <Route path="/HomePage/AllOrders" element={<AllOrders/>} />
         <Route path="/HomePage/EachOrderDetails" element={<EachOrderDetails/>} />
 

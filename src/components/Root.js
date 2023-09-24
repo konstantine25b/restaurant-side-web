@@ -200,6 +200,12 @@ export default function Root() {
                   restName: restName,
                   restInfo: restInfo
                 },
+                {
+                  Title: "Denied Orders",
+                  Name: "DeniedOrders",
+                  restName: restName,
+                  restInfo: restInfo
+                },
                
                
               ]}

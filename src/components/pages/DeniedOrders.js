@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { API } from "../../Processing/RestaurantAPI";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 
 const OrdersContainer = styled.div`
@@ -13,7 +13,13 @@ const OrderSection = styled.div`
   width: 85%;
   margin: 20px 0;
   margin-left: -8%;
-  border: 2px solid ${(props) => (props.orderState==0 ? "#FFC100" : props.orderState==1 ?   "#007bff" : "red")};
+  border: 2px solid
+    ${(props) =>
+      props.orderState == 0
+        ? "#FFC100"
+        : props.orderState == 1
+        ? "#007bff"
+        : "red"};
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
@@ -22,7 +28,6 @@ const OrderSection = styled.div`
   transition: transform 0.2s;
   cursor: pointer;
 `;
-
 const OrderItem = styled.div`
   margin-bottom: 30px;
   font-size: 18px;
@@ -41,10 +46,9 @@ const OrderItem = styled.div`
 
   &:hover {
     transform: scale(1.02);
-  
-    
   }
 `;
+
 const ConfirmButton = styled.button`
   background-color: #007bff;
   color: #fff;
@@ -104,43 +108,29 @@ const UserId = styled.div`
   margin-top: 5px;
   margin-bottom: 15px;
 `;
-const DeleteButton = styled.button`
-  background-color: black; /* Red color */
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  margin-left: 20px;
-  margin-top: 10px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-
-  &:hover {
-    opacity: 0.8;/* Darker red on hover */
-  }
-`;
-const DenyButton = styled.button`
-  background-color: red;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-left: 20px;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: darkred;
-  }
-`;
 
 const TimeWarning = styled.div`
   color: ${(props) =>
     props.isTimePassed ? "red" : props.isTimeWarning ? "orange" : "inherit"};
   font-size: 14px;
   margin-top: 5px;
+`;
+
+const SeeDetailsButton = styled.button`
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
 `;
 
 function isTimePassed(requestedDate) {
@@ -162,11 +152,11 @@ function calculateTimeLeft(requestedDate) {
     seconds: seconds,
   };
 }
-
-export default function AllOrders() {
+export default function DeniedOrders() {
   const [allOrders, setAllOrders] = useState();
   const { state } = useLocation();
   const { restName, restInfo } = state;
+  const navigate = useNavigate();
 
   let getOrders = async (id) => {
     const orders = await API.getRestaurantOrders(id);
@@ -177,35 +167,14 @@ export default function AllOrders() {
     getOrders(restInfo.id);
   }, [restInfo]);
 
-  const orderConfirmation = async (id, orderToConfirm) => {
-    
-    const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(id,true);
-    console.log(id , confirmOrderSuccess)
-    alert(
-      confirmOrderSuccess
-        ? "Order confirmed successfully!"
-        : "Order confirmation failed."
-    );
-    if (confirmOrderSuccess) {
-      const updatedPendingOrders = pendingOrders.filter(
-        (order) => order.id !== id
-      );
-      setPendingOrders(updatedPendingOrders);
-
-      setConfirmedOrders((prevConfirmedOrders) => [
-        ...prevConfirmedOrders,
-        orderToConfirm,
-      ]);
-    }
-  };
   const [pendingOrders, setPendingOrders] = useState([]);
   const [confirmedOrders, setConfirmedOrders] = useState([]);
-  const [deniedOrders, setDeniedOrders] = useState([])
+  const [deniedOrders, setDeniedOrders] = useState([]);
 
   useEffect(() => {
     let confArr = [];
     let pendArr = [];
-    let denArr=[]
+    let denArr = [];
     // console.log(allOrders)
 
     for (let i = 0; i < allOrders?.length; i++) {
@@ -229,7 +198,7 @@ export default function AllOrders() {
           orderItems: orderItems,
           itemNotes: orderNotes,
         });
-      } else if(eachOrder.orderState === 1){
+      } else if (eachOrder.orderState === 1) {
         let orderItems = [];
         let orderNotes = [];
 
@@ -248,8 +217,7 @@ export default function AllOrders() {
           orderItems: orderItems,
           itemNotes: orderNotes,
         });
-      }
-      else{
+      } else {
         let orderItems = [];
         let orderNotes = [];
 
@@ -268,13 +236,12 @@ export default function AllOrders() {
           orderItems: orderItems,
           itemNotes: orderNotes,
         });
-
       }
     }
 
     setConfirmedOrders(confArr);
     setPendingOrders(pendArr);
-    setDeniedOrders(denArr)
+    setDeniedOrders(denArr);
 
     const timer = setInterval(() => {
       pendingOrders.forEach((order) => {
@@ -298,77 +265,17 @@ export default function AllOrders() {
     seconds: 0,
   });
 
-  const deleteOrder = async (deleteOrderID) => {
-    const deleteOrderSuccess = await API.deleteRestaurantOrder(deleteOrderID);
-    alert(
-      deleteOrderSuccess
-        ? "Order deleted successfully!"
-        : "Order deletion failed."
-    );
-  };
-
-  const handleDeleteOrder = (id) => {
-    const shouldDelete = window.confirm(
-      "Are you sure you want to delete this order?"
-    );
-
-    if (shouldDelete) {
-      // Perform the deletion
-      deleteOrder(id);
-
-      // Update the pending orders list
-      const updatedPendingOrders = pendingOrders.filter(
-        (order) => order.id !== id
-      );
-      setPendingOrders(updatedPendingOrders);
-    }
-  };
-
-  const confirmOrder = (id) => {
-    const orderToConfirm = pendingOrders.find((order) => order.id === id);
-
-    if (orderToConfirm) {
-      const confirmConfirmation = window.confirm(
-        "Are you sure you want to confirm this order?"
-      );
-
-      if (confirmConfirmation) {
-        orderConfirmation(id, orderToConfirm);
-      }
-    }
-  };
-  const orderDenying = async (id, orderToConfirm) => {
-    
-    const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(id,false);
-    console.log(id , confirmOrderSuccess)
-    alert(
-      confirmOrderSuccess
-        ? "Order denied successfully!"
-        : "Order denying failed."
-    );
-    if (confirmOrderSuccess) {
-      const updatedPendingOrders = pendingOrders.filter(
-        (order) => order.id !== id
-      );
-      setPendingOrders(updatedPendingOrders);
-
-      setDeniedOrders((prevConfirmedOrders) => [
-        ...prevConfirmedOrders,
-        orderToConfirm,
-      ]);
-    }
-  };
   function groupOrdersByRequestedDate(orders) {
     const currentTime = new Date();
     const lessThan1Hour = new Date(currentTime);
     lessThan1Hour.setHours(currentTime.getHours() - 1);
-  
+
     const pendingOrders = [];
     const pastOrders = [];
-  
+
     for (const order of orders) {
       const orderDate = new Date(order.orderRequestedDate);
-  
+
       if (orderDate > currentTime) {
         pendingOrders.push(order);
       } else if (orderDate > lessThan1Hour) {
@@ -377,58 +284,42 @@ export default function AllOrders() {
         pastOrders.push(order);
       }
     }
-  
+
     return [...pendingOrders, ...pastOrders];
   }
-  const denyOrder = (id) => {
-    const orderToConfirm = pendingOrders.find((order) => order.id === id);
 
-    if (orderToConfirm) {
-      const confirmConfirmation = window.confirm(
-        "Are you sure you want to deny this order?"
-      );
-
-      if (confirmConfirmation) {
-        orderDenying(id, orderToConfirm);
-      }
-    }
-  };
-
-  const sortedPendingOrders = groupOrdersByRequestedDate(pendingOrders);
-  
+  const sortedDeniedOrders = groupOrdersByRequestedDate(deniedOrders);
 
   return (
     <OrdersContainer>
-      <OrderSection orderState = {0}>
-        <h2 style={{ color: "#FFC100" , marginBottom: 100}}>Pending Orders</h2>
-        {sortedPendingOrders.map((order) => (
+      <OrderSection orderState = {2}>
+        <h2 style={{ color: "red", marginBottom: 100 }}>
+          Denied Orders
+        </h2>
+        {sortedDeniedOrders.map((order) => (
           <div key={order.id}>
-            <OrderItem 
+            <OrderItem
               isTimeWarning={
                 calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                calculateTimeLeft(order.orderRequestedDate).minutes <= 45
+                calculateTimeLeft(order.orderRequestedDate).minutes <= 60
               }
               isTimePassed={isTimePassed(order.orderRequestedDate)}
             >
               <OrderDetails>
-                <OrderField orderState={0}>
+                <OrderField orderState={true}>
                   <strong>Order ID:</strong> {order.id}
                 </OrderField>
-                <OrderField orderState={0}>
+                <OrderField orderState={true}>
                   <strong>Order Request Date:</strong>{" "}
                   {new Date(order.orderRequestedDate).toLocaleString()}
                 </OrderField>
-                <OrderField orderState={0}>
+                <OrderField orderState={true}>
                   <strong>Order Sent Date:</strong>{" "}
                   {order.orderSent
                     ? new Date(order.orderSent).toLocaleString()
                     : ""}
                 </OrderField>
                 <TimeWarning
-                  isTimeWarning={
-                    calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                    calculateTimeLeft(order.orderRequestedDate).minutes <= 60
-                  }
                   isTimePassed={isTimePassed(order.orderRequestedDate)}
                 >
                   {isTimePassed(order.orderRequestedDate)
@@ -453,26 +344,27 @@ export default function AllOrders() {
                 ))}
               </OrderItemContainer> */}
               <TotalPrice>
-                <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
+                <strong>Total Price:</strong> ₾{order.totalPrice?.toFixed(2)}
               </TotalPrice>
-              <UserId>
+              <SeeDetailsButton
+                onClick={() => {
+                  navigate("/HomePage/EachOrderDetails", {
+                    state: {
+                      orderItems: order.orderItems,
+                      totalPrice: order.totalPrice?.toFixed(2),
+                      userId: order?.userId,
+                      orderNotes: order.itemNotes,
+                      orderRequestedDate: order.orderRequestedDate,
+                      orderSent: new Date(order.orderSent).toLocaleString(),
+                    },
+                  });
+                }}
+              >
+                See Details
+              </SeeDetailsButton>
+              {/* <UserId>
                 <strong>Customer ID:</strong> {order.userId}
-              </UserId>
-              <OrderField orderState={0}>
-                {!order.orderState && (
-                  <>
-                    <ConfirmButton onClick={() => confirmOrder(order.id)}>
-                      Confirm Order
-                    </ConfirmButton>
-                    <DenyButton onClick={() => denyOrder(order.id)}>
-                      Deny Order
-                    </DenyButton>
-                    <DeleteButton onClick={() => handleDeleteOrder(order.id)}>
-                      Delete Order
-                    </DeleteButton>
-                  </>
-                )}
-              </OrderField>
+              </UserId> */}
             </OrderItem>
           </div>
         ))}
