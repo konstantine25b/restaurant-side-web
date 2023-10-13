@@ -48,10 +48,46 @@ interface OrderDataResponse extends OrderData {
 }
 
 export class RestaurantAPI extends PrestoAPI{
-        async getRestaurantOrders(id: number): Promise<OrderData[]> {
+    async getRestaurantOrders(id: number): Promise<OrderData[]> {
         await this.loginIfNeeded();
         try {
             const response = await axios.get(`${this.baseUrl}/restaurant/${id}/orders`, {
+                headers: { Authorization: `Bearer ${this.token}` },
+            });
+            return response.data;
+        } catch (error) {
+            return [];
+        }
+    }
+
+    async getRestaurantOrdersConfirmed(id: number): Promise<OrderData[]> {
+        await this.loginIfNeeded();
+        try {
+            const response = await axios.get(`${this.baseUrl}/restaurant/${id}/orders/confirmed`, {
+                headers: { Authorization: `Bearer ${this.token}` },
+            });
+            return response.data;
+        } catch (error) {
+            return [];
+        }
+    }
+
+    async getRestaurantOrdersPending(id: number): Promise<OrderData[]> {
+        await this.loginIfNeeded();
+        try {
+            const response = await axios.get(`${this.baseUrl}/restaurant/${id}/orders/pending`, {
+                headers: { Authorization: `Bearer ${this.token}` },
+            });
+            return response.data;
+        } catch (error) {
+            return [];
+        }
+    }
+
+    async getRestaurantOrdersDenied(id: number): Promise<OrderData[]> {
+        await this.loginIfNeeded();
+        try {
+            const response = await axios.get(`${this.baseUrl}/restaurant/${id}/orders/denied`, {
                 headers: { Authorization: `Bearer ${this.token}` },
             });
             return response.data;
