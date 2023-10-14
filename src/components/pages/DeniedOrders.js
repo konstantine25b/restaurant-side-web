@@ -74,39 +74,11 @@ const OrderField = styled.div`
   flex: ${(props) => (props.orderState ? "2" : "1")};
 `;
 
-const OrderItemContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-`;
-
-const OrderItemDetails = styled.div`
-  flex: 1;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-`;
-
-const OrderItemNote = styled.div`
-  font-size: 14px;
-  color: #888;
-  margin-top: 5px;
-`;
-
 const TotalPrice = styled.div`
   font-size: 18px;
   font-weight: bold;
   padding: 5px;
   margin-top: 10px;
-`;
-
-const UserId = styled.div`
-  font-size: 16px;
-  padding: 5px;
-  margin-top: 5px;
-  margin-bottom: 15px;
 `;
 
 const TimeWarning = styled.div`
@@ -160,93 +132,48 @@ export default function DeniedOrders() {
   const { restName, restInfo } = state;
   const navigate = useNavigate();
 
-  let getOrders = async (id) => {
-    const orders = await API.getRestaurantOrders(id);
+  let getDeniedOrders = async (id) => {
+    const orders = await API.getRestaurantOrdersDenied(id);
     setAllOrders(orders);
   };
 
   useEffect(() => {
-    getOrders(restInfo.id);
+    // getOrders(restInfo?.id);
+    getDeniedOrders(restInfo?.id);
   }, [restInfo]);
 
-  const [pendingOrders, setPendingOrders] = useState([]);
-  const [confirmedOrders, setConfirmedOrders] = useState([]);
-  const [deniedOrders, setDeniedOrders] = useState([]);
+  const [deniedOrders1, setDeniedOrders1] = useState([]);
 
   useEffect(() => {
-    let confArr = [];
-    let pendArr = [];
     let denArr = [];
-    // console.log(allOrders)
 
     for (let i = 0; i < allOrders?.length; i++) {
       let eachOrder = allOrders[i];
-      if (eachOrder.orderState === 0) {
-        let orderItems = [];
-        let orderNotes = [];
 
-        for (let j = 0; j < eachOrder.orderItems.length; j++) {
-          orderItems.push(eachOrder.orderItems[j].dish_id);
-          orderNotes.push(eachOrder.orderItems[j].notes);
-        }
+      let orderItems = [];
+      let orderNotes = [];
 
-        pendArr.push({
-          id: eachOrder.id,
-          orderRequestedDate: eachOrder.orderRequestedDate,
-          orderSent: eachOrder.orderSent,
-          totalPrice: eachOrder.totalPrice,
-          userId: eachOrder.userId,
-          orderState: eachOrder.orderState,
-          orderItems: orderItems,
-          itemNotes: orderNotes,
-        });
-      } else if (eachOrder.orderState === 1) {
-        let orderItems = [];
-        let orderNotes = [];
-
-        for (let j = 0; j < eachOrder.orderItems.length; j++) {
-          orderItems.push(eachOrder.orderItems[j].dish_id);
-          orderNotes.push(eachOrder.orderItems[j].notes);
-        }
-
-        confArr.push({
-          id: eachOrder.id,
-          orderRequestedDate: eachOrder.orderRequestedDate,
-          orderSent: eachOrder.orderSent,
-          totalPrice: eachOrder.totalPrice,
-          userId: eachOrder.userId,
-          orderState: eachOrder.orderState,
-          orderItems: orderItems,
-          itemNotes: orderNotes,
-        });
-      } else {
-        let orderItems = [];
-        let orderNotes = [];
-
-        for (let j = 0; j < eachOrder.orderItems.length; j++) {
-          orderItems.push(eachOrder.orderItems[j].dish_id);
-          orderNotes.push(eachOrder.orderItems[j].notes);
-        }
-
-        denArr.push({
-          id: eachOrder.id,
-          orderRequestedDate: eachOrder.orderRequestedDate,
-          orderSent: eachOrder.orderSent,
-          totalPrice: eachOrder.totalPrice,
-          userId: eachOrder.userId,
-          orderState: eachOrder.orderState,
-          orderItems: orderItems,
-          itemNotes: orderNotes,
-        });
+      for (let j = 0; j < eachOrder.orderItems.length; j++) {
+        orderItems.push(eachOrder.orderItems[j].dish_id);
+        orderNotes.push(eachOrder.orderItems[j].notes);
       }
+
+      denArr.push({
+        id: eachOrder.id,
+        orderRequestedDate: eachOrder.orderRequestedDate,
+        orderSent: eachOrder.orderSent,
+        totalPrice: eachOrder.totalPrice,
+        userId: eachOrder.userId,
+        orderState: eachOrder.orderState,
+        orderItems: orderItems,
+        itemNotes: orderNotes,
+      });
     }
 
-    setConfirmedOrders(confArr);
-    setPendingOrders(pendArr);
-    setDeniedOrders(denArr);
+    setDeniedOrders1(denArr);
 
     const timer = setInterval(() => {
-      pendingOrders.forEach((order) => {
+      deniedOrders1.forEach((order) => {
         // Calculate remaining time for each pending order
         const timeLeft = calculateTimeLeft(order.orderRequestedDate);
 
@@ -255,7 +182,7 @@ export default function DeniedOrders() {
       });
     }, 1000);
 
-    // Clean up the timer when the component unmounts
+    //  Clean up the timer when the component unmounts
     return () => {
       clearInterval(timer);
     };
@@ -290,14 +217,12 @@ export default function DeniedOrders() {
     return [...pendingOrders, ...pastOrders];
   }
 
-  const sortedDeniedOrders = groupOrdersByRequestedDate(deniedOrders);
+  const sortedDeniedOrders = groupOrdersByRequestedDate(deniedOrders1);
 
   return (
     <OrdersContainer>
-      <OrderSection orderState = {2}>
-        <h2 style={{ color: "red", marginBottom: 100 }}>
-          Denied Orders
-        </h2>
+      <OrderSection orderState={2}>
+        <h2 style={{ color: "red", marginBottom: 100 }}>Denied Orders</h2>
         {sortedDeniedOrders.map((order) => (
           <div key={order.id}>
             <OrderItem

@@ -74,27 +74,6 @@ const OrderField = styled.div`
   flex: ${(props) => (props.orderState ? "2" : "1")};
 `;
 
-const OrderItemContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-`;
-
-const OrderItemDetails = styled.div`
-  flex: 1;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-`;
-
-const OrderItemNote = styled.div`
-  font-size: 14px;
-  color: #888;
-  margin-top: 5px;
-`;
-
 const TotalPrice = styled.div`
   font-size: 18px;
   font-weight: bold;
@@ -192,14 +171,15 @@ export default function AllOrders() {
   const { restName, restInfo } = state;
   const navigate = useNavigate();
 
-  let getOrders = async (id) => {
-    const orders = await API.getRestaurantOrders(id);
+  let getPendingOrders = async (id) => {
+    const orders = await API.getRestaurantOrdersPending(id);
     setAllOrders(orders);
   };
 
   useEffect(() => {
-    getOrders(restInfo.id);
+    getPendingOrders(restInfo?.id);
   }, [restInfo]);
+  const [pendingOrders1, setPendingOrders1] = useState([]);
 
   const orderConfirmation = async (id, orderToConfirm) => {
     const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
@@ -213,95 +193,48 @@ export default function AllOrders() {
         : "Order confirmation failed."
     );
     if (confirmOrderSuccess) {
-      const updatedPendingOrders = pendingOrders.filter(
+      const updatedPendingOrders = pendingOrders1.filter(
         (order) => order.id !== id
       );
-      setPendingOrders(updatedPendingOrders);
+      setPendingOrders1(updatedPendingOrders);
 
-      setConfirmedOrders((prevConfirmedOrders) => [
-        ...prevConfirmedOrders,
-        orderToConfirm,
-      ]);
+      // setConfirmedOrders((prevConfirmedOrders) => [
+      //   ...prevConfirmedOrders,
+      //   orderToConfirm,
+      // ]);
     }
   };
-  const [pendingOrders, setPendingOrders] = useState([]);
-  const [confirmedOrders, setConfirmedOrders] = useState([]);
-  const [deniedOrders, setDeniedOrders] = useState([]);
 
   useEffect(() => {
-    let confArr = [];
     let pendArr = [];
-    let denArr = [];
-    // console.log(allOrders)
 
     for (let i = 0; i < allOrders?.length; i++) {
       let eachOrder = allOrders[i];
-      if (eachOrder.orderState === 0) {
-        let orderItems = [];
-        let orderNotes = [];
 
-        for (let j = 0; j < eachOrder.orderItems.length; j++) {
-          orderItems.push(eachOrder.orderItems[j].dish_id);
-          orderNotes.push(eachOrder.orderItems[j].notes);
-        }
+      let orderItems = [];
+      let orderNotes = [];
 
-        pendArr.push({
-          id: eachOrder.id,
-          orderRequestedDate: eachOrder.orderRequestedDate,
-          orderSent: eachOrder.orderSent,
-          totalPrice: eachOrder.totalPrice,
-          userId: eachOrder.userId,
-          orderState: eachOrder.orderState,
-          orderItems: orderItems,
-          itemNotes: orderNotes,
-        });
-      } else if (eachOrder.orderState === 1) {
-        let orderItems = [];
-        let orderNotes = [];
-
-        for (let j = 0; j < eachOrder.orderItems.length; j++) {
-          orderItems.push(eachOrder.orderItems[j].dish_id);
-          orderNotes.push(eachOrder.orderItems[j].notes);
-        }
-
-        confArr.push({
-          id: eachOrder.id,
-          orderRequestedDate: eachOrder.orderRequestedDate,
-          orderSent: eachOrder.orderSent,
-          totalPrice: eachOrder.totalPrice,
-          userId: eachOrder.userId,
-          orderState: eachOrder.orderState,
-          orderItems: orderItems,
-          itemNotes: orderNotes,
-        });
-      } else {
-        let orderItems = [];
-        let orderNotes = [];
-
-        for (let j = 0; j < eachOrder.orderItems.length; j++) {
-          orderItems.push(eachOrder.orderItems[j].dish_id);
-          orderNotes.push(eachOrder.orderItems[j].notes);
-        }
-
-        denArr.push({
-          id: eachOrder.id,
-          orderRequestedDate: eachOrder.orderRequestedDate,
-          orderSent: eachOrder.orderSent,
-          totalPrice: eachOrder.totalPrice,
-          userId: eachOrder.userId,
-          orderState: eachOrder.orderState,
-          orderItems: orderItems,
-          itemNotes: orderNotes,
-        });
+      for (let j = 0; j < eachOrder.orderItems.length; j++) {
+        orderItems.push(eachOrder.orderItems[j].dish_id);
+        orderNotes.push(eachOrder.orderItems[j].notes);
       }
+
+      pendArr.push({
+        id: eachOrder.id,
+        orderRequestedDate: eachOrder.orderRequestedDate,
+        orderSent: eachOrder.orderSent,
+        totalPrice: eachOrder.totalPrice,
+        userId: eachOrder.userId,
+        orderState: eachOrder.orderState,
+        orderItems: orderItems,
+        itemNotes: orderNotes,
+      });
     }
 
-    setConfirmedOrders(confArr);
-    setPendingOrders(pendArr);
-    setDeniedOrders(denArr);
+    setPendingOrders1(pendArr);
 
     const timer = setInterval(() => {
-      pendingOrders.forEach((order) => {
+      pendingOrders1.forEach((order) => {
         // Calculate remaining time for each pending order
         const timeLeft = calculateTimeLeft(order.orderRequestedDate);
 
@@ -310,7 +243,7 @@ export default function AllOrders() {
       });
     }, 1000);
 
-    // Clean up the timer when the component unmounts
+    //  Clean up the timer when the component unmounts
     return () => {
       clearInterval(timer);
     };
@@ -330,12 +263,10 @@ export default function AllOrders() {
         : "Order deletion failed."
     );
     if (deleteOrderSuccess) {
-      const updatedPendingOrders = pendingOrders.filter(
+      const updatedPendingOrders = pendingOrders1.filter(
         (order) => order.id !== deleteOrderID
       );
-      setPendingOrders(updatedPendingOrders);
-
-      
+      setPendingOrders1(updatedPendingOrders);
     }
   };
 
@@ -349,12 +280,11 @@ export default function AllOrders() {
       deleteOrder(id);
 
       // Update the pending orders list
-      
     }
   };
 
   const confirmOrder = (id) => {
-    const orderToConfirm = pendingOrders.find((order) => order.id === id);
+    const orderToConfirm = pendingOrders1.find((order) => order.id === id);
 
     if (orderToConfirm) {
       const confirmConfirmation = window.confirm(
@@ -378,15 +308,10 @@ export default function AllOrders() {
         : "Order denying failed."
     );
     if (confirmOrderSuccess) {
-      const updatedPendingOrders = pendingOrders.filter(
+      const updatedPendingOrders = pendingOrders1.filter(
         (order) => order.id !== id
       );
-      setPendingOrders(updatedPendingOrders);
-
-      setDeniedOrders((prevConfirmedOrders) => [
-        ...prevConfirmedOrders,
-        orderToConfirm,
-      ]);
+      setPendingOrders1(updatedPendingOrders);
     }
   };
   function groupOrdersByRequestedDate(orders) {
@@ -412,7 +337,7 @@ export default function AllOrders() {
     return [...pendingOrders, ...pastOrders];
   }
   const denyOrder = (id) => {
-    const orderToConfirm = pendingOrders.find((order) => order.id === id);
+    const orderToConfirm = pendingOrders1.find((order) => order.id === id);
 
     if (orderToConfirm) {
       const confirmConfirmation = window.confirm(
@@ -425,7 +350,8 @@ export default function AllOrders() {
     }
   };
 
-  const sortedPendingOrders = groupOrdersByRequestedDate(pendingOrders)?.reverse();
+  const sortedPendingOrders =
+    groupOrdersByRequestedDate(pendingOrders1)?.reverse();
 
   return (
     <OrdersContainer>
