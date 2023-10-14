@@ -248,6 +248,10 @@ export default function DeniedOrders() {
                 </OrderField>
                 <TimeWarning
                   isTimePassed={isTimePassed(order.orderRequestedDate)}
+                  isTimeWarning={
+                    calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+                    calculateTimeLeft(order.orderRequestedDate).minutes <= 45
+                  }
                 >
                   {isTimePassed(order.orderRequestedDate)
                     ? "Time has passed"
