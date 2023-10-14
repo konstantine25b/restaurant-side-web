@@ -571,6 +571,10 @@ export default function AllOrders() {
 
                 <TimeWarning
                   isTimePassed={isTimePassed(order.orderRequestedDate)}
+                  isTimeWarning={
+                    calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+                    calculateTimeLeft(order.orderRequestedDate).minutes <= 45
+                  }
                 >
                   {isTimePassed(order.orderRequestedDate)
                     ? "Time has passed"
@@ -647,6 +651,10 @@ export default function AllOrders() {
 
                 <TimeWarning
                   isTimePassed={isTimePassed(order.orderRequestedDate)}
+                  isTimeWarning={
+                    calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+                    calculateTimeLeft(order.orderRequestedDate).minutes <= 45
+                  }
                 >
                   {isTimePassed(order.orderRequestedDate)
                     ? "Time has passed"
