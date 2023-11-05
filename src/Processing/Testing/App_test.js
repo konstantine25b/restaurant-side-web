@@ -84,6 +84,8 @@ export const App = () => {
     const [uploadStatus, setUploadStatus] = useState('');
     const [uploadLink, setUploadLink] = useState('');
 
+    const [searchRestaurant, setSearchRestaurant] = useState('');
+
     const handleRegistration = async () => {
         const registrationSuccess = await API.register({
             username,
@@ -258,6 +260,15 @@ export const App = () => {
     const handleDeleteDish = async () => {
         const deleteDishSuccess = await API.deleteDish(deleteDishID, deleteDishTitle);
         alert(deleteDishSuccess ? 'Dish deleted successfully!' : 'Dish deletion failed.');
+    };
+
+    const handleSearchRestaurant = async () => {
+        const searchRestaurantSuccess = await API.searchRestaurants(searchRestaurant);
+        if (searchRestaurantSuccess) {
+            alert('Restaurant found! ' + JSON.stringify(searchRestaurantSuccess));
+        } else {
+            alert('Restaurant not found.');
+        }
     };
 
     return (
@@ -704,6 +715,17 @@ export const App = () => {
                 />
                 <button onClick={handleFileUpload}>Upload</button>
                 <p>{uploadStatus}<a href={uploadLink}>{uploadLink}</a></p>
+            </div>
+
+            <h1>Search Restaurants</h1>
+            <div>
+                <input
+                    type="text"
+                    placeholder="Search Restaurant"
+                    value={searchRestaurant}
+                    onChange={(e) => setSearchRestaurant(e.target.value)}
+                />
+                <button onClick={handleSearchRestaurant}>Search</button>
             </div>
         </div>
     );
