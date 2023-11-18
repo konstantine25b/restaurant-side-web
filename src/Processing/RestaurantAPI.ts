@@ -96,10 +96,22 @@ export class RestaurantAPI extends PrestoAPI{
         }
     }
 
-    async confirmOrDenyRestaurantOrder(orderId: number, action:boolean): Promise<boolean> {
+    async getRestaurantOrdersDeleted(id: number): Promise<OrderData[]> {
         await this.loginIfNeeded();
         try {
-            await axios.patch(`${this.baseUrl}/order/${orderId}/${action}`, null, {
+            const response = await axios.get(`${this.baseUrl}/restaurant/${id}/orders/deleted`, {
+                headers: { Authorization: `Bearer ${this.token}` },
+            });
+            return response.data;
+        } catch (error) {
+            return [];
+        }
+    }
+
+    async confirmOrDenyRestaurantOrder(orderId: number, action:boolean,  table:number = -1): Promise<boolean> {
+        await this.loginIfNeeded();
+        try {
+            await axios.patch(`${this.baseUrl}/order/${orderId}/${action}/${table}`, null, {
                 headers: { Authorization: `Bearer ${this.token}` },
             });
             return true;

@@ -45,6 +45,7 @@ export interface OrderInfo {
 //Used for creating an order
 export interface OrderData {
     restaurantId: number;
+    orderTable?: number;
     orderRequestedDate: Date;
     orderItems: OrderItem[];
 }
@@ -240,7 +241,7 @@ export class PrestoAPI {
     // Which contains:
     // dishId - number;
     // notes - string;
-    async createOrder(data: OrderData): Promise<number> {
+    async createOrder(data: OrderData, table: number = -1): Promise<number> {
         await this.loginIfNeeded();
         try {
             const res = await axios.post(`${this.baseUrl}/order`, data, {
