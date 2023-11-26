@@ -63,6 +63,12 @@ const ConfirmButton = styled.button`
     background-color: #0056b3;
   }
 `;
+const UserId = styled.div`
+  font-size: 16px;
+  padding: 5px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+`;
 
 const OrderDetails = styled.div`
   display: flex;
@@ -168,6 +174,7 @@ export default function DeletedOrders() {
           orderState: eachOrder.orderState,
           orderItems: orderItems,
           itemNotes: orderNotes,
+          orderTable: eachOrder.orderTable,
         });
       }
   
@@ -277,9 +284,15 @@ export default function DeletedOrders() {
                   </OrderItemDetails>
                 ))}
               </OrderItemContainer> */}
+               <TotalPrice>
+                <strong>Table ID:</strong> {order.orderTable > 0 ? order.orderTable : "None"}
+              </TotalPrice>
               <TotalPrice>
                 <strong>Total Price:</strong> ₾{order.totalPrice?.toFixed(2)}
               </TotalPrice>
+              <UserId>
+                <strong>Customer ID:</strong> {order.userId}
+              </UserId>
               <SeeDetailsButton
                 onClick={() => {
                   navigate("/HomePage/EachOrderDetails", {
@@ -290,8 +303,10 @@ export default function DeletedOrders() {
                       orderNotes: order.itemNotes,
                       orderRequestedDate: order.orderRequestedDate,
                       orderSent: new Date(order.orderSent).toLocaleString(),
+                      orderTable: order?.orderTable
                     },
                   });
+               
                 }}
               >
                 See Details

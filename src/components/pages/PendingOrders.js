@@ -228,6 +228,7 @@ export default function AllOrders() {
         orderState: eachOrder.orderState,
         orderItems: orderItems,
         itemNotes: orderNotes,
+        orderTable: eachOrder.orderTable,
       });
     }
 
@@ -408,6 +409,9 @@ export default function AllOrders() {
                   </OrderItemDetails>
                 ))}
               </OrderItemContainer> */}
+               <TotalPrice>
+                <strong>Table ID:</strong> {order.orderTable > 0 ? order.orderTable : "None"}
+              </TotalPrice>
               <TotalPrice>
                 <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
               </TotalPrice>
@@ -429,6 +433,7 @@ export default function AllOrders() {
                             orderSent: new Date(
                               order.orderSent
                             ).toLocaleString(),
+                            orderTable: order?.orderTable
                           },
                         });
                       }}

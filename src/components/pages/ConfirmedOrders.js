@@ -168,6 +168,7 @@ export default function AllOrders() {
         orderState: eachOrder.orderState,
         orderItems: orderItems,
         itemNotes: orderNotes,
+        orderTable: eachOrder.orderTable,
       });
     }
 
@@ -278,9 +279,15 @@ export default function AllOrders() {
                   </OrderItemDetails>
                 ))}
               </OrderItemContainer> */}
+               <TotalPrice>
+                <strong>Table ID:</strong> {order.orderTable > 0 ? order.orderTable : "None"}
+              </TotalPrice>
                 <TotalPrice>
                   <strong>Total Price:</strong> ₾{order.totalPrice?.toFixed(2)}
                 </TotalPrice>
+                <UserId>
+                <strong>Customer ID:</strong> {order.userId}
+              </UserId>
                 <SeeDetailsButton
                   onClick={() => {
                     navigate("/HomePage/EachOrderDetails", {
@@ -291,6 +298,7 @@ export default function AllOrders() {
                         orderNotes: order.itemNotes,
                         orderRequestedDate: order.orderRequestedDate,
                         orderSent: new Date(order.orderSent).toLocaleString(),
+                        orderTable: order?.orderTable
                       },
                     });
                   }}

@@ -266,9 +266,11 @@ export default function AllOrders() {
     let confArr = [];
     let pendArr = [];
     let denArr = [];
-    // console.log(allOrders)
+
+   
 
     for (let i = 0; i < allOrders?.length; i++) {
+
       let eachOrder = allOrders[i];
       if (eachOrder.orderState === 0) {
         let orderItems = [];
@@ -288,6 +290,7 @@ export default function AllOrders() {
           orderState: eachOrder.orderState,
           orderItems: orderItems,
           itemNotes: orderNotes,
+          orderTable: eachOrder.orderTable,
         });
       } else if (eachOrder.orderState === 1) {
         let orderItems = [];
@@ -307,6 +310,7 @@ export default function AllOrders() {
           orderState: eachOrder.orderState,
           orderItems: orderItems,
           itemNotes: orderNotes,
+          orderTable: eachOrder.orderTable,
         });
       } else {
         let orderItems = [];
@@ -326,6 +330,7 @@ export default function AllOrders() {
           orderState: eachOrder.orderState,
           orderItems: orderItems,
           itemNotes: orderNotes,
+          orderTable: eachOrder.orderTable,
         });
       }
     }
@@ -498,6 +503,9 @@ export default function AllOrders() {
                 ))}
               </OrderItemContainer> */}
               <TotalPrice>
+                <strong>Table ID:</strong> {order.orderTable > 0 ? order.orderTable : "None"}
+              </TotalPrice>
+              <TotalPrice>
                 <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
               </TotalPrice>
               <UserId>
@@ -518,8 +526,11 @@ export default function AllOrders() {
                             orderSent: new Date(
                               order.orderSent
                             ).toLocaleString(),
+                            orderTable: order?.orderTable
                           },
+                          
                         });
+                        console.log(order)
                       }}
                     >
                       See Details
@@ -597,6 +608,9 @@ export default function AllOrders() {
                   </OrderItemDetails>
                 ))}
               </OrderItemContainer> */}
+               <TotalPrice>
+                <strong>Table ID:</strong> {order.orderTable > 0 ? order.orderTable : "None"}
+              </TotalPrice>
               <TotalPrice>
                 <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
               </TotalPrice>
@@ -613,6 +627,7 @@ export default function AllOrders() {
                       orderNotes: order.itemNotes,
                       orderRequestedDate: order.orderRequestedDate,
                       orderSent: new Date(order.orderSent).toLocaleString(),
+                      orderTable: order?.orderTable
                     },
                   });
                 }}
@@ -677,6 +692,9 @@ export default function AllOrders() {
                   </OrderItemDetails>
                 ))}
               </OrderItemContainer> */}
+               <TotalPrice>
+                <strong>Table ID:</strong> {order.orderTable > 0 ? order.orderTable : "None"}
+              </TotalPrice>
               <TotalPrice>
                 <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
               </TotalPrice>
@@ -693,6 +711,7 @@ export default function AllOrders() {
                       orderNotes: order.itemNotes,
                       orderRequestedDate: order.orderRequestedDate,
                       orderSent: new Date(order.orderSent).toLocaleString(),
+                      orderTable: order?.orderTable
                     },
                   });
                 }}

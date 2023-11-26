@@ -132,6 +132,7 @@ function EachOrderDetails() {
     orderNotes,
     orderSent,
     orderRequestedDate,
+    orderTable
   } = state;
   const navigate = useNavigate();
   const [fetchedDishes, setFetchedDishes] = useState([]);
@@ -207,6 +208,7 @@ function EachOrderDetails() {
         </BackButton>
         <TitleContainer>
           <TitleItem>User ID: {userId}</TitleItem>
+          <TitleItem>Table Number: {orderTable >0 ? orderTable :"None"}</TitleItem>
           <TitleItem>Price: ₾{totalPrice}</TitleItem>
           <TitleItem
             timeRemainingColor={
