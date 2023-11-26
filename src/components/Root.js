@@ -206,6 +206,12 @@ export default function Root() {
                   restName: restName,
                   restInfo: restInfo
                 },
+                {
+                  Title: "Deleted Orders",
+                  Name: "DeletedOrders",
+                  restName: restName,
+                  restInfo: restInfo
+                },
                
                
               ]}
