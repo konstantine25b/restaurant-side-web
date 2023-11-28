@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { API } from "../../Processing/RestaurantAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
+import EachPendingOrder from "../pageComponents/EachPendingOrder";
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -49,6 +50,47 @@ const OrderItem = styled.div`
     transform: scale(1.02);
   }
 `;
+// const ConfirmButton = styled.button`
+//   background-color: #007bff;
+//   color: #fff;
+//   padding: 10px 20px;
+//   border: none;
+//   border-radius: 5px;
+//   font-size: 16px;
+//   cursor: pointer;
+//   transition: background-color 0.2s;
+
+//   &:hover {
+//     background-color: #0056b3;
+//   }
+// `;
+
+const FancyInputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const TableInput = styled.input`
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+`;
+
+const FancyInputLabel = styled.label`
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
 const ConfirmButton = styled.button`
   background-color: #007bff;
   color: #fff;
@@ -56,11 +98,11 @@ const ConfirmButton = styled.button`
   border: none;
   border-radius: 5px;
   font-size: 16px;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: ${(props) => (props.disabled ? "#007bff" : "#0056b3")};
   }
 `;
 
@@ -181,27 +223,58 @@ export default function AllOrders() {
   }, [restInfo]);
   const [pendingOrders1, setPendingOrders1] = useState([]);
 
-  const orderConfirmation = async (id, orderToConfirm) => {
-    const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
-      id,
-      true
-    );
-    console.log(id, confirmOrderSuccess);
-    alert(
-      confirmOrderSuccess
-        ? "Order confirmed successfully!"
-        : "Order confirmation failed."
-    );
-    if (confirmOrderSuccess) {
-      const updatedPendingOrders = pendingOrders1.filter(
-        (order) => order.id !== id
-      );
-      setPendingOrders1(updatedPendingOrders);
+  const orderConfirmation = async (id, orderToConfirm, tableNum) => {
 
-      // setConfirmedOrders((prevConfirmedOrders) => [
-      //   ...prevConfirmedOrders,
-      //   orderToConfirm,
-      // ]);
+    console.log(1313234)
+    if (tableNum <= 0) {
+      console.log(23)
+      const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
+        id,
+        true
+      );
+      console.log(id, confirmOrderSuccess);
+      alert(
+        confirmOrderSuccess
+          ? "Order confirmed successfully!"
+          : "Order confirmation failed."
+      );
+      if (confirmOrderSuccess) {
+        const updatedPendingOrders = pendingOrders1.filter(
+          (order) => order.id !== id
+        );
+        setPendingOrders1(updatedPendingOrders);
+
+        // setConfirmedOrders((prevConfirmedOrders) => [
+        //   ...prevConfirmedOrders,
+        //   orderToConfirm,
+        // ]);
+      }
+       
+    }
+    else {
+      console.log(1313)
+      const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
+        id,
+        true,
+        tableNum 
+      );
+      console.log(id, confirmOrderSuccess);
+      alert(
+        confirmOrderSuccess
+          ? "Order confirmed successfully!"
+          : "Order confirmation failed."
+      );
+      if (confirmOrderSuccess) {
+        const updatedPendingOrders = pendingOrders1.filter(
+          (order) => order.id !== id
+        );
+        setPendingOrders1(updatedPendingOrders);
+
+        // setConfirmedOrders((prevConfirmedOrders) => [
+        //   ...prevConfirmedOrders,
+        //   orderToConfirm,
+        // ]);
+      }
     }
   };
 
@@ -284,19 +357,33 @@ export default function AllOrders() {
     }
   };
 
-  const confirmOrder = (id) => {
+  const confirmOrder = (id, tableNum) => {
     const orderToConfirm = pendingOrders1.find((order) => order.id === id);
 
-    if (orderToConfirm) {
-      const confirmConfirmation = window.confirm(
-        "Are you sure you want to confirm this order?"
-      );
+    if (tableNum <= 0) {
+      if (orderToConfirm) {
+        const confirmConfirmation = window.confirm(
+          "Are you sure you want to confirm this order?"
+        );
 
-      if (confirmConfirmation) {
-        orderConfirmation(id, orderToConfirm);
+        if (confirmConfirmation) {
+          // ese -1 imitoro connfirmaciistvis table number gadavce
+          orderConfirmation(id, orderToConfirm, -1);
+        }
+      }
+    } else {
+      if (orderToConfirm) {
+        const confirmConfirmation = window.confirm(
+          "Are you sure you want to confirm this order?"
+        );
+
+        if (confirmConfirmation) {
+          orderConfirmation(id, orderToConfirm, tableNum);
+        }
       }
     }
   };
+
   const orderDenying = async (id, orderToConfirm) => {
     const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
       id,
@@ -358,104 +445,153 @@ export default function AllOrders() {
     <OrdersContainer>
       <OrderSection orderState={0}>
         <h2 style={{ color: "#FFC100", marginBottom: 100 }}>Pending Orders</h2>
-        {sortedPendingOrders.map((order) => (
-          <div key={order.id}>
-            <OrderItem
-              isTimeWarning={
-                calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                calculateTimeLeft(order.orderRequestedDate).minutes <= 45
-              }
-              isTimePassed={isTimePassed(order.orderRequestedDate)}
-            >
-              <OrderDetails>
-                <OrderField orderState={0}>
-                  <strong>Order ID:</strong> {order.id}
-                </OrderField>
-                <OrderField orderState={0}>
-                  <strong>Order Request Date:</strong>{" "}
-                  {new Date(order.orderRequestedDate).toLocaleString()}
-                </OrderField>
-                <OrderField orderState={0}>
-                  <strong>Order Sent Date:</strong>{" "}
-                  {order.orderSent
-                    ? new Date(order.orderSent).toLocaleString()
-                    : ""}
-                </OrderField>
-                <TimeWarning
-                  isTimeWarning={
-                    calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                    calculateTimeLeft(order.orderRequestedDate).minutes <= 60
-                  }
-                  isTimePassed={isTimePassed(order.orderRequestedDate)}
-                >
-                  {isTimePassed(order.orderRequestedDate)
-                    ? "Time has passed"
-                    : `Time left: ${
-                        calculateTimeLeft(order.orderRequestedDate).hours
-                      }h ${
-                        calculateTimeLeft(order.orderRequestedDate).minutes
-                      }m ${
-                        calculateTimeLeft(order.orderRequestedDate).seconds
-                      }s`}
-                </TimeWarning>
-              </OrderDetails>
-              {/* <OrderItemContainer>
-                {order.orderItems.map((item, index) => (
-                  <OrderItemDetails key={index}>
-                    <strong>Item {index + 1}:</strong> {item}
-                    <OrderItemNote>
-                      <strong>Notes:</strong> {order.itemNotes[index]}
-                    </OrderItemNote>
-                  </OrderItemDetails>
-                ))}
-              </OrderItemContainer> */}
-               <TotalPrice>
-                <strong>Table ID:</strong> {order.orderTable > 0 ? order.orderTable : "None"}
-              </TotalPrice>
-              <TotalPrice>
-                <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
-              </TotalPrice>
-              <UserId>
-                <strong>Customer ID:</strong> {order.userId}
-              </UserId>
-              <OrderField orderState={0}>
-                {!order.orderState && (
-                  <>
-                    <SeeDetailsButton
-                      onClick={() => {
-                        navigate("/HomePage/EachOrderDetails", {
-                          state: {
-                            orderItems: order.orderItems,
-                            totalPrice: order.totalPrice?.toFixed(2),
-                            userId: order?.userId,
-                            orderNotes: order.itemNotes,
-                            orderRequestedDate: order.orderRequestedDate,
-                            orderSent: new Date(
-                              order.orderSent
-                            ).toLocaleString(),
-                            orderTable: order?.orderTable
-                          },
-                        });
-                      }}
-                    >
-                      See Details
-                    </SeeDetailsButton>
-                    <ConfirmButton onClick={() => confirmOrder(order.id)}>
-                      Confirm Order
-                    </ConfirmButton>
-                    <DenyButton onClick={() => denyOrder(order.id)}>
-                      Deny Order
-                    </DenyButton>
-                    <DeleteButton onClick={() => handleDeleteOrder(order.id)}>
-                      Delete Order
-                    </DeleteButton>
-                  </>
-                )}
-              </OrderField>
-            </OrderItem>
-          </div>
-        ))}
+        {sortedPendingOrders.map((order) => {
+          return (
+            <EachPendingOrder
+              key={order.id}
+              order={order}
+              confirmOrder={confirmOrder}
+              denyOrder={denyOrder}
+              handleDeleteOrder={handleDeleteOrder}
+            />
+          );
+        })}
       </OrderSection>
     </OrdersContainer>
   );
 }
+// {sortedPendingOrders.map((order) => {
+//   let tableNumber = -1;
+
+//   const handleTableChange = (e) => {
+
+//     tableNumber = e.target.value;
+
+//     console.log( tableNumber)
+//   };
+
+//   const handleConfirmClick = () => {
+//     console.log(order.orderTable,tableNumber)
+//     if (order.orderTable <= 0 && tableNumber > 0) {
+//       console.log(1)
+//       confirmOrder(order.id, tableNumber);
+//     } else if (order.orderTable > 0) {
+//       confirmOrder(order.id , -1);// ese imito rom table ro gadavcem chaiweros
+//     }
+//     else{
+//       alert("Please choose a table number");
+//     }
+//   };
+//   return (
+//     <div key={order.id}>
+//       <OrderItem
+//         isTimeWarning={
+//           calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+//           calculateTimeLeft(order.orderRequestedDate).minutes <= 45
+//         }
+//         isTimePassed={isTimePassed(order.orderRequestedDate)}
+//       >
+//         <OrderDetails>
+//           <OrderField orderState={0}>
+//             <strong>Order ID:</strong> {order.id}
+//           </OrderField>
+//           <OrderField orderState={0}>
+//             <strong>Order Request Date:</strong>{" "}
+//             {new Date(order.orderRequestedDate).toLocaleString()}
+//           </OrderField>
+//           <OrderField orderState={0}>
+//             <strong>Order Sent Date:</strong>{" "}
+//             {order.orderSent
+//               ? new Date(order.orderSent).toLocaleString()
+//               : ""}
+//           </OrderField>
+//           <TimeWarning
+//             isTimeWarning={
+//               calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+//               calculateTimeLeft(order.orderRequestedDate).minutes <= 60
+//             }
+//             isTimePassed={isTimePassed(order.orderRequestedDate)}
+//           >
+//             {isTimePassed(order.orderRequestedDate)
+//               ? "Time has passed"
+//               : `Time left: ${
+//                   calculateTimeLeft(order.orderRequestedDate).hours
+//                 }h ${
+//                   calculateTimeLeft(order.orderRequestedDate).minutes
+//                 }m ${
+//                   calculateTimeLeft(order.orderRequestedDate).seconds
+//                 }s`}
+//           </TimeWarning>
+//         </OrderDetails>
+//         {/* <OrderItemContainer>
+//         {order.orderItems.map((item, index) => (
+//           <OrderItemDetails key={index}>
+//             <strong>Item {index + 1}:</strong> {item}
+//             <OrderItemNote>
+//               <strong>Notes:</strong> {order.itemNotes[index]}
+//             </OrderItemNote>
+//           </OrderItemDetails>
+//         ))}
+//       </OrderItemContainer> */}
+//         <TotalPrice>
+//           <strong>Table ID:</strong>{" "}
+//           {order.orderTable > 0 ? order.orderTable : "None"}
+//         </TotalPrice>
+//         <TotalPrice>
+//           <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
+//         </TotalPrice>
+//         <UserId>
+//           <strong>Customer ID:</strong> {order.userId}
+//         </UserId>
+//         <OrderField orderState={0}>
+//           {!order.orderState && (
+//             <>
+//               <SeeDetailsButton
+//                 onClick={() => {
+//                   navigate("/HomePage/EachOrderDetails", {
+//                     state: {
+//                       orderItems: order.orderItems,
+//                       totalPrice: order.totalPrice?.toFixed(2),
+//                       userId: order?.userId,
+//                       orderNotes: order.itemNotes,
+//                       orderRequestedDate: order.orderRequestedDate,
+//                       orderSent: new Date(
+//                         order.orderSent
+//                       ).toLocaleString(),
+//                       orderTable: order?.orderTable,
+//                     },
+//                   });
+//                 }}
+//               >
+//                 See Details
+//               </SeeDetailsButton>
+//               {order.orderTable <= 0 ? (
+//                   <TableInput
+//                     type="number"
+//                     placeholder="Enter Table Number"
+//                     onChange={(e) => handleTableChange(e)}
+//                     min="1" // Set the minimum allowed value
+//                     step="1"
+//                   />
+
+//               ) : null}
+
+//               <ConfirmButton
+
+//                 onClick={handleConfirmClick}
+//               >
+//                 Confirm Order
+//               </ConfirmButton>
+//               <DenyButton onClick={() => denyOrder(order.id)}>
+//                 Deny Order
+//               </DenyButton>
+//               <DeleteButton onClick={() => handleDeleteOrder(order.id)}>
+//                 Delete Order
+//               </DeleteButton>
+//             </>
+//           )}
+//         </OrderField>
+//       </OrderItem>
+//     </div>
+//   );
+// })}
