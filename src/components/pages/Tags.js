@@ -1,38 +1,42 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-// import { editRestaurant, getRestaurant } from "../../Processing/Database";
+import { useLocation } from "react-router-dom";
 import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
 import { useForm, useFieldArray } from "react-hook-form";
+import { useQuery, useMutation } from "react-query";
 import { API } from "../../Processing/RestaurantAPI";
 
 export default function Tags() {
   const { state } = useLocation();
   const { restName } = state;
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    control,
-  } = useForm();
+  const { register, handleSubmit, control } = useForm();
 
   // aq vinaxav restornis mtlian informacia
-  const [restInfo, setRestInfo] = useState();
+  const { data: restInfo, isLoading, isError } = useQuery(
+    ["restaurant", restName],
+    () => API.getRestaurantByTitle(restName),
+    {
+      enabled: Boolean(restName),
+      onSuccess: (data) => {
+        console.log("Restaurant info fetched successfully:", data);
+      },
+      onError: (error) => {
+        console.error("Error fetching restaurant info:", error);
+      },
+    }
+  );
 
-  const getRestaurantInfo = async () => {
-    handleGetRestaurantByTitle(restName)
-  };
-  const handleGetRestaurantByTitle = async (restaurantTitle) => {
-    const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
-    setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)))
-  };
-  useEffect(() => {
-    console.log(restName);
-    // amit saxelis sashualebit momaq restornis info
-
-    getRestaurantInfo();
-  }, [restName]);
-  //   console.log(restInfo)
+  const mutation = useMutation(
+    (tagsArray) => API.updateRestaurant(restInfo.id, { tags: tagsArray }),
+    {
+      onSuccess: (data) => {
+        console.log("Restaurant updated successfully:", data);
+      },
+      onError: (error) => {
+        console.error("Error updating restaurant:", error);
+      },
+    }
+  );
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -41,50 +45,38 @@ export default function Tags() {
 
   const defaultItemsGenerated = useRef(false);
 
-  const [removeClicked,setRemoveClicked] = useState(false)
+  const [removeClicked, setRemoveClicked] = useState(false);
 
   // amit xdeba damateba ingredientebis tu aqvs ukve ogond defaultebis
   useEffect(() => {
-    console.log(restInfo)
-    if (restInfo?.tags==null? "" : restInfo?.tags.length > 0 && defaultItemsGenerated.current == false) {
+    console.log(restInfo);
+    if (restInfo?.tags == null ? "" : restInfo?.tags.length > 0 && defaultItemsGenerated.current === false) {
       restInfo.tags.forEach((item) => {
         append({ name: item });
       });
       defaultItemsGenerated.current = true;
     }
-   
-  }, [restInfo , removeClicked]);
-
-  const handleUpdateRestaurant = async (tagsArray) => {
-    const updateRestaurantData = {
-      shortdescription: restInfo.shortdescription,
-      address: restInfo.address,
-      tags:tagsArray,
-      images: restInfo.images
-    };
-    const updateRestaurantSuccess = await API.updateRestaurant(
-      restInfo.id,
-      updateRestaurantData
-    );
-    alert(
-      updateRestaurantSuccess
-        ? "Restaurant updated successfully!"
-        : "Restaurant update failed."
-    );
-  };
+  }, [restInfo, removeClicked]);
 
   const onSubmit = (data) => {
     console.log(data.Tags);
     console.log(fields);
-    let arr = []
+    let arr = [];
 
-    for(let i = 0 ; i < fields.length ; i++){
-       arr.push(data.Tags[i])
+    for (let i = 0; i < fields.length; i++) {
+      arr.push(data.Tags[i]);
     }
-    handleUpdateRestaurant(arr)
 
-    
+    mutation.mutate(arr);
   };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (isError) {
+    return <p>Error fetching data</p>;
+  }
 
   return (
     <MainDiv>
@@ -102,9 +94,8 @@ export default function Tags() {
               type="button"
               onClick={() => {
                 remove(index);
-                defaultItemsGenerated.current=(true)
-                setRemoveClicked(!removeClicked)
-
+                defaultItemsGenerated.current = true;
+                setRemoveClicked(!removeClicked);
               }}
             >
               Remove
@@ -131,7 +122,6 @@ const MainDiv = styled.div`
 
 const Bottom = styled.form`
   width: 100%;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -149,6 +139,7 @@ const IngrInput = styled.input`
   margin: 0px 0 10px 18px;
   outline: none;
 `;
+
 const DeleteIngr = styled.button`
   all: unset;
   width: 60px;
@@ -160,7 +151,6 @@ const DeleteIngr = styled.button`
   align-items: center;
   padding: 5px;
   border-radius: 5px;
-
   margin-left: 4px;
 
   &:hover {
@@ -180,10 +170,10 @@ const IngredientButton = styled.button`
   align-items: center;
   padding: 5px;
   border-radius: 5px;
-
   margin-top: 8px;
   margin-left: 18px;
   margin-bottom: 30px;
+
   &:hover {
     cursor: pointer;
     opacity: 0.8;
@@ -203,6 +193,7 @@ const SubmitInput = styled.input`
   margin-top: 18px;
   margin-left: 18px;
   margin-bottom: 30px;
+
   &:hover {
     cursor: pointer;
     opacity: 0.8;
