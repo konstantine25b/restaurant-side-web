@@ -5,29 +5,36 @@ import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { API } from "../../Processing/PrestoAPI";
+import { useQuery } from "react-query";
 
 export default function FullRestInfo() {
-  const navigate = useNavigate();
   const { state } = useLocation();
   const { restName } = state;
 
-  const [restInfo, setRestInfo] = useState();
+  const {
+    data: restInfo,
+    isLoading,
+    isError,
+  } = useQuery(
+    ["restaurant", restName],
+    () => API.getRestaurantByTitle(restName),
+    {
+      enabled: Boolean(restName),
+      onSuccess: (data) => {
+        console.log("Restaurant info fetched successfully:", data);
+      },
+      onError: (error) => {
+        console.error("Error fetching restaurant info:", error);
+      },
+    }
+  );
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
-  const getRestaurantInfo = async () => {
-    handleGetRestaurantByTitle(restName)
-  };
-  useEffect(() => {
-    console.log(restName);
-    // amit saxelis sashualebit momaq restornis info
-
-    getRestaurantInfo();
-  }, [restName]);
-  const handleGetRestaurantByTitle = async (restaurantTitle) => {
-    const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
-    setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)))
-  };
-
- 
+  if (isError) {
+    return <p>Error fetching data</p>;
+  }
 
   return (
     <MainDiv>
@@ -49,9 +56,11 @@ export default function FullRestInfo() {
       </Top>
       <Top>
         <TopP>Tags:</TopP>
-        {restInfo?.tags==null ? console.log("no tags" ) : restInfo?.tags.map((item) => {
-          return item ? <TopP key = {item}>{item} ,</TopP> : null;
-        })}
+        {restInfo?.tags == null
+          ? console.log("no tags")
+          : restInfo?.tags.map((item) => {
+              return item ? <TopP key={item}>{item} ,</TopP> : null;
+            })}
       </Top>
       <Top>
         <TopP>Main Image:</TopP>

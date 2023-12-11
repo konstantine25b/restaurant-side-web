@@ -5,9 +5,10 @@ import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
 import { useForm } from "react-hook-form";
 import { API } from "../../Processing/RestaurantAPI";
+import { useQuery } from "react-query";
 
 export default function Address() {
-  const navigate = useNavigate();
+
   const { state } = useLocation();
   const { restName } = state;
   const {
@@ -16,29 +17,27 @@ export default function Address() {
     formState: { errors },
   } = useForm();
 
-  // aq vinaxav restornis mtlian informacia
-  const [restInfo, setRestInfo] = useState();
-
-  const getRestaurantInfo = async () => {
-    handleGetRestaurantByTitle(restName);
-  };
-  useEffect(() => {
-    console.log(restName);
-    // amit saxelis sashualebit momaq restornis info
-
-    getRestaurantInfo();
-  }, [restName]);
-  //   console.log(restInfo)
+  
+  const { data: restInfo, isLoading, isError } = useQuery(
+    ["restaurant", restName],
+    () => API.getRestaurantByTitle(restName),
+    {
+      enabled: Boolean(restName),
+      onSuccess: (data) => {
+        console.log("Restaurant info fetched successfully:", data);
+      },
+      onError: (error) => {
+        console.error("Error fetching restaurant info:", error);
+      },
+    }
+  );
 
   const onSubmit = (data) => {
     console.log(restInfo, data);
     // editRestaurant(restInfo.Title , data.Address, restInfo.Genre, restInfo.MainImage, restInfo.ShortDescription, restInfo.Tags)
     handleUpdateRestaurant(data.Address);
   };
-  const handleGetRestaurantByTitle = async (restaurantTitle) => {
-    const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
-    setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)));
-  };
+
   const handleUpdateRestaurant = async (updateRestaurantAddress) => {
     const updateRestaurantData = {
       shortdescription: restInfo.shortdescription,
@@ -56,6 +55,14 @@ export default function Address() {
         : "Restaurant update failed."
     );
   };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (isError) {
+    return <p>Error fetching data</p>;
+  }
 
   return (
     <MainDiv>
