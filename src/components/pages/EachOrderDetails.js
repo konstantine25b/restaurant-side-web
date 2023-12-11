@@ -134,6 +134,7 @@ function EachOrderDetails() {
     orderRequestedDate,
     orderTable
   } = state;
+ 
   const navigate = useNavigate();
   const [fetchedDishes, setFetchedDishes] = useState([]);
 

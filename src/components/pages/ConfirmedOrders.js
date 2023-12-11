@@ -25,6 +25,31 @@ const OrderSection = styled.div`
   cursor: pointer;
 `;
 
+const PageNavigation = styled.div`
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const FancyButton = styled.button`
+  padding: 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
 function calculateTimeLeft(requestedDate) {
   const currentTime = new Date();
   const endTime = new Date(requestedDate);
@@ -40,67 +65,75 @@ function calculateTimeLeft(requestedDate) {
   };
 }
 
-
 const fetchConfirmedOrders = async (id) => {
   const orders = await API.getRestaurantOrdersConfirmed(id);
   return orders;
 };
 
 export default function AllOrders() {
-  const [allOrders, setAllOrders] = useState();
   const { state } = useLocation();
-  const { restName, restInfo } = state;
+  const { restInfo } = state;
   const navigate = useNavigate();
 
-  let getConfirmedOrders = async (id) => {
-    const orders = await API.getRestaurantOrdersConfirmed(id);
-    setAllOrders(orders);
-  };
+  const [orders,setOrders]= useState()
 
-  const { data: confirmedOrders } = useQuery(
+  const { data: confirmedOrders, isLoading, isError } = useQuery(
     ["confirmedOrders", restInfo?.id],
-    () => fetchConfirmedOrders(restInfo?.id)
+    () => fetchConfirmedOrders(restInfo?.id),
+    {
+      keepPreviousData: true,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      // Handle error
+      onError: (error) => {
+        console.error("Error fetching confirmed orders:", error);
+      },
+    }
   );
 
+  const pageSize = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const start = (currentPage - 1) * pageSize;
+  const end = start + pageSize;
 
-  useEffect(() => {
-    // getOrders(restInfo?.id);
-    getConfirmedOrders(restInfo?.id);
-  }, [restInfo]);
-
-  const [confirmedOrders1, setConfirmedOrders1] = useState([]);
+  const [remainingTime, setRemainingTime] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   useEffect(() => {
     let confArr = [];
 
-    for (let i = 0; i < allOrders?.length; i++) {
-      let eachOrder = allOrders[i];
+    if (confirmedOrders) {
+      for (let i = 0; i < confirmedOrders?.length; i++) {
+        let eachOrder = confirmedOrders[i];
 
-      let orderItems = [];
-      let orderNotes = [];
+        let orderItems = [];
+        let orderNotes = [];
 
-      for (let j = 0; j < eachOrder.orderItems.length; j++) {
-        orderItems.push(eachOrder.orderItems[j].dish_id);
-        orderNotes.push(eachOrder.orderItems[j].notes);
+        for (let j = 0; j < eachOrder.orderItems.length; j++) {
+          orderItems.push(eachOrder.orderItems[j].dish_id);
+          orderNotes.push(eachOrder.orderItems[j].notes);
+        }
+
+        confArr.push({
+          id: eachOrder.id,
+          orderRequestedDate: eachOrder.orderRequestedDate,
+          orderSent: eachOrder.orderSent,
+          totalPrice: eachOrder.totalPrice,
+          userId: eachOrder.userId,
+          orderState: eachOrder.orderState,
+          orderItems: orderItems,
+          itemNotes: orderNotes,
+          orderTable: eachOrder.orderTable,
+        });
       }
-
-      confArr.push({
-        id: eachOrder.id,
-        orderRequestedDate: eachOrder.orderRequestedDate,
-        orderSent: eachOrder.orderSent,
-        totalPrice: eachOrder.totalPrice,
-        userId: eachOrder.userId,
-        orderState: eachOrder.orderState,
-        orderItems: orderItems,
-        itemNotes: orderNotes,
-        orderTable: eachOrder.orderTable,
-      });
     }
 
-    setConfirmedOrders1(confArr);
+    setOrders(confArr);
 
     const timer = setInterval(() => {
-      confirmedOrders1.forEach((order) => {
+      confirmedOrders?.forEach((order) => {
         // Calculate remaining time for each pending order
         const timeLeft = calculateTimeLeft(order.orderRequestedDate);
 
@@ -109,54 +142,38 @@ export default function AllOrders() {
       });
     }, 1000);
 
-    //  Clean up the timer when the component unmounts
+    // Clean up the timer when the component unmounts
     return () => {
       clearInterval(timer);
     };
-  }, [allOrders]);
+  }, [confirmedOrders]);
 
-  const [remainingTime, setRemainingTime] = useState({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-
-  function groupOrdersByRequestedDate(orders) {
-    const currentTime = new Date();
-    const lessThan1Hour = new Date(currentTime);
-    lessThan1Hour.setHours(currentTime.getHours() - 1);
-
-    const pendingOrders = [];
-    const pastOrders = [];
-
-    for (const order of orders) {
-      const orderDate = new Date(order.orderRequestedDate);
-
-      if (orderDate > currentTime) {
-        pendingOrders.push(order);
-      } else if (orderDate > lessThan1Hour) {
-        pendingOrders.push(order);
-      } else {
-        pastOrders.push(order);
-      }
-    }
-
-    return [...pendingOrders, ...pastOrders];
-  }
-
-  const sortedConfirmedOrders = groupOrdersByRequestedDate(confirmedOrders1);
+  const reversedConfirmedOrders = [...(orders || [])].reverse();
+  const paginatedOrders = reversedConfirmedOrders.slice(start, end);
 
   return (
     <OrdersContainer>
       <OrderSection>
-        <h2 style={{ color: "#007bff", marginBottom: 100 }}>
-          Confirmed Orders
-        </h2>
-        {sortedConfirmedOrders.map((order) => {
-          return (
-            <ConfOrderItems key = {order.id} props={order}/>
-          );
-        })}
+        <h2 style={{ color: "#007bff", marginBottom: 20 }}>Confirmed Orders</h2>
+        {isLoading && <p>Loading...</p>}
+        {isError && <p>Error fetching data</p>}
+        <PageNavigation>
+          <FancyButton
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1 || isLoading}
+          >
+            Previous Page
+          </FancyButton>
+          <FancyButton
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={end >= confirmedOrders?.length || isLoading}
+          >
+            Next Page
+          </FancyButton>
+        </PageNavigation>
+        {paginatedOrders.map((order) => (
+          <ConfOrderItems key={order.id} props={order} />
+        ))}
       </OrderSection>
     </OrdersContainer>
   );
