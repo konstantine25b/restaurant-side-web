@@ -3,6 +3,7 @@ import { API } from "../../Processing/RestaurantAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import EachPendingOrder from "../pageComponents/EachPendingOrder";
+import { useQuery } from "react-query";
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -30,6 +31,30 @@ const OrderSection = styled.div`
   cursor: pointer;
 `;
 
+const PageNavigation = styled.div`
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const FancyButton = styled.button`
+  padding: 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
 
 function calculateTimeLeft(requestedDate) {
   const currentTime = new Date();
@@ -46,27 +71,43 @@ function calculateTimeLeft(requestedDate) {
   };
 }
 
+const fetchPendingOrders = async (id) => {
+  const orders = await API.getRestaurantOrdersPending(id);
+  return orders;
+};
+
 export default function AllOrders() {
-  const [allOrders, setAllOrders] = useState();
+
   const { state } = useLocation();
   const { restName, restInfo } = state;
-  const navigate = useNavigate();
 
-  let getPendingOrders = async (id) => {
-    const orders = await API.getRestaurantOrdersPending(id);
-    setAllOrders(orders);
-  };
+  const [orders, setOrders] = useState();
 
-  useEffect(() => {
-    getPendingOrders(restInfo?.id);
-  }, [restInfo]);
-  const [pendingOrders1, setPendingOrders1] = useState([]);
+  const {
+    data: pendingOrders,
+    isLoading,
+    isError,
+  } = useQuery(
+    ["pendingOrders", restInfo?.id],
+    () => fetchPendingOrders(restInfo?.id),
+    {
+      keepPreviousData: true,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      // Handle error
+      onError: (error) => {
+        console.error("Error fetching pending orders:", error);
+      },
+    }
+  );
+
+  const pageSize = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const start = (currentPage - 1) * pageSize;
+  const end = start + pageSize;
 
   const orderConfirmation = async (id, orderToConfirm, tableNum) => {
-
-    console.log(1313234)
     if (tableNum <= 0) {
-      console.log(23)
+      console.log(23);
       const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
         id,
         true
@@ -78,24 +119,15 @@ export default function AllOrders() {
           : "Order confirmation failed."
       );
       if (confirmOrderSuccess) {
-        const updatedPendingOrders = pendingOrders1.filter(
-          (order) => order.id !== id
-        );
-        setPendingOrders1(updatedPendingOrders);
-
-        // setConfirmedOrders((prevConfirmedOrders) => [
-        //   ...prevConfirmedOrders,
-        //   orderToConfirm,
-        // ]);
+        const updatedPendingOrders = orders.filter((order) => order.id !== id);
+        setOrders(updatedPendingOrders);
       }
-       
-    }
-    else {
-      console.log(1313)
+    } else {
+      console.log(1313);
       const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
         id,
         true,
-        tableNum 
+        tableNum
       );
       console.log(id, confirmOrderSuccess);
       alert(
@@ -104,15 +136,8 @@ export default function AllOrders() {
           : "Order confirmation failed."
       );
       if (confirmOrderSuccess) {
-        const updatedPendingOrders = pendingOrders1.filter(
-          (order) => order.id !== id
-        );
-        setPendingOrders1(updatedPendingOrders);
-
-        // setConfirmedOrders((prevConfirmedOrders) => [
-        //   ...prevConfirmedOrders,
-        //   orderToConfirm,
-        // ]);
+        const updatedPendingOrders = orders.filter((order) => order.id !== id);
+        setOrders(updatedPendingOrders);
       }
     }
   };
@@ -120,34 +145,35 @@ export default function AllOrders() {
   useEffect(() => {
     let pendArr = [];
 
-    for (let i = 0; i < allOrders?.length; i++) {
-      let eachOrder = allOrders[i];
+    if (pendingOrders) {
+      for (let i = 0; i < pendingOrders?.length; i++) {
+        let eachOrder = pendingOrders[i];
 
-      let orderItems = [];
-      let orderNotes = [];
+        let orderItems = [];
+        let orderNotes = [];
 
-      for (let j = 0; j < eachOrder.orderItems.length; j++) {
-        orderItems.push(eachOrder.orderItems[j].dish_id);
-        orderNotes.push(eachOrder.orderItems[j].notes);
+        for (let j = 0; j < eachOrder.orderItems.length; j++) {
+          orderItems.push(eachOrder.orderItems[j].dish_id);
+          orderNotes.push(eachOrder.orderItems[j].notes);
+        }
+
+        pendArr.push({
+          id: eachOrder.id,
+          orderRequestedDate: eachOrder.orderRequestedDate,
+          orderSent: eachOrder.orderSent,
+          totalPrice: eachOrder.totalPrice,
+          userId: eachOrder.userId,
+          orderState: eachOrder.orderState,
+          orderItems: orderItems,
+          itemNotes: orderNotes,
+          orderTable: eachOrder.orderTable,
+        });
       }
-
-      pendArr.push({
-        id: eachOrder.id,
-        orderRequestedDate: eachOrder.orderRequestedDate,
-        orderSent: eachOrder.orderSent,
-        totalPrice: eachOrder.totalPrice,
-        userId: eachOrder.userId,
-        orderState: eachOrder.orderState,
-        orderItems: orderItems,
-        itemNotes: orderNotes,
-        orderTable: eachOrder.orderTable,
-      });
     }
-
-    setPendingOrders1(pendArr);
+    setOrders(pendArr);
 
     const timer = setInterval(() => {
-      pendingOrders1.forEach((order) => {
+      pendingOrders?.forEach((order) => {
         // Calculate remaining time for each pending order
         const timeLeft = calculateTimeLeft(order.orderRequestedDate);
 
@@ -160,7 +186,7 @@ export default function AllOrders() {
     return () => {
       clearInterval(timer);
     };
-  }, [allOrders]);
+  }, [pendingOrders]);
 
   const [remainingTime, setRemainingTime] = useState({
     hours: 0,
@@ -176,10 +202,10 @@ export default function AllOrders() {
         : "Order deletion failed."
     );
     if (deleteOrderSuccess) {
-      const updatedPendingOrders = pendingOrders1.filter(
+      const updatedPendingOrders = orders.filter(
         (order) => order.id !== deleteOrderID
       );
-      setPendingOrders1(updatedPendingOrders);
+      setOrders(updatedPendingOrders);
     }
   };
 
@@ -197,7 +223,7 @@ export default function AllOrders() {
   };
 
   const confirmOrder = (id, tableNum) => {
-    const orderToConfirm = pendingOrders1.find((order) => order.id === id);
+    const orderToConfirm = orders.find((order) => order.id === id);
 
     if (tableNum <= 0) {
       if (orderToConfirm) {
@@ -235,10 +261,8 @@ export default function AllOrders() {
         : "Order denying failed."
     );
     if (confirmOrderSuccess) {
-      const updatedPendingOrders = pendingOrders1.filter(
-        (order) => order.id !== id
-      );
-      setPendingOrders1(updatedPendingOrders);
+      const updatedPendingOrders = orders.filter((order) => order.id !== id);
+      setOrders(updatedPendingOrders);
     }
   };
   function groupOrdersByRequestedDate(orders) {
@@ -264,7 +288,7 @@ export default function AllOrders() {
     return [...pendingOrders, ...pastOrders];
   }
   const denyOrder = (id) => {
-    const orderToConfirm = pendingOrders1.find((order) => order.id === id);
+    const orderToConfirm = orders.find((order) => order.id === id);
 
     if (orderToConfirm) {
       const confirmConfirmation = window.confirm(
@@ -277,24 +301,38 @@ export default function AllOrders() {
     }
   };
 
-  const sortedPendingOrders =
-    groupOrdersByRequestedDate(pendingOrders1)?.reverse();
+  const reversedPendingOrders = [...(orders || [])].reverse();
+  const paginatedOrders = reversedPendingOrders.slice(start, end);
 
   return (
     <OrdersContainer>
       <OrderSection orderState={0}>
         <h2 style={{ color: "#FFC100", marginBottom: 100 }}>Pending Orders</h2>
-        {sortedPendingOrders.map((order) => {
-          return (
-            <EachPendingOrder
-              key={order.id}
-              order={order}
-              confirmOrder={confirmOrder}
-              denyOrder={denyOrder}
-              handleDeleteOrder={handleDeleteOrder}
-            />
-          );
-        })}
+        {isLoading && <p>Loading...</p>}
+        {isError && <p>Error fetching data</p>}
+        <PageNavigation>
+          <FancyButton
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1 || isLoading}
+          >
+            Previous Page
+          </FancyButton>
+          <FancyButton
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={end >= pendingOrders?.length || isLoading}
+          >
+            Next Page
+          </FancyButton>
+        </PageNavigation>
+        {paginatedOrders.map((order) => (
+          <EachPendingOrder
+            key={order.id}
+            order={order}
+            confirmOrder={confirmOrder}
+            denyOrder={denyOrder}
+            handleDeleteOrder={handleDeleteOrder}
+          />
+        ))}
       </OrderSection>
     </OrdersContainer>
   );
