@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import EachPendingOrder from "../pageComponents/EachPendingOrder";
 import ConfOrderItems from "../pageComponents/ConfOrderItems";
+import { useQuery } from "react-query";
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -39,6 +40,30 @@ const OrderSection = styled.div`
   transition: transform 0.2s;
   cursor: pointer;
 `;
+const PageNavigation = styled.div`
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const FancyButton = styled.button`
+  padding: 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
 
 function calculateTimeLeft(requestedDate) {
   const currentTime = new Date();
@@ -55,23 +80,40 @@ function calculateTimeLeft(requestedDate) {
   };
 }
 
+const fetchOrders = async (id) => {
+  const orders = await API.getRestaurantOrders(id);
+  return orders;
+};
+
 export default function AllOrders() {
   const [allOrders, setAllOrders] = useState();
   const { state } = useLocation();
   const { restName, restInfo } = state;
-  const navigate = useNavigate();
 
-  let getOrders = async (id) => {
-    const orders = await API.getRestaurantOrders(id);
-    setAllOrders(orders);
-  };
+  const {
+    data: orders,
+    isLoading,
+    isError,
+  } = useQuery(
+    ["orders", restInfo?.id],
+    () => fetchOrders(restInfo?.id),
+    {
+      keepPreviousData: true,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      // Handle error
+      onError: (error) => {
+        console.error("Error fetching  orders:", error);
+      },
+    }
+  );
 
-  useEffect(() => {
-    getOrders(restInfo.id);
-  }, [restInfo]);
+  const pageSize = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const start = (currentPage - 1) * pageSize;
+  const end = start + pageSize;
 
   const orderConfirmation = async (id, orderToConfirm, tableNum) => {
-    console.log(1313234);
+
     if (tableNum <= 0) {
       console.log(23);
       const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
@@ -90,13 +132,9 @@ export default function AllOrders() {
         );
         setPendingOrders(updatedPendingOrders);
 
-        // setConfirmedOrders((prevConfirmedOrders) => [
-        //   ...prevConfirmedOrders,
-        //   orderToConfirm,
-        // ]);
       }
     } else {
-      console.log(1313);
+
       const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
         id,
         true,
@@ -114,36 +152,10 @@ export default function AllOrders() {
         );
         setPendingOrders(updatedPendingOrders);
 
-        // setConfirmedOrders((prevConfirmedOrders) => [
-        //   ...prevConfirmedOrders,
-        //   orderToConfirm,
-        // ]);
       }
     }
   };
-  // const orderConfirmation = async (id, orderToConfirm) => {
-  //   const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
-  //     id,
-  //     true
-  //   );
-  //   console.log(id, confirmOrderSuccess);
-  //   alert(
-  //     confirmOrderSuccess
-  //       ? "Order confirmed successfully!"
-  //       : "Order confirmation failed."
-  //   );
-  //   if (confirmOrderSuccess) {
-  //     const updatedPendingOrders = pendingOrders.filter(
-  //       (order) => order.id !== id
-  //     );
-  //     setPendingOrders(updatedPendingOrders);
 
-  //     setConfirmedOrders((prevConfirmedOrders) => [
-  //       ...prevConfirmedOrders,
-  //       orderToConfirm,
-  //     ]);
-  //   }
-  // };
   const orderDenying = async (id, orderToConfirm) => {
     const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
       id,
@@ -177,8 +189,8 @@ export default function AllOrders() {
     let pendArr = [];
     let denArr = [];
 
-    for (let i = 0; i < allOrders?.length; i++) {
-      let eachOrder = allOrders[i];
+    for (let i = 0; i < orders?.length; i++) {
+      let eachOrder = orders[i];
       if (eachOrder.orderState === 0) {
         let orderItems = [];
         let orderNotes = [];
@@ -260,7 +272,7 @@ export default function AllOrders() {
     return () => {
       clearInterval(timer);
     };
-  }, [allOrders]);
+  }, [orders]);
 
   const [remainingTime, setRemainingTime] = useState({
     hours: 0,
@@ -326,19 +338,7 @@ export default function AllOrders() {
       // Update the pending orders list
     }
   };
-  // const confirmOrder = (id) => {
-  //   const orderToConfirm = pendingOrders.find((order) => order.id === id);
 
-  //   if (orderToConfirm) {
-  //     const confirmConfirmation = window.confirm(
-  //       "Are you sure you want to confirm this order?"
-  //     );
-
-  //     if (confirmConfirmation) {
-  //       orderConfirmation(id, orderToConfirm);
-  //     }
-  //   }
-  // };
   const confirmOrder = (id, tableNum) => {
     const orderToConfirm = pendingOrders.find((order) => order.id === id);
 
@@ -379,12 +379,33 @@ export default function AllOrders() {
     }
   };
 
+ 
+  const paginatedPendingOrders = sortedPendingOrders.slice(start, end);
+  const paginatedConfirmedOrders = sortedConfirmedOrders.slice(start, end);
+  const paginatedDeniedOrders = sortedDeniedOrders.slice(start, end);
+
   return (
     <OrdersContainer>
       <AllOrdersTitle>All Orders</AllOrdersTitle>
       <OrderSection orderState={0}>
         <h2 style={{ color: "#FFC100", marginBottom: 100 }}>Pending Orders</h2>
-        {sortedPendingOrders.map((order) => (
+        {isLoading && <p>Loading...</p>}
+        {isError && <p>Error fetching data</p>}
+        <PageNavigation>
+          <FancyButton
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1 || isLoading}
+          >
+            Previous Page
+          </FancyButton>
+          <FancyButton
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={end >= pendingOrders?.length || isLoading}
+          >
+            Next Page
+          </FancyButton>
+        </PageNavigation>
+        {paginatedPendingOrders.map((order) => (
           <EachPendingOrder
             key={order.id}
             order={order}
@@ -396,16 +417,48 @@ export default function AllOrders() {
       </OrderSection>
 
       <OrderSection orderState={1}>
-        <h2 style={{ color: "#007bff", marginBottom: 100 }}>
-          Confirmed Orders
-        </h2>
-        {sortedConfirmedOrders.map((order) => (
+      
+        <h2 style={{ color: "#007bff", marginBottom: 20 }}>Confirmed Orders</h2>
+        {isLoading && <p>Loading...</p>}
+        {isError && <p>Error fetching data</p>}
+        <PageNavigation>
+          <FancyButton
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1 || isLoading}
+          >
+            Previous Page
+          </FancyButton>
+          <FancyButton
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={end >= confirmedOrders?.length || isLoading}
+          >
+            Next Page
+          </FancyButton>
+        </PageNavigation>
+        {paginatedConfirmedOrders.map((order) => (
           <ConfOrderItems key={order.id} props={order} />
         ))}
       </OrderSection>
+      
       <OrderSection orderState={2}>
-        <h2 style={{ color: "red", marginBottom: 100 }}>Denied Orders</h2>
-        {sortedDeniedOrders.map((order) => (
+        <h2 style={{ color: "red", marginBottom: 20 }}>Denied Orders</h2>
+        <PageNavigation>
+          <FancyButton
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Previous Page
+          </FancyButton>
+          <FancyButton
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={end >= deniedOrders?.length}
+          >
+            Next Page
+          </FancyButton>
+        </PageNavigation>
+        {isLoading && <p>Loading...</p>}
+        {isError && <p>Error fetching data</p>}
+        {paginatedDeniedOrders.map((order) => (
           <ConfOrderItems key={order.id} props={order} />
         ))}
       </OrderSection>
