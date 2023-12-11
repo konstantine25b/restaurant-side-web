@@ -3,11 +3,10 @@ import styled from "@emotion/styled";
 import { useNavigate } from 'react-router-dom';
 
 export default function ConfOrderItems(props) {
-    const navigate = useNavigate();
- 
-    let order = props?.props
 
-    console.log(order.id)
+    const navigate = useNavigate();
+    const order = props?.props
+    
   return (
     <div key={order.id}>
               <OrderItem
