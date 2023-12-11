@@ -3,6 +3,7 @@ import { API } from "../../Processing/RestaurantAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import EachPendingOrder from "../pageComponents/EachPendingOrder";
+import ConfOrderItems from "../pageComponents/ConfOrderItems";
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -212,12 +213,10 @@ export default function AllOrders() {
     getOrders(restInfo.id);
   }, [restInfo]);
 
-
   const orderConfirmation = async (id, orderToConfirm, tableNum) => {
-
-    console.log(1313234)
+    console.log(1313234);
     if (tableNum <= 0) {
-      console.log(23)
+      console.log(23);
       const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
         id,
         true
@@ -239,14 +238,12 @@ export default function AllOrders() {
         //   orderToConfirm,
         // ]);
       }
-       
-    }
-    else {
-      console.log(1313)
+    } else {
+      console.log(1313);
       const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
         id,
         true,
-        tableNum 
+        tableNum
       );
       console.log(id, confirmOrderSuccess);
       alert(
@@ -323,10 +320,7 @@ export default function AllOrders() {
     let pendArr = [];
     let denArr = [];
 
-   
-
     for (let i = 0; i < allOrders?.length; i++) {
-
       let eachOrder = allOrders[i];
       if (eachOrder.orderState === 0) {
         let orderItems = [];
@@ -441,9 +435,12 @@ export default function AllOrders() {
     return [...pendingOrders, ...pastOrders];
   }
 
-  const sortedPendingOrders = groupOrdersByRequestedDate(pendingOrders)?.reverse();
-  const sortedConfirmedOrders = groupOrdersByRequestedDate(confirmedOrders)?.reverse();
-  const sortedDeniedOrders = groupOrdersByRequestedDate(deniedOrders)?.reverse();
+  const sortedPendingOrders =
+    groupOrdersByRequestedDate(pendingOrders)?.reverse();
+  const sortedConfirmedOrders =
+    groupOrdersByRequestedDate(confirmedOrders)?.reverse();
+  const sortedDeniedOrders =
+    groupOrdersByRequestedDate(deniedOrders)?.reverse();
 
   const deleteOrder = async (deleteOrderID) => {
     const deleteOrderSuccess = await API.deleteRestaurantOrder(deleteOrderID);
@@ -457,8 +454,6 @@ export default function AllOrders() {
         (order) => order.id !== deleteOrderID
       );
       setPendingOrders(updatedPendingOrders);
-
-      
     }
   };
 
@@ -472,7 +467,6 @@ export default function AllOrders() {
       deleteOrder(id);
 
       // Update the pending orders list
-      
     }
   };
   // const confirmOrder = (id) => {
@@ -534,110 +528,13 @@ export default function AllOrders() {
       <OrderSection orderState={0}>
         <h2 style={{ color: "#FFC100", marginBottom: 100 }}>Pending Orders</h2>
         {sortedPendingOrders.map((order) => (
-          // <div key={order.id}>
-          //   <OrderItem
-          //     isTimeWarning={
-          //       calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-          //       calculateTimeLeft(order.orderRequestedDate).minutes <= 45
-          //     }
-          //     isTimePassed={isTimePassed(order.orderRequestedDate)}
-          //   >
-          //     <OrderDetails>
-          //       <OrderField orderState={0}>
-          //         <strong>Order ID:</strong> {order.id}
-          //       </OrderField>
-          //       <OrderField orderState={0}>
-          //         <strong>Order Request Date:</strong>{" "}
-          //         {new Date(order.orderRequestedDate).toLocaleString()}
-          //       </OrderField>
-          //       <OrderField orderState={0}>
-          //         <strong>Order Sent Date:</strong>{" "}
-          //         {order.orderSent
-          //           ? new Date(order.orderSent).toLocaleString()
-          //           : ""}
-          //       </OrderField>
-          //       <TimeWarning
-          //         isTimeWarning={
-          //           calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-          //           calculateTimeLeft(order.orderRequestedDate).minutes <= 60
-          //         }
-          //         isTimePassed={isTimePassed(order.orderRequestedDate)}
-          //       >
-          //         {isTimePassed(order.orderRequestedDate)
-          //           ? "Time has passed"
-          //           : `Time left: ${
-          //               calculateTimeLeft(order.orderRequestedDate).hours
-          //             }h ${
-          //               calculateTimeLeft(order.orderRequestedDate).minutes
-          //             }m ${
-          //               calculateTimeLeft(order.orderRequestedDate).seconds
-          //             }s`}
-          //       </TimeWarning>
-          //     </OrderDetails>
-          //     {/* <OrderItemContainer>
-          //       {order.orderItems.map((item, index) => (
-          //         <OrderItemDetails key={index}>
-          //           <strong>Item {index + 1}:</strong> {item}
-          //           <OrderItemNote>
-          //             <strong>Notes:</strong> {order.itemNotes[index]}
-          //           </OrderItemNote>
-          //         </OrderItemDetails>
-          //       ))}
-          //     </OrderItemContainer> */}
-          //     <TotalPrice>
-          //       <strong>Table ID:</strong> {order.orderTable > 0 ? order.orderTable : "None"}
-          //     </TotalPrice>
-          //     <TotalPrice>
-          //       <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
-          //     </TotalPrice>
-          //     <UserId>
-          //       <strong>Customer ID:</strong> {order.userId}
-          //     </UserId>
-          //     <OrderField orderState={0}>
-          //       {!order.orderState && (
-          //         <>
-          //           <SeeDetailsButton
-          //             onClick={() => {
-          //               navigate("/HomePage/EachOrderDetails", {
-          //                 state: {
-          //                   orderItems: order.orderItems,
-          //                   totalPrice: order.totalPrice?.toFixed(2),
-          //                   userId: order?.userId,
-          //                   orderNotes: order.itemNotes,
-          //                   orderRequestedDate: order.orderRequestedDate,
-          //                   orderSent: new Date(
-          //                     order.orderSent
-          //                   ).toLocaleString(),
-          //                   orderTable: order?.orderTable
-          //                 },
-                          
-          //               });
-          //               console.log(order)
-          //             }}
-          //           >
-          //             See Details
-          //           </SeeDetailsButton>
-          //           <ConfirmButton onClick={() => confirmOrder(order.id)}>
-          //             Confirm Order
-          //           </ConfirmButton>
-          //           <DenyButton onClick={() => denyOrder(order.id)}>
-          //             Deny Order
-          //           </DenyButton>
-          //           <DeleteButton onClick={() => handleDeleteOrder(order.id)}>
-          //             Delete Order
-          //           </DeleteButton>
-          //         </>
-          //       )}
-          //     </OrderField>
-          //   </OrderItem>
-          // </div>
           <EachPendingOrder
-              key={order.id}
-              order={order}
-              confirmOrder={confirmOrder}
-              denyOrder={denyOrder}
-              handleDeleteOrder={handleDeleteOrder}
-            />
+            key={order.id}
+            order={order}
+            confirmOrder={confirmOrder}
+            denyOrder={denyOrder}
+            handleDeleteOrder={handleDeleteOrder}
+          />
         ))}
       </OrderSection>
 
@@ -646,169 +543,13 @@ export default function AllOrders() {
           Confirmed Orders
         </h2>
         {sortedConfirmedOrders.map((order) => (
-          <div key={order.id}>
-            <OrderItem
-              isTimeWarning={
-                calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                calculateTimeLeft(order.orderRequestedDate).minutes <= 45
-              }
-              isTimePassed={isTimePassed(order.orderRequestedDate)}
-            >
-              <OrderDetails>
-                <OrderField orderState={1}>
-                  <strong>Order ID:</strong> {order.id}
-                </OrderField>
-                <OrderField orderState={1}>
-                  <strong>Order Request Date:</strong>{" "}
-                  {new Date(order.orderRequestedDate).toLocaleString()}
-                </OrderField>
-                <OrderField orderState={1}>
-                  <strong>Order Sent Date:</strong>{" "}
-                  {order.orderSent
-                    ? new Date(order.orderSent).toLocaleString()
-                    : ""}
-                </OrderField>
-
-                <TimeWarning
-                  isTimePassed={isTimePassed(order.orderRequestedDate)}
-                  isTimeWarning={
-                    calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                    calculateTimeLeft(order.orderRequestedDate).minutes <= 45
-                  }
-                >
-                  {isTimePassed(order.orderRequestedDate)
-                    ? "Time has passed"
-                    : `Time left: ${
-                        calculateTimeLeft(order.orderRequestedDate).hours
-                      }h ${
-                        calculateTimeLeft(order.orderRequestedDate).minutes
-                      }m ${
-                        calculateTimeLeft(order.orderRequestedDate).seconds
-                      }s`}
-                </TimeWarning>
-              </OrderDetails>
-              {/* <OrderItemContainer>
-                {order.orderItems.map((item, index) => (
-                  <OrderItemDetails key={index}>
-                    <strong>Item {index + 1}:</strong> {item}
-                    <OrderItemNote>
-                      <strong>Notes:</strong> {order.itemNotes[index]}
-                    </OrderItemNote>
-                  </OrderItemDetails>
-                ))}
-              </OrderItemContainer> */}
-               <TotalPrice>
-                <strong>Table ID:</strong> {order.orderTable > 0 ? order.orderTable : "None"}
-              </TotalPrice>
-              <TotalPrice>
-                <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
-              </TotalPrice>
-              <UserId>
-                <strong>Customer ID:</strong> {order.userId}
-              </UserId>
-              <SeeDetailsButton
-                onClick={() => {
-                  navigate("/HomePage/EachOrderDetails", {
-                    state: {
-                      orderItems: order.orderItems,
-                      totalPrice: order.totalPrice?.toFixed(2),
-                      userId: order?.userId,
-                      orderNotes: order.itemNotes,
-                      orderRequestedDate: order.orderRequestedDate,
-                      orderSent: new Date(order.orderSent).toLocaleString(),
-                      orderTable: order?.orderTable
-                    },
-                  });
-                }}
-              >
-                See Details
-              </SeeDetailsButton>
-            </OrderItem>
-          </div>
+          <ConfOrderItems key={order.id} props={order} />
         ))}
       </OrderSection>
       <OrderSection orderState={2}>
         <h2 style={{ color: "red", marginBottom: 100 }}>Denied Orders</h2>
         {sortedDeniedOrders.map((order) => (
-          <div key={order.id}>
-            <OrderItem
-              isTimeWarning={
-                calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                calculateTimeLeft(order.orderRequestedDate).minutes <= 45
-              }
-              isTimePassed={isTimePassed(order.orderRequestedDate)}
-            >
-              <OrderDetails>
-                <OrderField orderState={2}>
-                  <strong>Order ID:</strong> {order.id}
-                </OrderField>
-                <OrderField orderState={2}>
-                  <strong>Order Request Date:</strong>{" "}
-                  {new Date(order.orderRequestedDate).toLocaleString()}
-                </OrderField>
-                <OrderField orderState={2}>
-                  <strong>Order Sent Date:</strong>{" "}
-                  {order.orderSent
-                    ? new Date(order.orderSent).toLocaleString()
-                    : ""}
-                </OrderField>
-
-                <TimeWarning
-                  isTimePassed={isTimePassed(order.orderRequestedDate)}
-                  isTimeWarning={
-                    calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                    calculateTimeLeft(order.orderRequestedDate).minutes <= 45
-                  }
-                >
-                  {isTimePassed(order.orderRequestedDate)
-                    ? "Time has passed"
-                    : `Time left: ${
-                        calculateTimeLeft(order.orderRequestedDate).hours
-                      }h ${
-                        calculateTimeLeft(order.orderRequestedDate).minutes
-                      }m ${
-                        calculateTimeLeft(order.orderRequestedDate).seconds
-                      }s`}
-                </TimeWarning>
-              </OrderDetails>
-              {/* <OrderItemContainer>
-                {order.orderItems.map((item, index) => (
-                  <OrderItemDetails key={index}>
-                    <strong>Item {index + 1}:</strong> {item}
-                    <OrderItemNote>
-                      <strong>Notes:</strong> {order.itemNotes[index]}
-                    </OrderItemNote>
-                  </OrderItemDetails>
-                ))}
-              </OrderItemContainer> */}
-               <TotalPrice>
-                <strong>Table ID:</strong> {order.orderTable > 0 ? order.orderTable : "None"}
-              </TotalPrice>
-              <TotalPrice>
-                <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
-              </TotalPrice>
-              <UserId>
-                <strong>Customer ID:</strong> {order.userId}
-              </UserId>
-              <SeeDetailsButton
-                onClick={() => {
-                  navigate("/HomePage/EachOrderDetails", {
-                    state: {
-                      orderItems: order.orderItems,
-                      totalPrice: order.totalPrice?.toFixed(2),
-                      userId: order?.userId,
-                      orderNotes: order.itemNotes,
-                      orderRequestedDate: order.orderRequestedDate,
-                      orderSent: new Date(order.orderSent).toLocaleString(),
-                      orderTable: order?.orderTable
-                    },
-                  });
-                }}
-              >
-                See Details
-              </SeeDetailsButton>
-            </OrderItem>
-          </div>
+          <ConfOrderItems key={order.id} props={order} />
         ))}
       </OrderSection>
     </OrdersContainer>
