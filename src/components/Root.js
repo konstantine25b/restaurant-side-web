@@ -12,6 +12,9 @@ import {
   subscribeToLogInEvent,
 } from "../Processing/Database";
 import { API } from "../Processing/RestaurantAPI";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 export default function Root() {
   const navigate = useNavigate();
@@ -41,14 +44,12 @@ export default function Root() {
   };
   const handleGetRestaurantById = async (restaurantId) => {
     const restaurantById = await API.getRestaurantById(parseInt(restaurantId));
-    setRestName(JSON.parse(JSON.stringify(restaurantById))?.title)
-    setRestInfo(JSON.parse(JSON.stringify(restaurantById)))
-    
-    
+    setRestName(JSON.parse(JSON.stringify(restaurantById))?.title);
+    setRestInfo(JSON.parse(JSON.stringify(restaurantById)));
   };
-  useEffect(()=>{
-    setRestName(restInfo?.title)
-  },[restInfo])
+  useEffect(() => {
+    setRestName(restInfo?.title);
+  }, [restInfo]);
 
   // amit tavidanve momaq restornis saxeli
   useLayoutEffect(() => {
@@ -123,125 +124,124 @@ export default function Root() {
   // }, [context]);
 
   return (
-    <Main>
-      <Page>
-        <LeftSide>
-          <LeftSideTop>
-            <CompanyName onClick={() => navigate(`/HomePage`)}>
-              Presto Reserve
-            </CompanyName>
-          </LeftSideTop>
-          <LeftSideList>
-            <LeftNavbarList
-              title={"Restaurant Info"}
-              data={[
-                {
-                  Title: "Full Restaurant Information",
-                  Name: "FullRestInfo",
-                  restName: restName,
-                },
-                {
-                  Title: "Address",
-                  Name: "Address",
-                  restName: restName,
-                },
-                {
-                  Title: "Description",
-                  Name: "Description",
-                  restName: restName,
-                },
-                {
-                  Title: "Tags",
-                  Name: "RestaurantTags",
-                  restName: restName,
-                },
-                {
-                  Title: "Restaurant Main Image",
-                  Name: "MainImage",
-                  restName: restName,
-                },
-              ]}
-            />
-            <LeftNavbarList
-              title={"Products & Categories"}
-              data={[
-                {
-                  Title: "Products",
-                  Name: "Products",
-                  restName: restName,
-                  restInfo : restInfo
-                },
-                {
-                  Title: "Categories",
-                  Name: "Categories",
-                  restName: restName,
-                },
-              ]}
-            />
-             <LeftNavbarList
-              title={"Orders"}
-              data={[
-                {
-                  Title: "All Orders",
-                  Name: "AllOrders",
-                  restName: restName,
-                  restInfo: restInfo
-                },
-                {
-                  Title: "Pending Orders",
-                  Name: "PendingOrders",
-                  restName: restName,
-                  restInfo: restInfo
-                
-                },
-                {
-                  Title: "Confirmed Orders",
-                  Name: "ConfirmedOrders",
-                  restName: restName,
-                  restInfo: restInfo
-                },
-                {
-                  Title: "Denied Orders",
-                  Name: "DeniedOrders",
-                  restName: restName,
-                  restInfo: restInfo
-                },
-                {
-                  Title: "Deleted Orders",
-                  Name: "DeletedOrders",
-                  restName: restName,
-                  restInfo: restInfo
-                },
-               
-               
-              ]}
-            />
-          </LeftSideList>
-        </LeftSide>
-        <RightSide>
-          <UpperSideIn>
-            <UserTitle>
-              User: {data}
-              {/* {context?.mainUser} */}
-            </UserTitle>
-            <LogOutButton
-              onClick={() => {
-                // context?.setIsLoggedIn(false);
-                localStorage.removeItem("user_email");
-                localStorage.removeItem("user_password");
-                setData(null);
-                // signOut();
-              }}
-            >
-              Log Out
-            </LogOutButton>
-          </UpperSideIn>
-          <OutletSpace>
-            <Outlet />
-          </OutletSpace>
-        </RightSide>
-      </Page>
-    </Main>
+    <QueryClientProvider client={queryClient}>
+      <Main>
+        <Page>
+          <LeftSide>
+            <LeftSideTop>
+              <CompanyName onClick={() => navigate(`/HomePage`)}>
+                Presto Reserve
+              </CompanyName>
+            </LeftSideTop>
+            <LeftSideList>
+              <LeftNavbarList
+                title={"Restaurant Info"}
+                data={[
+                  {
+                    Title: "Full Restaurant Information",
+                    Name: "FullRestInfo",
+                    restName: restName,
+                  },
+                  {
+                    Title: "Address",
+                    Name: "Address",
+                    restName: restName,
+                  },
+                  {
+                    Title: "Description",
+                    Name: "Description",
+                    restName: restName,
+                  },
+                  {
+                    Title: "Tags",
+                    Name: "RestaurantTags",
+                    restName: restName,
+                  },
+                  {
+                    Title: "Restaurant Main Image",
+                    Name: "MainImage",
+                    restName: restName,
+                  },
+                ]}
+              />
+              <LeftNavbarList
+                title={"Products & Categories"}
+                data={[
+                  {
+                    Title: "Products",
+                    Name: "Products",
+                    restName: restName,
+                    restInfo: restInfo,
+                  },
+                  {
+                    Title: "Categories",
+                    Name: "Categories",
+                    restName: restName,
+                  },
+                ]}
+              />
+              <LeftNavbarList
+                title={"Orders"}
+                data={[
+                  {
+                    Title: "All Orders",
+                    Name: "AllOrders",
+                    restName: restName,
+                    restInfo: restInfo,
+                  },
+                  {
+                    Title: "Pending Orders",
+                    Name: "PendingOrders",
+                    restName: restName,
+                    restInfo: restInfo,
+                  },
+                  {
+                    Title: "Confirmed Orders",
+                    Name: "ConfirmedOrders",
+                    restName: restName,
+                    restInfo: restInfo,
+                  },
+                  {
+                    Title: "Denied Orders",
+                    Name: "DeniedOrders",
+                    restName: restName,
+                    restInfo: restInfo,
+                  },
+                  {
+                    Title: "Deleted Orders",
+                    Name: "DeletedOrders",
+                    restName: restName,
+                    restInfo: restInfo,
+                  },
+                ]}
+              />
+            </LeftSideList>
+          </LeftSide>
+          <RightSide>
+            <UpperSideIn>
+              <UserTitle>
+                User: {data}
+                {/* {context?.mainUser} */}
+              </UserTitle>
+              <LogOutButton
+                onClick={() => {
+                  // context?.setIsLoggedIn(false);
+                  localStorage.removeItem("user_email");
+                  localStorage.removeItem("user_password");
+                  setData(null);
+                  // signOut();
+                }}
+              >
+                Log Out
+              </LogOutButton>
+            </UpperSideIn>
+            <OutletSpace>
+              <Outlet />
+            </OutletSpace>
+          </RightSide>
+        </Page>
+      </Main>
+    </QueryClientProvider>
   );
 }
 

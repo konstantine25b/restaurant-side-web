@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { API } from "../../Processing/RestaurantAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
+import ConfOrderItems from "../pageComponents/ConfOrderItems";
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -234,88 +235,7 @@ export default function DeletedOrders() {
         <OrderSection orderState={3}>
           <h2 style={{ color: "gray", marginBottom: 100 }}>Deleted Orders</h2>
           {sortedDeletedOrders.map((order) => (
-          <div key={order.id}>
-            <OrderItem
-              isTimeWarning={
-                calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                calculateTimeLeft(order.orderRequestedDate).minutes <= 60
-              }
-              isTimePassed={isTimePassed(order.orderRequestedDate)}
-            >
-              <OrderDetails>
-                <OrderField orderState={true}>
-                  <strong>Order ID:</strong> {order.id}
-                </OrderField>
-                <OrderField orderState={true}>
-                  <strong>Order Request Date:</strong>{" "}
-                  {new Date(order.orderRequestedDate).toLocaleString()}
-                </OrderField>
-                <OrderField orderState={true}>
-                  <strong>Order Sent Date:</strong>{" "}
-                  {order.orderSent
-                    ? new Date(order.orderSent).toLocaleString()
-                    : ""}
-                </OrderField>
-                <TimeWarning
-                  isTimePassed={isTimePassed(order.orderRequestedDate)}
-                  isTimeWarning={
-                    calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                    calculateTimeLeft(order.orderRequestedDate).minutes <= 45
-                  }
-                >
-                  {isTimePassed(order.orderRequestedDate)
-                    ? "Time has passed"
-                    : `Time left: ${
-                        calculateTimeLeft(order.orderRequestedDate).hours
-                      }h ${
-                        calculateTimeLeft(order.orderRequestedDate).minutes
-                      }m ${
-                        calculateTimeLeft(order.orderRequestedDate).seconds
-                      }s`}
-                </TimeWarning>
-              </OrderDetails>
-              {/* <OrderItemContainer>
-                {order.orderItems.map((item, index) => (
-                  <OrderItemDetails key={index}>
-                    <strong>Item {index + 1}:</strong> {item}
-                    <OrderItemNote>
-                      <strong>Notes:</strong> {order.itemNotes[index]}
-                    </OrderItemNote>
-                  </OrderItemDetails>
-                ))}
-              </OrderItemContainer> */}
-               <TotalPrice>
-                <strong>Table ID:</strong> {order.orderTable > 0 ? order.orderTable : "None"}
-              </TotalPrice>
-              <TotalPrice>
-                <strong>Total Price:</strong> ₾{order.totalPrice?.toFixed(2)}
-              </TotalPrice>
-              <UserId>
-                <strong>Customer ID:</strong> {order.userId}
-              </UserId>
-              <SeeDetailsButton
-                onClick={() => {
-                  navigate("/HomePage/EachOrderDetails", {
-                    state: {
-                      orderItems: order.orderItems,
-                      totalPrice: order.totalPrice?.toFixed(2),
-                      userId: order?.userId,
-                      orderNotes: order.itemNotes,
-                      orderRequestedDate: order.orderRequestedDate,
-                      orderSent: new Date(order.orderSent).toLocaleString(),
-                      orderTable: order?.orderTable
-                    },
-                  });
-               
-                }}
-              >
-                See Details
-              </SeeDetailsButton>
-              {/* <UserId>
-                <strong>Customer ID:</strong> {order.userId}
-              </UserId> */}
-            </OrderItem>
-          </div>
+           (<ConfOrderItems key = {order.id} props = {order}/>)
         ))}
         </OrderSection>
       </OrdersContainer>
