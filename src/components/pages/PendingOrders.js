@@ -3,7 +3,7 @@ import { API } from "../../Processing/RestaurantAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import EachPendingOrder from "../pageComponents/EachPendingOrder";
-import { useQuery } from "react-query";
+import { QueryClient, useQuery } from "react-query";
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -77,7 +77,6 @@ const fetchPendingOrders = async (id) => {
 };
 
 export default function AllOrders() {
-
   const { state } = useLocation();
   const { restName, restInfo } = state;
 
@@ -87,6 +86,7 @@ export default function AllOrders() {
     data: pendingOrders,
     isLoading,
     isError,
+    refetch,
   } = useQuery(
     ["pendingOrders", restInfo?.id],
     () => fetchPendingOrders(restInfo?.id),
@@ -100,6 +100,11 @@ export default function AllOrders() {
     }
   );
 
+  // refreshes page when its triggered
+  const simulateRealtimeUpdate = () => {
+    // Trigger a manual refetch to simulate real-time updates
+    refetch();
+  };
   const pageSize = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const start = (currentPage - 1) * pageSize;
@@ -216,7 +221,9 @@ export default function AllOrders() {
 
     if (shouldDelete) {
       // Perform the deletion
-      deleteOrder(id);
+      deleteOrder(id).then(() => {
+        simulateRealtimeUpdate();
+      });
 
       // Update the pending orders list
     }
@@ -233,7 +240,9 @@ export default function AllOrders() {
 
         if (confirmConfirmation) {
           // ese -1 imitoro connfirmaciistvis table number gadavce
-          orderConfirmation(id, orderToConfirm, -1);
+          orderConfirmation(id, orderToConfirm, -1).then(() => {
+            simulateRealtimeUpdate();
+          });
         }
       }
     } else {
@@ -243,7 +252,9 @@ export default function AllOrders() {
         );
 
         if (confirmConfirmation) {
-          orderConfirmation(id, orderToConfirm, tableNum);
+          orderConfirmation(id, orderToConfirm, tableNum).then(() => {
+            simulateRealtimeUpdate();
+          });
         }
       }
     }
@@ -296,7 +307,9 @@ export default function AllOrders() {
       );
 
       if (confirmConfirmation) {
-        orderDenying(id, orderToConfirm);
+        orderDenying(id, orderToConfirm).then(() => {
+          simulateRealtimeUpdate();
+        });
       }
     }
   };
