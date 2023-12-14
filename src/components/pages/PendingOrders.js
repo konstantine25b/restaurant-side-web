@@ -92,7 +92,7 @@ export default function AllOrders() {
     () => fetchPendingOrders(restInfo?.id),
     {
       keepPreviousData: true,
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 5, // 5 minutes
       // Handle error
       onError: (error) => {
         console.error("Error fetching pending orders:", error);

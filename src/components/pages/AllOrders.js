@@ -94,18 +94,21 @@ export default function AllOrders() {
     data: orders,
     isLoading,
     isError,
-  } = useQuery(
-    ["orders", restInfo?.id],
-    () => fetchOrders(restInfo?.id),
-    {
-      keepPreviousData: true,
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      // Handle error
-      onError: (error) => {
-        console.error("Error fetching  orders:", error);
-      },
-    }
-  );
+    refetch,
+  } = useQuery(["orders", restInfo?.id], () => fetchOrders(restInfo?.id), {
+    keepPreviousData: true,
+    staleTime: 1000 * 5, // 5 minutes
+    // Handle error
+    onError: (error) => {
+      console.error("Error fetching  orders:", error);
+    },
+  });
+
+  // refreshes page when its triggered
+  const simulateRealtimeUpdate = () => {
+    // Trigger a manual refetch to simulate real-time updates
+    refetch();
+  };
 
   const pageSize = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -113,7 +116,6 @@ export default function AllOrders() {
   const end = start + pageSize;
 
   const orderConfirmation = async (id, orderToConfirm, tableNum) => {
-
     if (tableNum <= 0) {
       console.log(23);
       const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
@@ -131,10 +133,8 @@ export default function AllOrders() {
           (order) => order.id !== id
         );
         setPendingOrders(updatedPendingOrders);
-
       }
     } else {
-
       const confirmOrderSuccess = await API.confirmOrDenyRestaurantOrder(
         id,
         true,
@@ -151,7 +151,6 @@ export default function AllOrders() {
           (order) => order.id !== id
         );
         setPendingOrders(updatedPendingOrders);
-
       }
     }
   };
@@ -183,6 +182,8 @@ export default function AllOrders() {
   const [pendingOrders, setPendingOrders] = useState([]);
   const [confirmedOrders, setConfirmedOrders] = useState([]);
   const [deniedOrders, setDeniedOrders] = useState([]);
+
+
 
   useEffect(() => {
     let confArr = [];
@@ -333,7 +334,9 @@ export default function AllOrders() {
 
     if (shouldDelete) {
       // Perform the deletion
-      deleteOrder(id);
+      deleteOrder(id).then(() => {
+        simulateRealtimeUpdate();
+      });
 
       // Update the pending orders list
     }
@@ -350,7 +353,9 @@ export default function AllOrders() {
 
         if (confirmConfirmation) {
           // ese -1 imitoro connfirmaciistvis table number gadavce
-          orderConfirmation(id, orderToConfirm, -1);
+          orderConfirmation(id, orderToConfirm, -1).then(() => {
+            simulateRealtimeUpdate();
+          });
         }
       }
     } else {
@@ -360,7 +365,9 @@ export default function AllOrders() {
         );
 
         if (confirmConfirmation) {
-          orderConfirmation(id, orderToConfirm, tableNum);
+          orderConfirmation(id, orderToConfirm, tableNum).then(() => {
+            simulateRealtimeUpdate();
+          });
         }
       }
     }
@@ -374,12 +381,13 @@ export default function AllOrders() {
       );
 
       if (confirmConfirmation) {
-        orderDenying(id, orderToConfirm);
+        orderDenying(id, orderToConfirm).then(() => {
+          simulateRealtimeUpdate();
+        });
       }
     }
   };
 
- 
   const paginatedPendingOrders = sortedPendingOrders.slice(start, end);
   const paginatedConfirmedOrders = sortedConfirmedOrders.slice(start, end);
   const paginatedDeniedOrders = sortedDeniedOrders.slice(start, end);
@@ -417,7 +425,6 @@ export default function AllOrders() {
       </OrderSection>
 
       <OrderSection orderState={1}>
-      
         <h2 style={{ color: "#007bff", marginBottom: 20 }}>Confirmed Orders</h2>
         {isLoading && <p>Loading...</p>}
         {isError && <p>Error fetching data</p>}
@@ -439,7 +446,7 @@ export default function AllOrders() {
           <ConfOrderItems key={order.id} props={order} />
         ))}
       </OrderSection>
-      
+
       <OrderSection orderState={2}>
         <h2 style={{ color: "red", marginBottom: 20 }}>Denied Orders</h2>
         <PageNavigation>

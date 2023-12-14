@@ -82,7 +82,7 @@ export default function AllOrders() {
     () => fetchConfirmedOrders(restInfo?.id),
     {
       keepPreviousData: true,
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 *  5, // 5 secs
       // Handle error
       onError: (error) => {
         console.error("Error fetching confirmed orders:", error);
