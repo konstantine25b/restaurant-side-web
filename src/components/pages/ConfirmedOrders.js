@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import { useQuery } from "react-query";
 import ConfOrderItems from "../pageComponents/ConfOrderItems";
+import Select from 'react-select';
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -49,6 +50,43 @@ const FancyButton = styled.button`
     cursor: not-allowed;
   }
 `;
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+`;
+
+const PageSelectContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const PageSelect = styled.select`
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const PageOption = styled.option`
+  background-color: #007bff;
+  color: #fff;
+`;
+
+
+const PaginationButton = styled(FancyButton)`
+  margin: 0 5px;
+`;
+
 
 function calculateTimeLeft(requestedDate) {
   const currentTime = new Date();
@@ -73,16 +111,19 @@ const fetchConfirmedOrders = async (id) => {
 export default function AllOrders() {
   const { state } = useLocation();
   const { restInfo } = state;
-  const navigate = useNavigate();
 
-  const [orders,setOrders]= useState()
+  const [orders, setOrders] = useState();
 
-  const { data: confirmedOrders, isLoading, isError } = useQuery(
+  const {
+    data: confirmedOrders,
+    isLoading,
+    isError,
+  } = useQuery(
     ["confirmedOrders", restInfo?.id],
     () => fetchConfirmedOrders(restInfo?.id),
     {
       keepPreviousData: true,
-      staleTime: 1000 *  5, // 5 secs
+      staleTime: 1000 * 5, // 5 secs
       // Handle error
       onError: (error) => {
         console.error("Error fetching confirmed orders:", error);
@@ -94,6 +135,43 @@ export default function AllOrders() {
   const [currentPage, setCurrentPage] = useState(1);
   const start = (currentPage - 1) * pageSize;
   const end = start + pageSize;
+  
+  const totalPages = Math.ceil((confirmedOrders?.length || 0) / pageSize);
+
+  const handlePageClick = (selectedOption) => {
+    setCurrentPage(selectedOption.value);
+  };
+
+  const options = Array.from({ length: totalPages }, (_, index) => ({
+    value: index + 1,
+    label: `${index + 1}`,
+  }));
+// es aris Select is style
+  const customStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: '#007bff',
+      color: 'white',
+      borderRadius: '5px',
+      border: 'none',
+      boxShadow: state.isFocused ? '0 0 0 1px #0056b3' : 'none',
+      '&:hover': {
+        borderColor: state.isFocused ? '#0056b3' : 'none',
+      },
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? '#0056b3' : '#007bff',
+      color: 'white',
+      '&:hover': {
+        backgroundColor: state.isSelected ? '#0056b3' : '#0056b3',
+      },
+    }),
+    indicatorSeparator: (provided) => ({
+      ...provided,
+      display: 'none',
+    }),
+  };
 
   const [remainingTime, setRemainingTime] = useState({
     hours: 0,
@@ -158,18 +236,31 @@ export default function AllOrders() {
         {isLoading && <p>Loading...</p>}
         {isError && <p>Error fetching data</p>}
         <PageNavigation>
-          <FancyButton
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1 || isLoading}
-          >
-            Previous Page
-          </FancyButton>
-          <FancyButton
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-            disabled={end >= confirmedOrders?.length || isLoading}
-          >
-            Next Page
-          </FancyButton>
+          <PaginationContainer>
+          <PaginationButton
+              onClick={() => handlePageClick({ value: currentPage - 1 })}
+              disabled={currentPage === 1 || isLoading}
+            >
+              Previous
+            </PaginationButton>
+            <span>Page {currentPage} of {totalPages}</span>
+            <PaginationButton
+              onClick={() => handlePageClick({ value: currentPage + 1 })}
+              disabled={currentPage === totalPages || isLoading}
+            >
+              Next
+            </PaginationButton>
+          
+          </PaginationContainer>
+          <PageSelectContainer>
+          <Select
+            value={{ value: currentPage, label: `${currentPage}` }}
+            onChange={handlePageClick}
+            options={options}
+            styles={customStyles}
+          />
+            
+          </PageSelectContainer>
         </PageNavigation>
         {paginatedOrders.map((order) => (
           <ConfOrderItems key={order.id} props={order} />

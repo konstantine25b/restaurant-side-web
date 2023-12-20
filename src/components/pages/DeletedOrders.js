@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import styled from "@emotion/styled";
 import ConfOrderItems from "../pageComponents/ConfOrderItems";
 import { useQuery } from "react-query";
+import Select from 'react-select';
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -48,6 +49,40 @@ const FancyButton = styled.button`
     background-color: #ccc;
     cursor: not-allowed;
   }
+`;
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+`;
+
+const PageSelectContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const PaginationButton = styled(FancyButton)`
+  margin: 0 5px;
+`;
+
+const PageSelect = styled.select`
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const PageOption = styled.option`
+  background-color: #007bff;
+  color: #fff;
 `;
 
 
@@ -98,6 +133,41 @@ export default function DeletedOrders() {
   const [currentPage, setCurrentPage] = useState(1);
   const start = (currentPage - 1) * pageSize;
   const end = start + pageSize;
+  const totalPages = Math.ceil((deletedOrders?.length || 0) / pageSize);
+
+  const handlePageClick = (selectedOption) => {
+    setCurrentPage(selectedOption.value);
+  };
+  const options = Array.from({ length: totalPages }, (_, index) => ({
+    value: index + 1,
+    label: `${index + 1}`,
+  }));
+// es aris Select is style
+  const customStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: '#007bff',
+      color: 'white',
+      borderRadius: '5px',
+      border: 'none',
+      boxShadow: state.isFocused ? '0 0 0 1px #0056b3' : 'none',
+      '&:hover': {
+        borderColor: state.isFocused ? '#0056b3' : 'none',
+      },
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? '#0056b3' : '#007bff',
+      color: 'white',
+      '&:hover': {
+        backgroundColor: state.isSelected ? '#0056b3' : '#0056b3',
+      },
+    }),
+    indicatorSeparator: (provided) => ({
+      ...provided,
+      display: 'none',
+    }),
+  };
 
   const [remainingTime, setRemainingTime] = useState({
     hours: 0,
@@ -159,18 +229,31 @@ export default function DeletedOrders() {
       <OrderSection orderState={3}>
         <h2 style={{ color: "grey", marginBottom: 20 }}>Deleted Orders</h2>
         <PageNavigation>
-          <FancyButton
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous Page
-          </FancyButton>
-          <FancyButton
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-            disabled={end >= deletedOrders?.length}
-          >
-            Next Page
-          </FancyButton>
+          <PaginationContainer>
+          <PaginationButton
+              onClick={() => handlePageClick({ value: currentPage - 1 })}
+              disabled={currentPage === 1 || isLoading}
+            >
+              Previous
+            </PaginationButton>
+            <span>Page {currentPage} of {totalPages}</span>
+            <PaginationButton
+              onClick={() => handlePageClick({ value: currentPage + 1 })}
+              disabled={currentPage === totalPages || isLoading}
+            >
+              Next
+            </PaginationButton>
+          
+          </PaginationContainer>
+          <PageSelectContainer>
+          <Select
+            value={{ value: currentPage, label: `${currentPage}` }}
+            onChange={handlePageClick}
+            options={options}
+            styles={customStyles}
+          />
+            
+          </PageSelectContainer>
         </PageNavigation>
         {isLoading && <p>Loading...</p>}
         {isError && <p>Error fetching data</p>}
