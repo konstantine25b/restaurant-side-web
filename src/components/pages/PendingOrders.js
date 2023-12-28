@@ -96,11 +96,13 @@ function calculateTimeLeft(requestedDate) {
   const currentTime = new Date();
   const endTime = new Date(requestedDate);
   const timeDiff = endTime - currentTime;
+  const days = Math.floor((timeDiff / (1000 * 60 * 60 * 24)) % 30);
   const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
   const minutes = Math.floor((timeDiff / 1000 / 60) % 60);
   const seconds = Math.floor((timeDiff / 1000) % 60);
 
   return {
+    days: days,
     hours: hours,
     minutes: minutes,
     seconds: seconds,
@@ -265,6 +267,7 @@ export default function AllOrders() {
   }, [pendingOrders]);
 
   const [remainingTime, setRemainingTime] = useState({
+    days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
@@ -347,28 +350,28 @@ export default function AllOrders() {
       setOrders(updatedPendingOrders);
     }
   };
-  function groupOrdersByRequestedDate(orders) {
-    const currentTime = new Date();
-    const lessThan1Hour = new Date(currentTime);
-    lessThan1Hour.setHours(currentTime.getHours() - 1);
+  // function groupOrdersByRequestedDate(orders) {
+  //   const currentTime = new Date();
+  //   const lessThan1Hour = new Date(currentTime);
+  //   lessThan1Hour.setHours(currentTime.getHours() - 1);
 
-    const pendingOrders = [];
-    const pastOrders = [];
+  //   const pendingOrders = [];
+  //   const pastOrders = [];
 
-    for (const order of orders) {
-      const orderDate = new Date(order.orderRequestedDate);
+  //   for (const order of orders) {
+  //     const orderDate = new Date(order.orderRequestedDate);
 
-      if (orderDate < currentTime) {
-        pendingOrders.push(order);
-      } else if (orderDate > lessThan1Hour) {
-        pendingOrders.push(order);
-      } else {
-        pastOrders.push(order);
-      }
-    }
+  //     if (orderDate < currentTime) {
+  //       pendingOrders.push(order);
+  //     } else if (orderDate > lessThan1Hour) {
+  //       pendingOrders.push(order);
+  //     } else {
+  //       pastOrders.push(order);
+  //     }
+  //   }
 
-    return [...pendingOrders, ...pastOrders];
-  }
+  //   return [...pendingOrders, ...pastOrders];
+  // }
   const denyOrder = (id) => {
     const orderToConfirm = orders.find((order) => order.id === id);
 

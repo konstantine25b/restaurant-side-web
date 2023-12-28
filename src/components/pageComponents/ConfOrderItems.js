@@ -40,12 +40,10 @@ export default function ConfOrderItems(props) {
                     {isTimePassed(order.orderRequestedDate)
                       ? "Time has passed"
                       : `Time left: ${
-                          calculateTimeLeft(order.orderRequestedDate).hours
-                        }h ${
-                          calculateTimeLeft(order.orderRequestedDate).minutes
-                        }m ${
-                          calculateTimeLeft(order.orderRequestedDate).seconds
-                        }s`}
+                        calculateTimeLeft(order.orderRequestedDate).days
+                      }d ${calculateTimeLeft(order.orderRequestedDate).hours}h ${
+                        calculateTimeLeft(order.orderRequestedDate).minutes
+                      }m ${calculateTimeLeft(order.orderRequestedDate).seconds}s`}
                   </TimeWarning>
                 </OrderDetails>
                 {/* <OrderItemContainer>
@@ -176,11 +174,13 @@ function calculateTimeLeft(requestedDate) {
   const currentTime = new Date();
   const endTime = new Date(requestedDate);
   const timeDiff = endTime - currentTime;
+  const days = Math.floor((timeDiff / (1000 * 60 * 60 * 24)) % 30);
   const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
   const minutes = Math.floor((timeDiff / 1000 / 60) % 60);
   const seconds = Math.floor((timeDiff / 1000) % 60);
 
   return {
+    days: days,
     hours: hours,
     minutes: minutes,
     seconds: seconds,

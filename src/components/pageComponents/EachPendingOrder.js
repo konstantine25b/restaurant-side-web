@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
 
-
 const OrderItem = styled.div`
   margin-bottom: 30px;
   font-size: 18px;
@@ -51,7 +50,6 @@ const TableInput = styled.input`
   margin-right: 10px;
   border: 1px solid #ccc;
 `;
-
 
 const ConfirmButton = styled.button`
   background-color: #007bff;
@@ -158,88 +156,86 @@ function calculateTimeLeft(requestedDate) {
   const currentTime = new Date();
   const endTime = new Date(requestedDate);
   const timeDiff = endTime - currentTime;
+  const days = Math.floor((timeDiff / (1000 * 60 * 60 * 24)) % 30);
   const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
   const minutes = Math.floor((timeDiff / 1000 / 60) % 60);
   const seconds = Math.floor((timeDiff / 1000) % 60);
 
   return {
+    days: days,
     hours: hours,
     minutes: minutes,
     seconds: seconds,
   };
 }
 
+const EachPendingOrder = ({
+  order,
+  confirmOrder,
+  denyOrder,
+  handleDeleteOrder,
+}) => {
+  const navigate = useNavigate();
 
-const EachPendingOrder = ({ order, confirmOrder, denyOrder, handleDeleteOrder }) => {
-    const navigate = useNavigate();
+  const [tableNumber, setTableNumber] = useState(-1);
 
+  const handleTableChange = (e) => {
+    setTableNumber(e.target.value);
 
-    const [tableNumber, setTableNumber] = useState(-1);
+    console.log(tableNumber);
+  };
 
-    const handleTableChange = (e) => {
-           
-        setTableNumber(e.target.value)
-  
-        console.log( tableNumber)
-      };
-
-      const handleConfirmClick = () => {
-        // console.log(order.orderTable,tableNumber)
-        if (order.orderTable <= 0 && tableNumber > 0) {
-        //   console.log(1)
-          confirmOrder(order.id, tableNumber);
-        } else if (order.orderTable > 0) {
-            // console.log("dfdg")
-          confirmOrder(order.id , -1);// ese imito rom table ro gadavcem chaiweros 
-        }
-        else{
-          alert("Please choose a table number");
-        }
-      };
- 
+  const handleConfirmClick = () => {
+    // console.log(order.orderTable,tableNumber)
+    if (order.orderTable <= 0 && tableNumber > 0) {
+      //   console.log(1)
+      confirmOrder(order.id, tableNumber);
+    } else if (order.orderTable > 0) {
+      // console.log("dfdg")
+      confirmOrder(order.id, -1); // ese imito rom table ro gadavcem chaiweros
+    } else {
+      alert("Please choose a table number");
+    }
+  };
 
   return (
     <div key={order.id}>
-              <OrderItem
-                isTimeWarning={
-                  calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                  calculateTimeLeft(order.orderRequestedDate).minutes <= 45
-                }
-                isTimePassed={isTimePassed(order.orderRequestedDate)}
-              >
-                <OrderDetails>
-                  <OrderField orderState={0}>
-                    <strong>Order ID:</strong> {order.id}
-                  </OrderField>
-                  <OrderField orderState={0}>
-                    <strong>Order Request Date:</strong>{" "}
-                    {new Date(order.orderRequestedDate).toLocaleString()}
-                  </OrderField>
-                  <OrderField orderState={0}>
-                    <strong>Order Sent Date:</strong>{" "}
-                    {order.orderSent
-                      ? new Date(order.orderSent).toLocaleString()
-                      : ""}
-                  </OrderField>
-                  <TimeWarning
-                    isTimeWarning={
-                      calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
-                      calculateTimeLeft(order.orderRequestedDate).minutes <= 60
-                    }
-                    isTimePassed={isTimePassed(order.orderRequestedDate)}
-                  >
-                    {isTimePassed(order.orderRequestedDate)
-                      ? "Time has passed"
-                      : `Time left: ${
-                          calculateTimeLeft(order.orderRequestedDate).hours
-                        }h ${
-                          calculateTimeLeft(order.orderRequestedDate).minutes
-                        }m ${
-                          calculateTimeLeft(order.orderRequestedDate).seconds
-                        }s`}
-                  </TimeWarning>
-                </OrderDetails>
-                {/* <OrderItemContainer>
+      <OrderItem
+        isTimeWarning={
+          calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+          calculateTimeLeft(order.orderRequestedDate).minutes <= 45
+        }
+        isTimePassed={isTimePassed(order.orderRequestedDate)}
+      >
+        <OrderDetails>
+          <OrderField orderState={0}>
+            <strong>Order ID:</strong> {order.id}
+          </OrderField>
+          <OrderField orderState={0}>
+            <strong>Order Request Date:</strong>{" "}
+            {new Date(order.orderRequestedDate).toLocaleString()}
+          </OrderField>
+          <OrderField orderState={0}>
+            <strong>Order Sent Date:</strong>{" "}
+            {order.orderSent ? new Date(order.orderSent).toLocaleString() : ""}
+          </OrderField>
+          <TimeWarning
+            isTimeWarning={
+              calculateTimeLeft(order.orderRequestedDate).hours === 0 &&
+              calculateTimeLeft(order.orderRequestedDate).minutes <= 60
+            }
+            isTimePassed={isTimePassed(order.orderRequestedDate)}
+          >
+            {isTimePassed(order.orderRequestedDate)
+              ? "Time has passed"
+              : `Time left: ${
+                  calculateTimeLeft(order.orderRequestedDate).days
+                }d ${calculateTimeLeft(order.orderRequestedDate).hours}h ${
+                  calculateTimeLeft(order.orderRequestedDate).minutes
+                }m ${calculateTimeLeft(order.orderRequestedDate).seconds}s`}
+          </TimeWarning>
+        </OrderDetails>
+        {/* <OrderItemContainer>
                 {order.orderItems.map((item, index) => (
                   <OrderItemDetails key={index}>
                     <strong>Item {index + 1}:</strong> {item}
@@ -249,66 +245,60 @@ const EachPendingOrder = ({ order, confirmOrder, denyOrder, handleDeleteOrder })
                   </OrderItemDetails>
                 ))}
               </OrderItemContainer> */}
-                <TotalPrice>
-                  <strong>Table ID:</strong>{" "}
-                  {order.orderTable > 0 ? order.orderTable : "None"}
-                </TotalPrice>
-                <TotalPrice>
-                  <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
-                </TotalPrice>
-                <UserId>
-                  <strong>Customer ID:</strong> {order.userId}
-                </UserId>
-                <OrderField orderState={0}>
-                  {!order.orderState && (
-                    <>
-                      <SeeDetailsButton
-                        onClick={() => {
-                          navigate("/HomePage/EachOrderDetails", {
-                            state: {
-                              orderItems: order.orderItems,
-                              totalPrice: order.totalPrice?.toFixed(2),
-                              userId: order?.userId,
-                              orderNotes: order.itemNotes,
-                              orderRequestedDate: order.orderRequestedDate,
-                              orderSent: new Date(
-                                order.orderSent
-                              ).toLocaleString(),
-                              orderTable: order?.orderTable,
-                            },
-                          });
-                        }}
-                      >
-                        See Details
-                      </SeeDetailsButton>
-                      {order.orderTable <= 0 ? (
-                          <TableInput
-                            type="number"
-                            placeholder="Enter Table Number"
-                            onChange={(e) => handleTableChange(e)}
-                            min="1" // Set the minimum allowed value
-                            step="1"
-                          />
-                       
-                      ) : null}
-                      
-                      <ConfirmButton
-                      
-                        onClick={handleConfirmClick}
-                      >
-                        Confirm Order
-                      </ConfirmButton>
-                      <DenyButton onClick={() => denyOrder(order.id)}>
-                        Deny Order
-                      </DenyButton>
-                      <DeleteButton onClick={() => handleDeleteOrder(order.id)}>
-                        Delete Order
-                      </DeleteButton>
-                    </>
-                  )}
-                </OrderField>
-              </OrderItem>
-            </div>
+        <TotalPrice>
+          <strong>Table ID:</strong>{" "}
+          {order.orderTable > 0 ? order.orderTable : "None"}
+        </TotalPrice>
+        <TotalPrice>
+          <strong>Total Price:</strong> ₾{order.totalPrice.toFixed(2)}
+        </TotalPrice>
+        <UserId>
+          <strong>Customer ID:</strong> {order.userId}
+        </UserId>
+        <OrderField orderState={0}>
+          {!order.orderState && (
+            <>
+              <SeeDetailsButton
+                onClick={() => {
+                  navigate("/HomePage/EachOrderDetails", {
+                    state: {
+                      orderItems: order.orderItems,
+                      totalPrice: order.totalPrice?.toFixed(2),
+                      userId: order?.userId,
+                      orderNotes: order.itemNotes,
+                      orderRequestedDate: order.orderRequestedDate,
+                      orderSent: new Date(order.orderSent).toLocaleString(),
+                      orderTable: order?.orderTable,
+                    },
+                  });
+                }}
+              >
+                See Details
+              </SeeDetailsButton>
+              {order.orderTable <= 0 ? (
+                <TableInput
+                  type="number"
+                  placeholder="Enter Table Number"
+                  onChange={(e) => handleTableChange(e)}
+                  min="1" // Set the minimum allowed value
+                  step="1"
+                />
+              ) : null}
+
+              <ConfirmButton onClick={handleConfirmClick}>
+                Confirm Order
+              </ConfirmButton>
+              <DenyButton onClick={() => denyOrder(order.id)}>
+                Deny Order
+              </DenyButton>
+              <DeleteButton onClick={() => handleDeleteOrder(order.id)}>
+                Delete Order
+              </DeleteButton>
+            </>
+          )}
+        </OrderField>
+      </OrderItem>
+    </div>
   );
 };
 
