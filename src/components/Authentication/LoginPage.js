@@ -1,26 +1,14 @@
-import React, { useContext, useEffect, useState } from "react";
-import { UserContext } from "../../App";
+import React from "react";
+
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
-// import { signIn, subscribeToLogInEvent } from "../../Processing/Database";
+
 import { API } from "../../Processing/RestaurantAPI";
 
 export default function LoginPage() {
-  // const context = useContext(UserContext);
-
   const navigate = useNavigate();
-
-  // const [user, setUser] = useState(null);
-
-  // // es aris localstorageshi shenaxuli data
-  // const [data, setData] = useState(null);
-
-  // const [dataIsUploaded, setDataIsUploaded] = useState(false);
-
-  // // am metods vamateb imitom rom ise iloopeboda da amitom check rom gaketdes
-  // const[tempUser, setTempUser]= useState(null)
 
   const {
     register,
@@ -28,17 +16,7 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm();
   const onSubmit = (data) => {
-    // console.log(data);
-    // signIn(data.Email, data.Password);
-    // setTempUser(tempUser);
     handleLogin(data.Email, data.Password);
-
-    // const success = await API.login(data.email, data.password);
-    // if (success) {
-    //     console.log("ki")
-    // } else {
-    //   console.log("ara")
-    // }
   };
   const handleLogin = async (email, password) => {
     const success = await API.login(email, password);
@@ -46,45 +24,10 @@ export default function LoginPage() {
       setTimeout(() => {
         navigate(`/HomePage`);
       }, [500]);
-     
     } else {
       console.log("ara");
     }
   };
-
-  // useEffect(() => {
-    
-  //     setUser(user);
-  //     // context.setMainUser(user.email);
-  //     // localStorage.setItem("User", JSON.stringify(user));
-
-  //     // kotem daamata
-  //     // console.log(user)
-    
-  //   // const savedData = localStorage.getItem("user_email");
-  //   // if (savedData) {
-  //   //   setData(savedData);
-  //   //   setDataIsUploaded(true);
-  //   // }
-
-  //   // console.log(user)
-  //   // if(user){
-  //   //   context.setIsLoggedIn(true);
-  //   //   // console.log(context)
-  //   // }
-  //   // if (context?.isLoggedIn) {
-  //   //   navigate(`/HomePage`);
-  //   // }
-  // }, [user]);
-
-  // useEffect(() => {
-  //   if (dataIsUploaded && data) {
-     
-  //     setTimeout(() => {
-  //       navigate(`/HomePage`);
-  //     }, [500]);
-  //   }
-  // }, [dataIsUploaded, data]);
 
   return (
     <MainDiv>
@@ -119,14 +62,6 @@ export default function LoginPage() {
           )}
           <SubmitInput type="submit" value={"Sign In"} />
         </Form>
-        {/* <button
-        onClick={() => {
-          context?.setIsLoggedIn((current) => !current);
-          console.log(context);
-        }}
-      >
-        {context?.isLoggedIn ? "log in" : "log out"}
-      </button> */}
       </FormDiv>
     </MainDiv>
   );

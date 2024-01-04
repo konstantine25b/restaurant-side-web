@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import React, { useState } from "react";
-import COLORS from "../../themes/colors";
+import COLORS from "../../../themes/colors";
 import { useNavigate } from "react-router-dom";
 
 export default function LeftNavbarList(props) {
@@ -10,7 +10,6 @@ export default function LeftNavbarList(props) {
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
-  
 
   const navigate = useNavigate();
 
@@ -31,14 +30,11 @@ export default function LeftNavbarList(props) {
           <ListContentItem
             onClick={() =>
               navigate(`/HomePage/${item.Name}`, {
-                
-                  state: {
-                    restInfo: item?.restInfo,
-                    restName: item?.restName
-                  }
-                }
-                
-              )
+                state: {
+                  restInfo: item?.restInfo,
+                  restName: item?.restName,
+                },
+              })
             }
             key={index}
           >

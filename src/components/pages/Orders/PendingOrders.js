@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { API } from "../../Processing/RestaurantAPI";
+import { API } from "../../../Processing/RestaurantAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
-import EachPendingOrder from "../pageComponents/EachPendingOrder";
+import EachPendingOrder from "./OrderComponents/EachPendingOrder";
 import { QueryClient, useQuery } from "react-query";
-import Select from 'react-select';
+import Select from "react-select";
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -157,30 +157,30 @@ export default function AllOrders() {
     value: index + 1,
     label: `${index + 1}`,
   }));
-// es aris Select is style
+  // es aris Select is style
   const customStyles = {
     control: (provided, state) => ({
       ...provided,
-      backgroundColor: '#007bff',
-      color: 'white',
-      borderRadius: '5px',
-      border: 'none',
-      boxShadow: state.isFocused ? '0 0 0 1px #0056b3' : 'none',
-      '&:hover': {
-        borderColor: state.isFocused ? '#0056b3' : 'none',
+      backgroundColor: "#007bff",
+      color: "white",
+      borderRadius: "5px",
+      border: "none",
+      boxShadow: state.isFocused ? "0 0 0 1px #0056b3" : "none",
+      "&:hover": {
+        borderColor: state.isFocused ? "#0056b3" : "none",
       },
     }),
     option: (provided, state) => ({
       ...provided,
-      backgroundColor: state.isSelected ? '#0056b3' : '#007bff',
-      color: 'white',
-      '&:hover': {
-        backgroundColor: state.isSelected ? '#0056b3' : '#0056b3',
+      backgroundColor: state.isSelected ? "#0056b3" : "#007bff",
+      color: "white",
+      "&:hover": {
+        backgroundColor: state.isSelected ? "#0056b3" : "#0056b3",
       },
     }),
     indicatorSeparator: (provided) => ({
       ...provided,
-      display: 'none',
+      display: "none",
     }),
   };
   const orderConfirmation = async (id, orderToConfirm, tableNum) => {
@@ -399,29 +399,29 @@ export default function AllOrders() {
         {isError && <p>Error fetching data</p>}
         <PageNavigation>
           <PaginationContainer>
-          <PaginationButton
+            <PaginationButton
               onClick={() => handlePageClick({ value: currentPage - 1 })}
               disabled={currentPage === 1 || isLoading}
             >
               Previous
             </PaginationButton>
-            <span>Page {currentPage} of {totalPages}</span>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
             <PaginationButton
               onClick={() => handlePageClick({ value: currentPage + 1 })}
               disabled={currentPage === totalPages || isLoading}
             >
               Next
             </PaginationButton>
-          
           </PaginationContainer>
           <PageSelectContainer>
-          <Select
-            value={{ value: currentPage, label: `${currentPage}` }}
-            onChange={handlePageClick}
-            options={options}
-            styles={customStyles}
-          />
-            
+            <Select
+              value={{ value: currentPage, label: `${currentPage}` }}
+              onChange={handlePageClick}
+              options={options}
+              styles={customStyles}
+            />
           </PageSelectContainer>
         </PageNavigation>
         {paginatedOrders.map((order) => (

@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React from "react";
+import { useLocation } from "react-router-dom";
 
 import styled from "@emotion/styled";
-import COLORS from "../../themes/colors";
+import COLORS from "../../../themes/colors";
 import { useForm } from "react-hook-form";
-import { API } from "../../Processing/RestaurantAPI";
+import { API } from "../../../Processing/RestaurantAPI";
 import { useQuery } from "react-query";
 
 export default function Address() {
-
   const { state } = useLocation();
   const { restName } = state;
   const {
@@ -17,8 +16,11 @@ export default function Address() {
     formState: { errors },
   } = useForm();
 
-  
-  const { data: restInfo, isLoading, isError } = useQuery(
+  const {
+    data: restInfo,
+    isLoading,
+    isError,
+  } = useQuery(
     ["restaurant", restName],
     () => API.getRestaurantByTitle(restName),
     {
@@ -34,7 +36,7 @@ export default function Address() {
 
   const onSubmit = (data) => {
     console.log(restInfo, data);
-    // editRestaurant(restInfo.Title , data.Address, restInfo.Genre, restInfo.MainImage, restInfo.ShortDescription, restInfo.Tags)
+
     handleUpdateRestaurant(data.Address);
   };
 
@@ -43,7 +45,7 @@ export default function Address() {
       shortdescription: restInfo.shortdescription,
       address: updateRestaurantAddress,
       tags: restInfo.tags,
-      images: restInfo.images
+      images: restInfo.images,
     };
     const updateRestaurantSuccess = await API.updateRestaurant(
       restInfo.id,

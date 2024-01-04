@@ -1,16 +1,9 @@
-import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import styled from "@emotion/styled";
 import COLORS from "../themes/colors";
-import LeftNavbarList from "./pageComponents/LeftNavbarList";
+import LeftNavbarList from "./pages/pageComponents/LeftNavbarList";
 import { Outlet, useNavigate } from "react-router-dom";
-import { UserContext } from "../App";
-import {
-  getRestaurant,
-  getRestaurantAdmin,
-  getRestaurantOwner,
-  signOut,
-  subscribeToLogInEvent,
-} from "../Processing/Database";
+
 import { API } from "../Processing/RestaurantAPI";
 import { QueryClient, QueryClientProvider } from "react-query";
 
@@ -18,9 +11,6 @@ const queryClient = new QueryClient();
 
 export default function Root() {
   const navigate = useNavigate();
-
-  // // amit xdeba shesulia tu ara useris shemowmeba
-  // const context = useContext(UserContext);
 
   // restornis axels vwer aq
   const [restName, setRestName] = useState();
@@ -66,12 +56,6 @@ export default function Root() {
     }
   }, []);
 
-  // setTimeout(()=>{
-  //   if(data!=null){
-  //     console.log(data)
-  //   }
-  // },[3000])
-
   useEffect(() => {
     if (dataIsUploaded && data == null) {
       setTimeout(() => {
@@ -79,49 +63,6 @@ export default function Root() {
       }, [500]);
     }
   }, [data, dataIsUploaded]);
-
-  // const getRestaurantInfo = async () => {
-  //   setRestInfo(await getRestaurant(restName));
-  // };
-
-  // useEffect(() => {
-  //   console.log(restName)
-  //   // amit saxelis sashualebit momaq restornis info
-
-  //   getRestaurantInfo();
-
-  // }, [restName]);
-
-  // useEffect(()=>{
-  //   const handleRefresh = () => {
-  //     // Function to be executed on each refresh
-  //     console.log('Page has been refreshed');
-  //     getRestaurantInfo();
-
-  //   };
-
-  //   handleRefresh(); // Call the function on component mount
-
-  //   const beforeUnloadListener = () => {
-  //     handleRefresh(); // Call the function before page refresh
-  //   };
-
-  //   window.addEventListener('beforeunload', beforeUnloadListener);
-
-  //   return () => {
-  //     window.removeEventListener('beforeunload', beforeUnloadListener);
-  //   };
-
-  // },[])
-
-  // console.log(restInfo)
-
-  //tu user gamosvlas daachers mashin mas ushvebs log inshi isev
-  // useEffect(() => {
-  //   if (!context?.isLoggedIn) {
-  //     navigate(`/`);
-  //   }
-  // }, [context]);
 
   return (
     <QueryClientProvider client={queryClient}>

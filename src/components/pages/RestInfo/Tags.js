@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "@emotion/styled";
-import COLORS from "../../themes/colors";
+import COLORS from "../../../themes/colors";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useQuery, useMutation } from "react-query";
-import { API } from "../../Processing/RestaurantAPI";
+import { API } from "../../../Processing/RestaurantAPI";
 
 export default function Tags() {
   const { state } = useLocation();
@@ -12,7 +12,11 @@ export default function Tags() {
   const { register, handleSubmit, control } = useForm();
 
   // aq vinaxav restornis mtlian informacia
-  const { data: restInfo, isLoading, isError } = useQuery(
+  const {
+    data: restInfo,
+    isLoading,
+    isError,
+  } = useQuery(
     ["restaurant", restName],
     () => API.getRestaurantByTitle(restName),
     {
@@ -50,7 +54,11 @@ export default function Tags() {
   // amit xdeba damateba ingredientebis tu aqvs ukve ogond defaultebis
   useEffect(() => {
     console.log(restInfo);
-    if (restInfo?.tags == null ? "" : restInfo?.tags.length > 0 && defaultItemsGenerated.current === false) {
+    if (
+      restInfo?.tags == null
+        ? ""
+        : restInfo?.tags.length > 0 && defaultItemsGenerated.current === false
+    ) {
       restInfo.tags.forEach((item) => {
         append({ name: item });
       });

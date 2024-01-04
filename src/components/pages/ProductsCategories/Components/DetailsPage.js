@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import COLORS from "../../themes/colors";
+import COLORS from "../../../../themes/colors";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 
 export default function DetailsPage() {
@@ -11,7 +11,7 @@ export default function DetailsPage() {
   // aq indexebit momaqvs imitom rom mere martivad vipovo restionfos categoriebshi
   const { restInfo, categoryIndex, dishIndex } = state;
   const dishInfo = restInfo.categories[categoryIndex].dishes[dishIndex];
-  console.log(dishInfo)
+  console.log(dishInfo);
 
   const firstData = {
     Category: restInfo.categories[categoryIndex].title,
@@ -20,18 +20,18 @@ export default function DetailsPage() {
     AproxTime: dishInfo.approxtime,
     Ingredients: dishInfo.ingredients,
     Price: dishInfo.price,
-    Img: dishInfo.image
+    Img: dishInfo.image,
   };
-  console.log(firstData)
+  console.log(firstData);
   return (
     <MainDiv>
-         <BackButton
-          onClick={() => {
-            navigate(-1);
-          }}
-        >
-          <ArrowLeftIcon style={{ width: 20, color: "white" }} />
-        </BackButton>
+      <BackButton
+        onClick={() => {
+          navigate(-1);
+        }}
+      >
+        <ArrowLeftIcon style={{ width: 20, color: "white" }} />
+      </BackButton>
       <Top>
         <TopP>Name (English):</TopP>
         <TopP>{firstData.NameEng}</TopP>
@@ -54,13 +54,15 @@ export default function DetailsPage() {
       </Top>
       <Top>
         <TopP>Ingredients:</TopP>
-        {firstData.Ingredients ==null? "": firstData.Ingredients.map(item=>{
-            return  item? <TopP key={item}>{item} ,</TopP>: null
-        })}
+        {firstData.Ingredients == null
+          ? ""
+          : firstData.Ingredients.map((item) => {
+              return item ? <TopP key={item}>{item} ,</TopP> : null;
+            })}
       </Top>
       <Top>
         <TopP>Product Image :</TopP>
-        <ProductImage src = {dishInfo.image}/>
+        <ProductImage src={dishInfo.image} />
       </Top>
     </MainDiv>
   );
@@ -105,6 +107,5 @@ const BackButton = styled.div`
 `;
 
 const ProductImage = styled.img`
- width: 240px;
- 
+  width: 240px;
 `;

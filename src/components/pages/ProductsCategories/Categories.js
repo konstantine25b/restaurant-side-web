@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
-import COLORS from "../../themes/colors";
+import COLORS from "../../../themes/colors";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
-import { deleteCategory, getRestaurant } from "../../Processing/Database";
-import { API } from "../../Processing/RestaurantAPI";
+import { deleteCategory, getRestaurant } from "../../../Processing/Database";
+import { API } from "../../../Processing/RestaurantAPI";
 
 export default function Categories() {
   const navigate = useNavigate();
@@ -62,14 +62,14 @@ export default function Categories() {
     };
   }, []);
 
-  const handleDelete = (deleteCategoryID,CategoryName) => {
+  const handleDelete = (deleteCategoryID, CategoryName) => {
     // Perform the delete operation here
     // ...
 
     if (window.confirm("Are you sure you want to delete?")) {
       // Delete confirmed, perform the delete operation
       // ...
-      handleDeleteCategory(deleteCategoryID,CategoryName).then(() => {
+      handleDeleteCategory(deleteCategoryID, CategoryName).then(() => {
         window.location.reload(true);
       });
     }
@@ -80,13 +80,14 @@ export default function Categories() {
       <Top>
         <TopP>Categories</TopP>
         <AddButton
-          onClick={() => navigate(`/HomePage/Categories/AddCategories`,{
-                
-            state: {
-              restInfo: restInfo,
-              restName: restName
-            }
-          })}
+          onClick={() =>
+            navigate(`/HomePage/Categories/AddCategories`, {
+              state: {
+                restInfo: restInfo,
+                restName: restName,
+              },
+            })
+          }
         >
           <PlusIcon style={{ width: 30, color: "white" }} />
         </AddButton>
@@ -111,15 +112,14 @@ export default function Categories() {
                       NameGeo: item.title,
                       Image: item.image,
                       categoryInfo: item,
-                      restId :restInfo.id
-
+                      restId: restInfo.id,
                     },
                   });
                 }}
               >
                 Correcting
               </CorrectionButton>
-              <DeleteButton onClick={() => handleDelete(item.id,item.title)}>
+              <DeleteButton onClick={() => handleDelete(item.id, item.title)}>
                 Delete
               </DeleteButton>
             </Bottom1>

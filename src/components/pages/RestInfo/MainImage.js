@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
-import COLORS from "../../themes/colors";
+import COLORS from "../../../themes/colors";
 import { useLocation } from "react-router-dom";
 import { useQuery, useMutation } from "react-query";
-import { API } from "../../Processing/RestaurantAPI";
+import { API } from "../../../Processing/RestaurantAPI";
 
 export default function MainImage() {
   const { state } = useLocation();
@@ -12,7 +12,11 @@ export default function MainImage() {
   const [uploadLink, setUploadLink] = useState("");
   const newImageUploaded = useRef(false);
 
-  const { data: restInfo, isLoading, isError } = useQuery(
+  const {
+    data: restInfo,
+    isLoading,
+    isError,
+  } = useQuery(
     ["restaurant", restName],
     () => API.getRestaurantByTitle(restName),
     {
@@ -26,19 +30,16 @@ export default function MainImage() {
     }
   );
 
-  const mutation = useMutation(
-    (image) => API.uploadImage(restInfo.id, image),
-    {
-      onSuccess: (data) => {
-        console.log("Image uploaded successfully:", data);
-        setUploadLink(data);
-        newImageUploaded.current = true;
-      },
-      onError: (error) => {
-        console.error("Error uploading image:", error);
-      },
-    }
-  );
+  const mutation = useMutation((image) => API.uploadImage(restInfo.id, image), {
+    onSuccess: (data) => {
+      console.log("Image uploaded successfully:", data);
+      setUploadLink(data);
+      newImageUploaded.current = true;
+    },
+    onError: (error) => {
+      console.error("Error uploading image:", error);
+    },
+  });
 
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -111,7 +112,7 @@ export default function MainImage() {
             )}
           </span>
         </label>
-        {restInfo.images[0] && !selectedFile &&(
+        {restInfo.images[0] && !selectedFile && (
           <img className="selected-file-preview" src={restInfo.images[0]} />
         )}
         {selectedFile && (
@@ -126,7 +127,6 @@ export default function MainImage() {
     </MainDiv>
   );
 }
-
 
 const SubmitInput = styled.div`
   all: unset;

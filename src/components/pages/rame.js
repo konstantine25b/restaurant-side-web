@@ -3,7 +3,7 @@ import { API } from "../../Processing/RestaurantAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import { useQuery } from "react-query";
-import ConfOrderItems from "../pageComponents/ConfOrderItems";
+import ConfOrderItems from "./Orders/OrderComponents/ConfOrderItems";
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -40,7 +40,6 @@ function calculateTimeLeft(requestedDate) {
   };
 }
 
-
 const fetchConfirmedOrders = async (id) => {
   const orders = await API.getRestaurantOrdersConfirmed(id);
   return orders;
@@ -61,7 +60,6 @@ export default function AllOrders() {
     ["confirmedOrders", restInfo?.id],
     () => fetchConfirmedOrders(restInfo?.id)
   );
-
 
   useEffect(() => {
     // getOrders(restInfo?.id);
@@ -153,10 +151,7 @@ export default function AllOrders() {
           Confirmed Orders
         </h2>
         {sortedConfirmedOrders.map((order) => {
-        
-          return (
-            <ConfOrderItems key = {order.id} props={order}/>
-          );
+          return <ConfOrderItems key={order.id} props={order} />;
         })}
       </OrderSection>
     </OrdersContainer>

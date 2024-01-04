@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { API } from "../../Processing/RestaurantAPI";
+import { API } from "../../../Processing/RestaurantAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import { useQuery } from "react-query";
-import ConfOrderItems from "../pageComponents/ConfOrderItems";
-import Select from 'react-select';
+import ConfOrderItems from "./OrderComponents/ConfOrderItems";
+import Select from "react-select";
 
 const OrdersContainer = styled.div`
   display: flex;
@@ -16,7 +16,13 @@ const OrderSection = styled.div`
   width: 85%;
   margin: 20px 0;
   margin-left: -8%;
-  border: 2px solid ${(props) => (props.orderState ? "#FFC100" : "#007bff")};
+  border: 2px solid
+    ${(props) =>
+      props.orderState == 0
+        ? "#FFC100"
+        : props.orderState == 1
+        ? "#007bff"
+        : "red"};
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
@@ -56,6 +62,9 @@ const PaginationContainer = styled.div`
   align-items: center;
   margin-top: 20px;
 `;
+const PaginationButton = styled(FancyButton)`
+  margin: 0 5px;
+`;
 
 const PageSelectContainer = styled.div`
   display: flex;
@@ -82,12 +91,6 @@ const PageOption = styled.option`
   color: #fff;
 `;
 
-
-const PaginationButton = styled(FancyButton)`
-  margin: 0 5px;
-`;
-
-
 function calculateTimeLeft(requestedDate) {
   const currentTime = new Date();
   const endTime = new Date(requestedDate);
@@ -103,30 +106,31 @@ function calculateTimeLeft(requestedDate) {
   };
 }
 
-const fetchConfirmedOrders = async (id) => {
-  const orders = await API.getRestaurantOrdersConfirmed(id);
+const fetchDeniedOrders = async (id) => {
+  const orders = await API.getRestaurantOrdersDenied(id);
   return orders;
 };
 
-export default function AllOrders() {
+export default function DeniedOrders() {
   const { state } = useLocation();
   const { restInfo } = state;
+  const navigate = useNavigate();
 
   const [orders, setOrders] = useState();
 
   const {
-    data: confirmedOrders,
+    data: deniedOrders,
     isLoading,
     isError,
   } = useQuery(
-    ["confirmedOrders", restInfo?.id],
-    () => fetchConfirmedOrders(restInfo?.id),
+    ["deniedOrders", restInfo?.id],
+    () => fetchDeniedOrders(restInfo?.id),
     {
       keepPreviousData: true,
-      staleTime: 1000 * 5, // 5 secs
+      staleTime: 1000 * 5, // 5 minutes
       // Handle error
       onError: (error) => {
-        console.error("Error fetching confirmed orders:", error);
+        console.error("Error fetching denied orders:", error);
       },
     }
   );
@@ -135,41 +139,39 @@ export default function AllOrders() {
   const [currentPage, setCurrentPage] = useState(1);
   const start = (currentPage - 1) * pageSize;
   const end = start + pageSize;
-  
-  const totalPages = Math.ceil((confirmedOrders?.length || 0) / pageSize);
+  const totalPages = Math.ceil((deniedOrders?.length || 0) / pageSize);
 
   const handlePageClick = (selectedOption) => {
     setCurrentPage(selectedOption.value);
   };
-
   const options = Array.from({ length: totalPages }, (_, index) => ({
     value: index + 1,
     label: `${index + 1}`,
   }));
-// es aris Select is style
+  // es aris Select is style
   const customStyles = {
     control: (provided, state) => ({
       ...provided,
-      backgroundColor: '#007bff',
-      color: 'white',
-      borderRadius: '5px',
-      border: 'none',
-      boxShadow: state.isFocused ? '0 0 0 1px #0056b3' : 'none',
-      '&:hover': {
-        borderColor: state.isFocused ? '#0056b3' : 'none',
+      backgroundColor: "#007bff",
+      color: "white",
+      borderRadius: "5px",
+      border: "none",
+      boxShadow: state.isFocused ? "0 0 0 1px #0056b3" : "none",
+      "&:hover": {
+        borderColor: state.isFocused ? "#0056b3" : "none",
       },
     }),
     option: (provided, state) => ({
       ...provided,
-      backgroundColor: state.isSelected ? '#0056b3' : '#007bff',
-      color: 'white',
-      '&:hover': {
-        backgroundColor: state.isSelected ? '#0056b3' : '#0056b3',
+      backgroundColor: state.isSelected ? "#0056b3" : "#007bff",
+      color: "white",
+      "&:hover": {
+        backgroundColor: state.isSelected ? "#0056b3" : "#0056b3",
       },
     }),
     indicatorSeparator: (provided) => ({
       ...provided,
-      display: 'none',
+      display: "none",
     }),
   };
 
@@ -182,9 +184,9 @@ export default function AllOrders() {
   useEffect(() => {
     let confArr = [];
 
-    if (confirmedOrders) {
-      for (let i = 0; i < confirmedOrders?.length; i++) {
-        let eachOrder = confirmedOrders[i];
+    if (deniedOrders) {
+      for (let i = 0; i < deniedOrders?.length; i++) {
+        let eachOrder = deniedOrders[i];
 
         let orderItems = [];
         let orderNotes = [];
@@ -211,7 +213,7 @@ export default function AllOrders() {
     setOrders(confArr);
 
     const timer = setInterval(() => {
-      confirmedOrders?.forEach((order) => {
+      deniedOrders?.forEach((order) => {
         // Calculate remaining time for each pending order
         const timeLeft = calculateTimeLeft(order.orderRequestedDate);
 
@@ -224,44 +226,44 @@ export default function AllOrders() {
     return () => {
       clearInterval(timer);
     };
-  }, [confirmedOrders]);
+  }, [deniedOrders]);
 
-  const reversedConfirmedOrders = [...(orders || [])].reverse();
-  const paginatedOrders = reversedConfirmedOrders.slice(start, end);
+  const reversedDeniedOrders = [...(orders || [])].reverse();
+  const paginatedOrders = reversedDeniedOrders.slice(start, end);
 
   return (
     <OrdersContainer>
-      <OrderSection>
-        <h2 style={{ color: "#007bff", marginBottom: 20 }}>Confirmed Orders</h2>
-        {isLoading && <p>Loading...</p>}
-        {isError && <p>Error fetching data</p>}
+      <OrderSection orderState={2}>
+        <h2 style={{ color: "red", marginBottom: 20 }}>Denied Orders</h2>
         <PageNavigation>
           <PaginationContainer>
-          <PaginationButton
+            <PaginationButton
               onClick={() => handlePageClick({ value: currentPage - 1 })}
               disabled={currentPage === 1 || isLoading}
             >
               Previous
             </PaginationButton>
-            <span>Page {currentPage} of {totalPages}</span>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
             <PaginationButton
               onClick={() => handlePageClick({ value: currentPage + 1 })}
               disabled={currentPage === totalPages || isLoading}
             >
               Next
             </PaginationButton>
-          
           </PaginationContainer>
           <PageSelectContainer>
-          <Select
-            value={{ value: currentPage, label: `${currentPage}` }}
-            onChange={handlePageClick}
-            options={options}
-            styles={customStyles}
-          />
-            
+            <Select
+              value={{ value: currentPage, label: `${currentPage}` }}
+              onChange={handlePageClick}
+              options={options}
+              styles={customStyles}
+            />
           </PageSelectContainer>
         </PageNavigation>
+        {isLoading && <p>Loading...</p>}
+        {isError && <p>Error fetching data</p>}
         {paginatedOrders.map((order) => (
           <ConfOrderItems key={order.id} props={order} />
         ))}

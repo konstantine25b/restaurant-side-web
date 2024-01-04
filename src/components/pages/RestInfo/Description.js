@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-// import { editRestaurant, getRestaurant } from "../../Processing/Database";
+import React from "react";
+import { useLocation } from "react-router-dom";
+
 import styled from "@emotion/styled";
-import COLORS from "../../themes/colors";
+import COLORS from "../../../themes/colors";
 import { useForm } from "react-hook-form";
-import { API } from "../../Processing/RestaurantAPI";
+import { API } from "../../../Processing/RestaurantAPI";
 import { useQuery } from "react-query";
 
 export default function Description() {
@@ -37,7 +37,6 @@ export default function Description() {
   const onSubmit = (data) => {
     console.log(restInfo, data);
     handleUpdateRestaurant(data.ShortDescription);
-    // editRestaurant(restInfo.Title , restInfo.Address, restInfo.Genre, restInfo.MainImage, data.ShortDescription, restInfo.Tags)
   };
 
   const handleUpdateRestaurant = async (updateShortDescription) => {

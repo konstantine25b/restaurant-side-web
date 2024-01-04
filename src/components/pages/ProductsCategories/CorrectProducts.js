@@ -1,66 +1,140 @@
-import React, { useEffect, useRef, useState } from "react";
-
-import COLORS from "../../themes/colors";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import COLORS from "../../../themes/colors";
 import styled from "@emotion/styled";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import "./MainImage.css";
-import { addDish, uploadImage } from "../../Processing/Database";
-import { API } from "../../Processing/RestaurantAPI";
+// import { addDish, updateDish, uploadImage } from "../../Processing/Database";
+import { API } from "../../../Processing/RestaurantAPI";
 
-export default function AddProduct() {
+export default function CorrectProduct() {
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
   } = useForm();
-  const navigate = useNavigate();
-
-  const { state } = useLocation();
-  const { restInfo } = state;
-  const uploadLink = useRef("");
 
   const newUrl = useRef("");
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const uploadLink = useRef("");
+  // aq indexebit momaqvs imitom rom mere martivad vipovo restionfos categoriebshi
+  const { restInfo, categoryIndex, dishIndex } = state;
+  // es konkretulad dishes mtel infos igebs
+  const dishInfo = restInfo.categories[categoryIndex].dishes[dishIndex];
+
   const [selectedFile, setSelectedFile] = useState(null);
 
   // amas viyeneb rom titoeuli categois saxelis id gavigo
-  let categoryMap = new Map()
-   //am metodit xdeba categoriebis ids gagaeba romelic unda gadavce dishebis damatebis funqcias
-   restInfo?.categories?.forEach((item) => {
-    
+  let categoryMap = new Map();
+  //am metodit xdeba categoriebis ids gagaeba romelic unda gadavce dishebis damatebis funqcias
+  restInfo?.categories?.forEach((item) => {
     categoryMap.set(item.title, item.id);
     // Force a render by setting the state.
-    
-    
   });
 
-  const handleCreateDish = async (
-    createDishCategoryID,
-    createDishTitle,
-    productImage,
-    createDishPrice,
+  useEffect(() => {
+    handleFileUpload(selectedFile);
+    // .then((url) => {
+    //   newUrl.current = url;
+    // });
+  }, [selectedFile]);
+  const firstData = {
+    Category: restInfo.categories[categoryIndex].title,
+    NameEng: dishInfo.title,
+    dishId: dishInfo.id,
+    img: dishInfo.image,
+    Description: dishInfo.description,
+    AproxTime: dishInfo.approxtime,
+    ingredients: dishInfo.ingredients,
+    Price: dishInfo.price,
+    Availability: dishInfo.availability,
+  };
+  // useEffect(()=>{
+  // console.log(dishInfo)
+  // },[dishInfo])
+
+  const handleUpdateDish = async (
+    updateDishID,
+    updateDishTitle,
+    updateDishPrice,
+    uploadLink,
     approxtime,
     description,
-    ingredients
+    ingredients,
+    categoryId
   ) => {
-    const createDishData = {
-      title: createDishTitle,
-      price: parseInt(createDishPrice),
-      image: productImage,
+    const updateDishData = {
+      title: updateDishTitle,
+      price: parseInt(updateDishPrice),
+      image: uploadLink,
       approxtime: approxtime,
       description: description,
-      ingredients: ingredients
+      ingredients: ingredients,
+      categoryId: categoryId,
+      avaible: true,
     };
-    const createDishSuccess = await API.addDishToCategory(
-      createDishCategoryID,
-      createDishData
+
+    console.log(updateDishID, updateDishData);
+    const updateDishSuccess = await API.updateDish(
+      updateDishID,
+      updateDishData
     );
     alert(
-      createDishSuccess ? "Dish created successfully!" : "Dish creation failed."
+      updateDishSuccess ? "Dish updated successfully!" : "Dish update failed."
     );
   };
+
+  const onSubmit = (data) => {
+    let imgLink = uploadLink.current == "" ? firstData.img : uploadLink.current;
+    let arr = [];
+
+    for (let i = 0; i < fields.length; i++) {
+      arr.push(data.ingredients[i]);
+    }
+    console.log(data.AproxTime);
+    // console.log(dishInfo.id, data.NameEng, data.Price, imgLink )
+    handleUpdateDish(
+      dishInfo.id,
+      data.NameEng,
+      data.Price,
+      imgLink,
+      data.AproxTime,
+      data.Description,
+      data.ingredients !== undefined ? arr : [], //Undefined check
+      categoryMap.get(data.Category)
+    ).then(() => {
+      window.location.reload(true);
+      navigate(-1);
+    });
+
+    // updateDish(
+    //   data.Category,
+    //   firstData.NameEng,
+    //   data.NameEng,
+    //   data.Description,
+    //   imgLink,
+    //   data.AproxTime,
+    //   data.ingredients !== undefined ? arr : [], //Undefined check
+    //   data.Price,
+    //   dishInfo.Availability
+    // ).then(() => {
+    //   window.location.reload(true);
+    //   navigate(-1);
+    // });
+  };
+
+  console.log(dishInfo);
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "items",
+  });
+
+  const defaultItemsGenerated = useRef(false);
+
   const handleFileUpload = async (image) => {
     if (image) {
       const uploadSuccess = await API.uploadImage(restInfo.id, image); // Replace with the correct restaurant ID
@@ -73,68 +147,40 @@ export default function AddProduct() {
     }
   };
 
-  // useEffect(()=>{
-
-  // },[selectedFile])
-
-  const onSubmit = (data) => {
-    let arr = [];
-
-    for (let i = 0; i < fields.length; i++) {
-      arr.push(data.ingredients[i]);
-    }
-    handleFileUpload(selectedFile)
-      .then(() => {
-        // addDish(
-        //   data.Category,
-        //   data.NameEng,
-        //   data.Description,
-        //   newUrl.current,
-        //   data.AproxTime,
-        //   data.ingredients !== undefined ? arr : [], //Undefined check
-        //   data.Price,
-        //   true
-        // ).then(() => {
-        //   window.location.reload(true);
-        //   navigate(-1);
-        // });
-        // console.log(data,  categoryMap)
-        handleCreateDish (
-          categoryMap.get(data.Category),
-          data.NameEng,
-          uploadLink.current,
-          data.Price,
-          data.AproxTime,
-          data.Description,
-          data.ingredients !== undefined ? arr : [] //Undefined check
-          
-        ).then(() => {
-          navigate(-1);
-          // window.location.reload(true);
-         
-        });
+  // amit xdeba damateba ingredientebis tu aqvs ukve ogond defaultebis
+  useEffect(() => {
+    if (
+      dishInfo?.ingredients?.length > 0 &&
+      defaultItemsGenerated.current == false
+    ) {
+      dishInfo.ingredients.forEach((item) => {
+        append({ name: item });
       });
-  };
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "items",
-  });
+      defaultItemsGenerated.current = true;
+    }
+  }, [dishInfo]);
 
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
-  
+  useEffect(() => {
+    console.log(selectedFile);
+  }, [selectedFile]);
 
   const categories = restInfo.categories.map((item) => {
-    // addEntry(item.title, item.id)
     return item.title;
   });
 
   const Select = React.forwardRef(
     ({ onChange, onBlur, name, valueData }, ref) => (
       <>
-        <Select1 name={name} ref={ref} onChange={onChange} onBlur={onBlur}>
+        <Select1
+          defaultValue={restInfo.categories[categoryIndex].title}
+          name={name}
+          ref={ref}
+          onChange={onChange}
+          onBlur={onBlur}
+        >
           {valueData?.map((value, index) => {
             return (
               <option key={index} value={value}>
@@ -152,7 +198,8 @@ export default function AddProduct() {
       <Top>
         <BackButton
           onClick={() => {
-            navigate(-1);
+            onSubmit(firstData);
+            // console.log(firstData)
           }}
         >
           <ArrowLeftIcon style={{ width: 20, color: "white" }} />
@@ -162,7 +209,7 @@ export default function AddProduct() {
       <Bottom onSubmit={handleSubmit(onSubmit)}>
         <NameP>Name (English)</NameP>
         <NameInput
-          placeholder="Add Product Name (English)"
+          defaultValue={dishInfo.title}
           {...register("NameEng", { required: true })}
         />
         {errors.NameEng?.type === "required" && (
@@ -172,6 +219,7 @@ export default function AddProduct() {
         )}
         <NameP>Name (Georgian)</NameP>
         <NameInput
+          defaultValue={dishInfo.title}
           placeholder="Add Product Name (Georgian)"
           {...register("NameGeo", { required: true })}
         />
@@ -183,6 +231,7 @@ export default function AddProduct() {
 
         <NameP>Price (Gel)</NameP>
         <NameInput
+          defaultValue={dishInfo.price}
           placeholder="0"
           {...register("Price", { required: true, pattern: /^\d+$/ })}
         />
@@ -194,6 +243,7 @@ export default function AddProduct() {
 
         <NameP>Approximate Time (Minutes)</NameP>
         <NameInput
+          defaultValue={dishInfo.approxtime}
           placeholder="0"
           {...register("AproxTime", { required: true, pattern: /^\d+$/ })}
         />
@@ -203,17 +253,15 @@ export default function AddProduct() {
           </p>
         )}
 
-        <NameP> Desctiption</NameP>
+        <NameP> Description</NameP>
         <NameInput
+          defaultValue={dishInfo.description}
           placeholder="Add small description"
           {...register("Description", {})}
         />
 
         <NameP>Category Name</NameP>
-        <Select
-          valueData={categories}
-          {...register("Category", { required: true })}
-        />
+        <Select valueData={categories} {...register("Category")} />
 
         <NameP>Ingredients</NameP>
         {fields.map((item, index) => (
@@ -239,7 +287,7 @@ export default function AddProduct() {
             <input
               className="file-input"
               type="file"
-              {...register("img", { required: true })}
+              {...register("img")}
               onChange={handleFileInputChange}
             />
             <span className="file-cta">
@@ -254,20 +302,15 @@ export default function AddProduct() {
               )}
             </span>
           </label>
-          {errors.img?.type === "required" && (
-            <p
-              style={{ color: "red", margin: 0, paddingLeft: 18 }}
-              role="alert"
-            >
-              Product Image is required
-            </p>
-          )}
           {selectedFile && (
             <img
               className="selected-file-preview"
               src={URL.createObjectURL(selectedFile)}
               alt={selectedFile.name}
             />
+          )}
+          {!selectedFile?.name && (
+            <img className="selected-file-preview" src={dishInfo.image} />
           )}
         </div>
 

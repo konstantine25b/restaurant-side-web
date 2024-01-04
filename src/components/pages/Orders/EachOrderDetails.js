@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
-import COLORS from "../../themes/colors";
+import COLORS from "../../../themes/colors";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import { API } from "../../Processing/RestaurantAPI";
+import { API } from "../../../Processing/RestaurantAPI";
 
 const OrderDetailsContainer = styled.div`
   display: flex;
@@ -113,7 +113,7 @@ const OrderItemImage = styled.img`
   width: 50px;
   height: 50px;
   border: 1px solid black; // You can adjust the border color
- 
+
   object-fit: cover;
   transition: transform 0.2s;
   cursor: pointer;
@@ -132,9 +132,9 @@ function EachOrderDetails() {
     orderNotes,
     orderSent,
     orderRequestedDate,
-    orderTable
+    orderTable,
   } = state;
- 
+
   const navigate = useNavigate();
   const [fetchedDishes, setFetchedDishes] = useState([]);
 
@@ -144,8 +144,6 @@ function EachOrderDetails() {
     const currentTime = new Date();
 
     // console.log(requestedTime);
-
-    
 
     if (isNaN(requestedTime)) {
       return "Invalid Date"; // Handle invalid date
@@ -169,22 +167,19 @@ function EachOrderDetails() {
   const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining());
 
   async function getDishesArr() {
-    
     const fetchedDishes = [];
-  
+
     for (let i = 0; i < orderItems.length; i++) {
       const dish = await API.getDishById(orderItems[i]);
       fetchedDishes.push(dish);
       setFetchedDishes([...fetchedDishes]); // Update the state with the new dish
     }
-    console.log(fetchedDishes)
+    console.log(fetchedDishes);
   }
 
-  
-  useEffect(()=>{
+  useEffect(() => {
     getDishesArr();
-    
-  },[orderItems])
+  }, [orderItems]);
 
   useEffect(() => {
     // Recalculate and update time remaining every second
@@ -209,7 +204,9 @@ function EachOrderDetails() {
         </BackButton>
         <TitleContainer>
           <TitleItem>User ID: {userId}</TitleItem>
-          <TitleItem>Table Number: {orderTable >0 ? orderTable :"None"}</TitleItem>
+          <TitleItem>
+            Table Number: {orderTable > 0 ? orderTable : "None"}
+          </TitleItem>
           <TitleItem>Price: ₾{totalPrice}</TitleItem>
           <TitleItem
             timeRemainingColor={
@@ -228,26 +225,26 @@ function EachOrderDetails() {
 
         <OrderItemContainer>
           {orderItems.map((item, index) => (
-             <OrderItem key={index}>
-             <OrderItemDetails>
-               <div>
-                 <strong>Item ID{index + 1}:</strong> {item}
-               </div>
-               <div>
-                 <strong>Item Name{index + 1}:</strong>{" "}
-                 {fetchedDishes[index]?.title}
-               </div>
-               <OrderItemNote>
-                 <strong>Notes:</strong> {orderNotes[index]}
-               </OrderItemNote>
-             </OrderItemDetails>
-             <div>
-               <OrderItemImage
-                 src={fetchedDishes[index]?.image}
-                 alt={fetchedDishes[index]?.title}
-               />
-             </div>
-           </OrderItem>
+            <OrderItem key={index}>
+              <OrderItemDetails>
+                <div>
+                  <strong>Item ID{index + 1}:</strong> {item}
+                </div>
+                <div>
+                  <strong>Item Name{index + 1}:</strong>{" "}
+                  {fetchedDishes[index]?.title}
+                </div>
+                <OrderItemNote>
+                  <strong>Notes:</strong> {orderNotes[index]}
+                </OrderItemNote>
+              </OrderItemDetails>
+              <div>
+                <OrderItemImage
+                  src={fetchedDishes[index]?.image}
+                  alt={fetchedDishes[index]?.title}
+                />
+              </div>
+            </OrderItem>
           ))}
         </OrderItemContainer>
         <TimeContainer>

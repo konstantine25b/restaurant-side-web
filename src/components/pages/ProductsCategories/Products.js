@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
-import COLORS from "../../themes/colors";
+import COLORS from "../../../themes/colors";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -8,8 +8,8 @@ import {
   deleteDish,
   getRestaurant,
   updateDish,
-} from "../../Processing/Database";
-import { API } from "../../Processing/RestaurantAPI";
+} from "../../../Processing/Database";
+import { API } from "../../../Processing/RestaurantAPI";
 
 export default function Products() {
   const navigate = useNavigate();
@@ -125,7 +125,9 @@ export default function Products() {
     // Perform the delete operation here
     // ...
 
-    if (window.confirm("Are you sure you want to change availability status?")) {
+    if (
+      window.confirm("Are you sure you want to change availability status?")
+    ) {
       // Delete confirmed, perform the delete operation
       // ...
       console.log(dish, Category, Avaibility);
@@ -139,9 +141,9 @@ export default function Products() {
         dish.ingredients !== undefined ? dish.ingredients : [], //Undefined check
         dish.categoryId,
         Avaibility
-      ).then(()=>{
-          window.location.reload(true);
-        });
+      ).then(() => {
+        window.location.reload(true);
+      });
 
       // updateDish(
       //   Category,

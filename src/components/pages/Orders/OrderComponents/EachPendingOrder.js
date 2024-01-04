@@ -22,26 +22,6 @@ const OrderItem = styled.div`
     transform: scale(1.02);
   }
 `;
-// const ConfirmButton = styled.button`
-//   background-color: #007bff;
-//   color: #fff;
-//   padding: 10px 20px;
-//   border: none;
-//   border-radius: 5px;
-//   font-size: 16px;
-//   cursor: pointer;
-//   transition: background-color 0.2s;
-
-//   &:hover {
-//     background-color: #0056b3;
-//   }
-// `;
-
-const FancyInputContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-`;
 
 const TableInput = styled.input`
   padding: 10px;

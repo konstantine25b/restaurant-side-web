@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { API } from "../../Processing/RestaurantAPI";
+import { API } from "../../../Processing/RestaurantAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
-import EachPendingOrder from "../pageComponents/EachPendingOrder";
-import ConfOrderItems from "../pageComponents/ConfOrderItems";
+import EachPendingOrder from "./OrderComponents/EachPendingOrder";
+import ConfOrderItems from "./OrderComponents/ConfOrderItems";
 import { useQuery } from "react-query";
 
 const OrdersContainer = styled.div`
@@ -182,8 +182,6 @@ export default function AllOrders() {
   const [pendingOrders, setPendingOrders] = useState([]);
   const [confirmedOrders, setConfirmedOrders] = useState([]);
   const [deniedOrders, setDeniedOrders] = useState([]);
-
-
 
   useEffect(() => {
     let confArr = [];

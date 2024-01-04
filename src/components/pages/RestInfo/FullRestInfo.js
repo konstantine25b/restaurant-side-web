@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-// import { getRestaurant } from "../../Processing/Database";
+import React from "react";
+import { useLocation } from "react-router-dom";
 import styled from "@emotion/styled";
-import COLORS from "../../themes/colors";
-import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import { API } from "../../Processing/PrestoAPI";
+import COLORS from "../../../themes/colors";
+import { API } from "../../../Processing/PrestoAPI";
 import { useQuery } from "react-query";
 
 export default function FullRestInfo() {
