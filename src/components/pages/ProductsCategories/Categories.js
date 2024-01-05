@@ -19,7 +19,6 @@ export default function Categories() {
   useEffect(() => {
     console.log(restName);
     // amit saxelis sashualebit momaq restornis info
-
     getRestaurantInfo();
   }, [restName]);
 

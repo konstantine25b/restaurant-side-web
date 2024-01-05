@@ -1,50 +1,37 @@
 import styled from "@emotion/styled";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import COLORS from "../../../themes/colors";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../../../Processing/RestaurantAPI";
+import { useQuery } from "react-query";
+import ProductsComps from "./ProductsComps/ProductsComps";
 
+const handleGetRestaurantByTitle = async (restaurantTitle) => {
+  const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
+  return JSON.parse(JSON.stringify(restaurantByTitle));
+};
 export default function Products() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { restName } = state;
-  const [restInfo, setRestInfo] = useState();
 
-  useEffect(() => {
-    console.log(restName);
-    // amit saxelis sashualebit momaq restornis info
-
-    getRestaurantInfo();
-  }, [restName]);
-  const getRestaurantInfo = async () => {
-    handleGetRestaurantByTitle(restName);
-  };
-  const handleGetRestaurantByTitle = async (restaurantTitle) => {
-    const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
-    setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)));
-  };
-
-  useEffect(() => {
-    console.log(restInfo);
-  }, [restInfo]);
-
-  const handleDelete = (deleteDishID, deleteDishTitle) => {
-    if (window.confirm("Are you sure you want to delete?")) {
-      handleDeleteDish(deleteDishID, deleteDishTitle).then(() => {
-        window.location.reload(true);
-      });
+  const {
+    data: restInfo,
+    isLoading,
+    isError,
+  } = useQuery(
+    ["restIndo", restName],
+    () => handleGetRestaurantByTitle(restName),
+    {
+      keepPreviousData: true,
+      staleTime: 1000 * 5, // 5 secs
+      // Handle error
+      onError: (error) => {
+        console.error("Error fetching confirmed orders:", error);
+      },
     }
-  };
-  const handleDeleteDish = async (deleteDishID, deleteDishTitle) => {
-    const deleteDishSuccess = await API.deleteDish(
-      deleteDishID,
-      deleteDishTitle
-    );
-    alert(
-      deleteDishSuccess ? "Dish deleted successfully!" : "Dish deletion failed."
-    );
-  };
+  );
 
   const handleUpdateDish = async (
     updateDishID,
@@ -115,6 +102,8 @@ export default function Products() {
           <PlusIcon style={{ width: 30, color: "white" }} />
         </AddButton>
       </Top>
+      {isLoading && <p>Loading...</p>}
+      {isError && <p>Error fetching data</p>}
       <Bottom>
         <BottomItem>Category</BottomItem>
         <BottomItem>Name (English)</BottomItem>
@@ -133,59 +122,14 @@ export default function Products() {
                   // console.log(dish.title , item.title)
                   // console.log(index * 10 + index1 + dish.Title);
                   return (
-                    <Bottom1 key={index + dish.title}>
-                      <BottomItem1>{dish.title}</BottomItem1>
-                      <CorrectionButton
-                        onClick={() => {
-                          navigate(`/HomePage/Products/Details`, {
-                            state: {
-                              restInfo: restInfo,
-                              categoryIndex: index1,
-                              dishIndex: index,
-                            },
-                          });
-                        }}
-                      >
-                        See full details
-                      </CorrectionButton>
-                      {dish.available ? (
-                        <BottomItemAvaible1
-                          onClick={() =>
-                            handleChangeAvaibility(dish, item.Title, false)
-                          }
-                        >
-                          Available
-                        </BottomItemAvaible1>
-                      ) : (
-                        <BottomItemAvaible2
-                          onClick={() =>
-                            handleChangeAvaibility(dish, item.Title, true)
-                          }
-                        >
-                          Not Available
-                        </BottomItemAvaible2>
-                      )}
-
-                      <CorrectionButton
-                        onClick={() => {
-                          navigate(`/HomePage/Products/CorrectProduct`, {
-                            state: {
-                              restInfo: restInfo,
-                              categoryIndex: index1,
-                              dishIndex: index,
-                              Img: dish.Image,
-                            },
-                          });
-                        }}
-                      >
-                        Correcting
-                      </CorrectionButton>
-                      <DeleteButton
-                        onClick={() => handleDelete(dish.id, dish.title)}
-                      >
-                        Delete
-                      </DeleteButton>
-                    </Bottom1>
+                    <ProductsComps
+                      restInfo={restInfo}
+                      index1={index1}
+                      index={index}
+                      handleChangeAvaibility={handleChangeAvaibility}
+                      dish={dish}
+                      item={item}
+                    />
                   );
                 })}
               </Bottom3>
@@ -291,41 +235,6 @@ const Bottom3 = styled.ul`
   background-color: ${COLORS.light};
   border: 0.5px solid ${COLORS.insideBlue};
 `;
-const BottomItem1 = styled.li`
-  all: unset;
-  padding: 15px;
-  box-sizing: border-box !important;
-  border-right: 0.5px solid ${COLORS.insideBlue};
-  width: calc(100% / 5) !important;
-`;
-
-const BottomItemAvaible1 = styled.li`
-  all: unset;
-  padding: 15px;
-  box-sizing: border-box !important;
-  border-right: 0.5px solid ${COLORS.insideBlue};
-  width: calc(100% / 5) !important;
-  background-color: ${COLORS.green};
-  color: ${COLORS.lightBlue};
-  &:hover {
-    cursor: pointer;
-    opacity: 0.8;
-  }
-`;
-
-const BottomItemAvaible2 = styled.li`
-  all: unset;
-  padding: 15px;
-  box-sizing: border-box !important;
-  border-right: 0.5px solid ${COLORS.insideBlue};
-  width: calc(100% / 5) !important;
-  background-color: ${COLORS.iconColor};
-  color: white;
-  &:hover {
-    cursor: pointer;
-    opacity: 0.8;
-  }
-`;
 
 const BottomItem2 = styled.li`
   all: unset;
@@ -338,32 +247,4 @@ const BottomList = styled.ul`
   width: 100%;
   margin: 0;
   padding: 0;
-`;
-
-const CorrectionButton = styled.li`
-  all: unset;
-  height: 100% !important;
-  padding: 15px;
-  background-color: ${COLORS.lightBlue};
-  border-right: 0.5px solid ${COLORS.insideBlue};
-  width: calc(100% / 6);
-  text-align: center;
-  color: white;
-  &:hover {
-    cursor: pointer;
-    opacity: 0.8;
-  }
-`;
-const DeleteButton = styled.li`
-  all: unset;
-  padding: 15px;
-  background-color: ${COLORS.red};
-  border-right: 0.5px solid ${COLORS.insideBlue};
-  width: calc(100% / 6);
-  text-align: center;
-  color: white;
-  &:hover {
-    cursor: pointer;
-    opacity: 0.8;
-  }
 `;
