@@ -1,19 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import COLORS from "../../../themes/colors";
+import COLORS from "../../../../themes/colors";
 import styled from "@emotion/styled";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import "./MainImage.css";
-// import {
-//   addCategory,
-//   deleteCategory,
-//   updateCategory,
-//   uploadImage,
-// } from "../../Processing/Database";
-import { API } from "../../../Processing/RestaurantAPI";
+import "../Components/MainImage.css";
 
-export default function CorrectCategories() {
+import { API } from "../../../../Processing/RestaurantAPI";
+
+export default function AddCategories() {
   const {
     register,
     handleSubmit,
@@ -22,60 +17,18 @@ export default function CorrectCategories() {
   const navigate = useNavigate();
   const uploadLink = useRef("");
   const { state } = useLocation();
-  const { NameEng, NameGeo, Image, categoryInfo, restId } = state;
-
-  const firstData = {
-    NameEng: NameEng,
-    NameGeo: NameGeo,
-    img: Image,
-    categoryInfo: categoryInfo,
-  };
-  useEffect(() => {
-    console.log(categoryInfo, NameEng, NameGeo, Image);
-  }, [categoryInfo]);
-
-  const handleUpdateCategory = async (updateCategoryTitle, image) => {
-    const updateCategoryData = {
-      title: updateCategoryTitle,
-      description: "rame",
-      image: image,
-    };
-    const updateCategorySuccess = await API.updateCategory(
-      categoryInfo.id,
-      updateCategoryData
-    );
-    alert(
-      updateCategorySuccess
-        ? "Category updated successfully!"
-        : "Category update failed."
-    );
-  };
-
+  const { restName, restInfo } = state;
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // const newUrl = useRef("");
-
   useEffect(() => {
-    handleFileUpload(selectedFile);
-    // .then((url) => {
-    //   newUrl.current = url;
-
-    // })
-  }, [selectedFile]);
-
-  const onSubmit = (data) => {
-    let imgLink = uploadLink.current == "" ? firstData.img : uploadLink.current;
-
-    handleUpdateCategory(data.NameEng, imgLink).then(() => {
-      console.log(data, imgLink);
-      window.location.reload(true);
-      navigate(-1);
-    });
-  };
+    console.log(restName);
+    console.log(restInfo);
+    // amit saxelis sashualebit momaq restornis info
+  }, [restName, restInfo]);
 
   const handleFileUpload = async (image) => {
     if (image) {
-      const uploadSuccess = await API.uploadImage(restId, image); // Replace with the correct restaurant ID
+      const uploadSuccess = await API.uploadImage(restInfo.id, image); // Replace with the correct restaurant ID
       if (uploadSuccess !== "") {
         console.log("success upload image");
         uploadLink.current = uploadSuccess;
@@ -83,6 +36,42 @@ export default function CorrectCategories() {
         console.log("failed upload image");
       }
     }
+  };
+
+  useEffect(() => {
+    console.log(uploadLink);
+  }, [uploadLink]);
+  const onSubmit = (data) => {
+    handleFileUpload(selectedFile).then(() => {
+      console.log(uploadLink.current);
+
+      // addCategory(
+      //   data.NameEng,
+      //   "sfkdfks",
+      //   newUrl.current
+      // ).then(() => {
+      //   navigate(-1);
+      // });
+      handleCreateCategory(data.NameEng, uploadLink.current).then(() => {
+        navigate(-1);
+      });
+    });
+  };
+  const handleCreateCategory = async (createCategoryTitle, categoryImage) => {
+    const createCategoryData = {
+      title: createCategoryTitle,
+      description: "rame",
+      image: categoryImage,
+    };
+    const createCategorySuccess = await API.addCategoryToRestaurant(
+      restInfo.id,
+      createCategoryData
+    );
+    alert(
+      createCategorySuccess
+        ? "Category created successfully!"
+        : "Category creation failed."
+    );
   };
 
   const handleFileInputChange = (event) => {
@@ -97,7 +86,7 @@ export default function CorrectCategories() {
       <Top>
         <BackButton
           onClick={() => {
-            onSubmit(firstData);
+            navigate(-1);
           }}
         >
           <ArrowLeftIcon style={{ width: 20, color: "white" }} />
@@ -106,20 +95,14 @@ export default function CorrectCategories() {
       </Top>
       <Bottom onSubmit={handleSubmit(onSubmit)}>
         <NameP>Name (English)</NameP>
-        <NameInput
-          defaultValue={NameEng}
-          {...register("NameEng", { required: true })}
-        />
+        <NameInput {...register("NameEng", { required: true })} />
         {errors.NameEng?.type === "required" && (
           <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
             English Name is required
           </p>
         )}
         <NameP>Name (Georgian)</NameP>
-        <NameInput
-          defaultValue={NameGeo}
-          {...register("NameGeo", { required: true })}
-        />
+        <NameInput {...register("NameGeo", { required: true })} />
         {errors.NameGeo?.type === "required" && (
           <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
             Georgian Name is required
@@ -131,7 +114,7 @@ export default function CorrectCategories() {
             <input
               className="file-input"
               type="file"
-              {...register("img")}
+              {...register("img", { required: true })}
               onChange={handleFileInputChange}
             />
             <span className="file-cta">
@@ -146,9 +129,6 @@ export default function CorrectCategories() {
               )}
             </span>
           </label>
-          {!selectedFile && (
-            <img className="selected-file-preview" src={firstData.img} />
-          )}
           {selectedFile && (
             <img
               className="selected-file-preview"
@@ -157,6 +137,11 @@ export default function CorrectCategories() {
             />
           )}
         </div>
+        {errors.img?.type === "required" && (
+          <p style={{ color: "red", margin: 0, paddingLeft: 18 }} role="alert">
+            Category Image is required
+          </p>
+        )}
 
         <SubmitInput type="submit" />
       </Bottom>
