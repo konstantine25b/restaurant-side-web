@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import COLORS from "../../../../themes/colors";
 import styled from "@emotion/styled";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
@@ -15,7 +15,6 @@ export default function CorrectProduct() {
     control,
   } = useForm();
 
-  const newUrl = useRef("");
   const navigate = useNavigate();
   const { state } = useLocation();
   const uploadLink = useRef("");

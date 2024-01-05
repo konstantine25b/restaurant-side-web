@@ -22,7 +22,7 @@ export default function Products() {
     isError,
     refetch,
   } = useQuery(
-    ["restIndo", restName],
+    ["restInfo", restName],
     () => handleGetRestaurantByTitle(restName),
     {
       keepPreviousData: true,

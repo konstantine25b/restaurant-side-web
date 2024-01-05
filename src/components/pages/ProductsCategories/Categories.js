@@ -4,28 +4,34 @@ import COLORS from "../../../themes/colors";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API } from "../../../Processing/RestaurantAPI";
+import { useQuery } from "react-query";
 
+const handleGetRestaurantByTitle = async (restaurantTitle) => {
+  const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
+  return JSON.parse(JSON.stringify(restaurantByTitle));
+};
 export default function Categories() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { restName } = state;
 
-  // aq vinaxav restornis mtlian informacia
-  const [restInfo, setRestInfo] = useState();
-
-  const getRestaurantInfo = async () => {
-    handleGetRestaurantByTitle(restName);
-  };
-  useEffect(() => {
-    console.log(restName);
-    // amit saxelis sashualebit momaq restornis info
-    getRestaurantInfo();
-  }, [restName]);
-
-  const handleGetRestaurantByTitle = async (restaurantTitle) => {
-    const restaurantByTitle = await API.getRestaurantByTitle(restaurantTitle);
-    setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)));
-  };
+  const {
+    data: restInfo,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery(
+    ["restInfo", restName],
+    () => handleGetRestaurantByTitle(restName),
+    {
+      keepPreviousData: true,
+      staleTime: 1000 * 5, // 5 secs
+      // Handle error
+      onError: (error) => {
+        console.error("Error fetching confirmed orders:", error);
+      },
+    }
+  );
 
   const handleDeleteCategory = async (deleteCategoryID, deleteCategoryName) => {
     const deleteCategorySuccess = await API.deleteCategory(
@@ -37,38 +43,12 @@ export default function Categories() {
         ? "Category deleted successfully!"
         : "Category deletion failed."
     );
+    refetch();
   };
 
-  useEffect(() => {
-    const handleRefresh = () => {
-      // Function to be executed on each refresh
-      console.log("Page has been refreshed");
-      getRestaurantInfo();
-    };
-
-    handleRefresh(); // Call the function on component mount
-
-    const beforeUnloadListener = () => {
-      handleRefresh(); // Call the function before page refresh
-    };
-
-    window.addEventListener("beforeunload", beforeUnloadListener);
-
-    return () => {
-      window.removeEventListener("beforeunload", beforeUnloadListener);
-    };
-  }, []);
-
   const handleDelete = (deleteCategoryID, CategoryName) => {
-    // Perform the delete operation here
-    // ...
-
     if (window.confirm("Are you sure you want to delete?")) {
-      // Delete confirmed, perform the delete operation
-      // ...
-      handleDeleteCategory(deleteCategoryID, CategoryName).then(() => {
-        window.location.reload(true);
-      });
+      handleDeleteCategory(deleteCategoryID, CategoryName);
     }
   };
 
@@ -89,6 +69,8 @@ export default function Categories() {
           <PlusIcon style={{ width: 30, color: "white" }} />
         </AddButton>
       </Top>
+      {isLoading && <p>Loading...</p>}
+      {isError && <p>Error fetching data</p>}
       <Bottom>
         <BottomItem>Name (English)</BottomItem>
         <BottomItem>Name (Georgian)</BottomItem>

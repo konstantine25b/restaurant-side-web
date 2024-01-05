@@ -20,7 +20,6 @@ export default function AddProduct() {
   const { restInfo } = state;
   const uploadLink = useRef("");
 
-  const newUrl = useRef("");
   const [selectedFile, setSelectedFile] = useState(null);
 
   // amas viyeneb rom titoeuli categois saxelis id gavigo
