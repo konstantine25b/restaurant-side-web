@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-
+import React, { useRef, useState } from "react";
 import COLORS from "../../../../themes/colors";
 import styled from "@emotion/styled";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import "../Components/MainImage.css";
-import { addDish, uploadImage } from "../../../../Processing/Database";
 import { API } from "../../../../Processing/RestaurantAPI";
 
 export default function AddProduct() {
@@ -70,10 +68,6 @@ export default function AddProduct() {
     }
   };
 
-  // useEffect(()=>{
-
-  // },[selectedFile])
-
   const onSubmit = (data) => {
     let arr = [];
 
@@ -81,20 +75,6 @@ export default function AddProduct() {
       arr.push(data.ingredients[i]);
     }
     handleFileUpload(selectedFile).then(() => {
-      // addDish(
-      //   data.Category,
-      //   data.NameEng,
-      //   data.Description,
-      //   newUrl.current,
-      //   data.AproxTime,
-      //   data.ingredients !== undefined ? arr : [], //Undefined check
-      //   data.Price,
-      //   true
-      // ).then(() => {
-      //   window.location.reload(true);
-      //   navigate(-1);
-      // });
-      // console.log(data,  categoryMap)
       handleCreateDish(
         categoryMap.get(data.Category),
         data.NameEng,
@@ -105,7 +85,6 @@ export default function AddProduct() {
         data.ingredients !== undefined ? arr : [] //Undefined check
       ).then(() => {
         navigate(-1);
-        // window.location.reload(true);
       });
     });
   };
@@ -120,7 +99,6 @@ export default function AddProduct() {
   };
 
   const categories = restInfo.categories.map((item) => {
-    // addEntry(item.title, item.id)
     return item.title;
   });
 

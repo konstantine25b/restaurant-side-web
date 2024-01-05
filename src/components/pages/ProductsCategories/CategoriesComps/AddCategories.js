@@ -5,7 +5,6 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import "../Components/MainImage.css";
-
 import { API } from "../../../../Processing/RestaurantAPI";
 
 export default function AddCategories() {
@@ -45,13 +44,6 @@ export default function AddCategories() {
     handleFileUpload(selectedFile).then(() => {
       console.log(uploadLink.current);
 
-      // addCategory(
-      //   data.NameEng,
-      //   "sfkdfks",
-      //   newUrl.current
-      // ).then(() => {
-      //   navigate(-1);
-      // });
       handleCreateCategory(data.NameEng, uploadLink.current).then(() => {
         navigate(-1);
       });

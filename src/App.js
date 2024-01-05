@@ -74,21 +74,7 @@ const router = createBrowserRouter(
 );
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const[mainUser,setMainUser] = useState(null)
-  return (
-    // amit anu usercontext provideri gadascems imas shesulia tu ara useri
-    // <UserContext.Provider
-    //   value={{
-    //     isLoggedIn: isLoggedIn,
-    //     setIsLoggedIn,
-    //     // mainUser: mainUser,
-    //     // setMainUser,
-    //   }}
-    // >
-    <RouterProvider router={router} />
-    // </UserContext.Provider>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

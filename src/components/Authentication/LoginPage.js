@@ -1,10 +1,8 @@
 import React from "react";
-
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
-
 import { API } from "../../Processing/RestaurantAPI";
 
 export default function LoginPage() {

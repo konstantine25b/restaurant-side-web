@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 import COLORS from "../themes/colors";
 import LeftNavbarList from "./pages/pageComponents/LeftNavbarList";
 import { Outlet, useNavigate } from "react-router-dom";
-
 import { API } from "../Processing/RestaurantAPI";
 import { QueryClient, QueryClientProvider } from "react-query";
 

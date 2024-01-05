@@ -3,12 +3,10 @@ import React, { useEffect, useState } from "react";
 import COLORS from "../../../themes/colors";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
-import { deleteCategory, getRestaurant } from "../../../Processing/Database";
 import { API } from "../../../Processing/RestaurantAPI";
 
 export default function Categories() {
   const navigate = useNavigate();
-
   const { state } = useLocation();
   const { restName } = state;
 

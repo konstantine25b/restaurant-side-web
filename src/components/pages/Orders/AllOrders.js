@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { API } from "../../../Processing/RestaurantAPI";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation} from "react-router-dom";
 import styled from "@emotion/styled";
 import EachPendingOrder from "./OrderComponents/EachPendingOrder";
 import ConfOrderItems from "./OrderComponents/ConfOrderItems";

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { API } from "../../../Processing/RestaurantAPI";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation} from "react-router-dom";
 import styled from "@emotion/styled";
 import { useQuery } from "react-query";
 import ConfOrderItems from "./OrderComponents/ConfOrderItems";
@@ -71,26 +71,6 @@ const PageSelectContainer = styled.div`
   align-items: center;
 `;
 
-const PageSelect = styled.select`
-  padding: 10px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-right: 10px;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
-const PageOption = styled.option`
-  background-color: #007bff;
-  color: #fff;
-`;
-
 function calculateTimeLeft(requestedDate) {
   const currentTime = new Date();
   const endTime = new Date(requestedDate);
@@ -114,7 +94,7 @@ const fetchDeniedOrders = async (id) => {
 export default function DeniedOrders() {
   const { state } = useLocation();
   const { restInfo } = state;
-  const navigate = useNavigate();
+ 
 
   const [orders, setOrders] = useState();
 

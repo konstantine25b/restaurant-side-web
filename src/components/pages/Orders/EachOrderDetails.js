@@ -60,13 +60,6 @@ const OrderItemNote = styled.div`
   margin-top: 5px;
 `;
 
-const UserId = styled.div`
-  font-size: 16px;
-  padding: 5px;
-  margin-top: 5px;
-  margin-bottom: 15px;
-`;
-
 const TimeContainer = styled.div`
   display: flex;
   flex-direction: column;

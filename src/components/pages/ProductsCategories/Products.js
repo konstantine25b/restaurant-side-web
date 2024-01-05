@@ -3,12 +3,6 @@ import React, { useEffect, useState } from "react";
 import COLORS from "../../../themes/colors";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  addDish,
-  deleteDish,
-  getRestaurant,
-  updateDish,
-} from "../../../Processing/Database";
 import { API } from "../../../Processing/RestaurantAPI";
 
 export default function Products() {
@@ -31,49 +25,12 @@ export default function Products() {
     setRestInfo(JSON.parse(JSON.stringify(restaurantByTitle)));
   };
 
-  // aq vinaxav restornis mtlian informacia
-
-  // const getRestaurantInfo = async () => {
-  //   setRestInfo(await getRestaurant(restName));
-  // };
-  // useEffect(() => {
-  //   console.log(restName);
-  //   // amit saxelis sashualebit momaq restornis info
-
-  //   getRestaurantInfo();
-  // }, [restName]);
-
-  // useEffect(() => {
-  //   const handleRefresh = () => {
-  //     // Function to be executed on each refresh
-  //     console.log("Page has been refreshed");
-  //     getRestaurantInfo();
-  //   };
-
-  //   handleRefresh(); // Call the function on component mount
-
-  //   const beforeUnloadListener = () => {
-  //     handleRefresh(); // Call the function before page refresh
-  //   };
-
-  //   window.addEventListener("beforeunload", beforeUnloadListener);
-
-  //   return () => {
-  //     window.removeEventListener("beforeunload", beforeUnloadListener);
-  //   };
-  // }, []);
   useEffect(() => {
     console.log(restInfo);
   }, [restInfo]);
 
   const handleDelete = (deleteDishID, deleteDishTitle) => {
-    // Perform the delete operation here
-    // ...
-
     if (window.confirm("Are you sure you want to delete?")) {
-      // Delete confirmed, perform the delete operation
-      // ...
-
       handleDeleteDish(deleteDishID, deleteDishTitle).then(() => {
         window.location.reload(true);
       });
@@ -122,14 +79,9 @@ export default function Products() {
   };
 
   const handleChangeAvaibility = (dish, Category, Avaibility) => {
-    // Perform the delete operation here
-    // ...
-
     if (
       window.confirm("Are you sure you want to change availability status?")
     ) {
-      // Delete confirmed, perform the delete operation
-      // ...
       console.log(dish, Category, Avaibility);
       handleUpdateDish(
         dish.id,
@@ -144,20 +96,6 @@ export default function Products() {
       ).then(() => {
         window.location.reload(true);
       });
-
-      // updateDish(
-      //   Category,
-      //   dish.title,
-      //   dish.title,
-      //   dish.description,
-      //   dish.image,
-      //   dish.approxTime,
-      //   dish.ingredients, //Undefined check
-      //   dish.price,
-      //   Avaibility
-      // ).then(()=>{
-      //   window.location.reload(true);
-      // })
     }
   };
 

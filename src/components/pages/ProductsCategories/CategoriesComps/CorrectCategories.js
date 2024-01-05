@@ -5,12 +5,6 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import "../Components/MainImage.css";
-// import {
-//   addCategory,
-//   deleteCategory,
-//   updateCategory,
-//   uploadImage,
-// } from "../../Processing/Database";
 import { API } from "../../../../Processing/RestaurantAPI";
 
 export default function CorrectCategories() {
@@ -53,14 +47,8 @@ export default function CorrectCategories() {
 
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // const newUrl = useRef("");
-
   useEffect(() => {
     handleFileUpload(selectedFile);
-    // .then((url) => {
-    //   newUrl.current = url;
-
-    // })
   }, [selectedFile]);
 
   const onSubmit = (data) => {

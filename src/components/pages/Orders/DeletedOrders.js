@@ -65,26 +65,6 @@ const PaginationButton = styled(FancyButton)`
   margin: 0 5px;
 `;
 
-const PageSelect = styled.select`
-  padding: 10px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-right: 10px;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
-const PageOption = styled.option`
-  background-color: #007bff;
-  color: #fff;
-`;
-
 function calculateTimeLeft(requestedDate) {
   const currentTime = new Date();
   const endTime = new Date(requestedDate);

@@ -1,6 +1,5 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-
 import styled from "@emotion/styled";
 import COLORS from "../../../themes/colors";
 import { useForm } from "react-hook-form";

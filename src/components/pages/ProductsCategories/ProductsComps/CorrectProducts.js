@@ -5,7 +5,6 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import "../Components/MainImage.css";
-// import { addDish, updateDish, uploadImage } from "../../Processing/Database";
 import { API } from "../../../../Processing/RestaurantAPI";
 
 export default function CorrectProduct() {
@@ -37,9 +36,6 @@ export default function CorrectProduct() {
 
   useEffect(() => {
     handleFileUpload(selectedFile);
-    // .then((url) => {
-    //   newUrl.current = url;
-    // });
   }, [selectedFile]);
   const firstData = {
     Category: restInfo.categories[categoryIndex].title,
@@ -52,9 +48,6 @@ export default function CorrectProduct() {
     Price: dishInfo.price,
     Availability: dishInfo.availability,
   };
-  // useEffect(()=>{
-  // console.log(dishInfo)
-  // },[dishInfo])
 
   const handleUpdateDish = async (
     updateDishID,
@@ -95,7 +88,7 @@ export default function CorrectProduct() {
       arr.push(data.ingredients[i]);
     }
     console.log(data.AproxTime);
-    // console.log(dishInfo.id, data.NameEng, data.Price, imgLink )
+
     handleUpdateDish(
       dishInfo.id,
       data.NameEng,
@@ -109,21 +102,6 @@ export default function CorrectProduct() {
       window.location.reload(true);
       navigate(-1);
     });
-
-    // updateDish(
-    //   data.Category,
-    //   firstData.NameEng,
-    //   data.NameEng,
-    //   data.Description,
-    //   imgLink,
-    //   data.AproxTime,
-    //   data.ingredients !== undefined ? arr : [], //Undefined check
-    //   data.Price,
-    //   dishInfo.Availability
-    // ).then(() => {
-    //   window.location.reload(true);
-    //   navigate(-1);
-    // });
   };
 
   console.log(dishInfo);
@@ -199,7 +177,6 @@ export default function CorrectProduct() {
         <BackButton
           onClick={() => {
             onSubmit(firstData);
-            // console.log(firstData)
           }}
         >
           <ArrowLeftIcon style={{ width: 20, color: "white" }} />

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { API } from "../../../Processing/RestaurantAPI";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import styled from "@emotion/styled";
 import EachPendingOrder from "./OrderComponents/EachPendingOrder";
-import { QueryClient, useQuery } from "react-query";
+import { useQuery } from "react-query";
 import Select from "react-select";
 
 const OrdersContainer = styled.div`
@@ -72,26 +72,6 @@ const PageSelectContainer = styled.div`
   align-items: center;
 `;
 
-const PageSelect = styled.select`
-  padding: 10px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-right: 10px;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
-const PageOption = styled.option`
-  background-color: #007bff;
-  color: #fff;
-`;
-
 function calculateTimeLeft(requestedDate) {
   const currentTime = new Date();
   const endTime = new Date(requestedDate);
@@ -116,7 +96,7 @@ const fetchPendingOrders = async (id) => {
 
 export default function AllOrders() {
   const { state } = useLocation();
-  const { restName, restInfo } = state;
+  const { restInfo } = state;
 
   const [orders, setOrders] = useState();
 
