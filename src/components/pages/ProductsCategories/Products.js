@@ -20,6 +20,7 @@ export default function Products() {
     data: restInfo,
     isLoading,
     isError,
+    refetch,
   } = useQuery(
     ["restIndo", restName],
     () => handleGetRestaurantByTitle(restName),
@@ -55,7 +56,6 @@ export default function Products() {
       available: available,
     };
 
-    console.log(updateDishID, updateDishData);
     const updateDishSuccess = await API.updateDish(
       updateDishID,
       updateDishData
@@ -63,6 +63,7 @@ export default function Products() {
     alert(
       updateDishSuccess ? "Dish updated successfully!" : "Dish update failed."
     );
+    refetch();
   };
 
   const handleChangeAvaibility = (dish, Category, Avaibility) => {
@@ -80,9 +81,7 @@ export default function Products() {
         dish.ingredients !== undefined ? dish.ingredients : [], //Undefined check
         dish.categoryId,
         Avaibility
-      ).then(() => {
-        window.location.reload(true);
-      });
+      );
     }
   };
 
@@ -119,16 +118,16 @@ export default function Products() {
               <BottomItem2 key={index1}>{item.title}</BottomItem2>
               <Bottom3>
                 {item.dishes.map((dish, index) => {
-                  // console.log(dish.title , item.title)
-                  // console.log(index * 10 + index1 + dish.Title);
                   return (
                     <ProductsComps
+                      key={index}
                       restInfo={restInfo}
                       index1={index1}
                       index={index}
                       handleChangeAvaibility={handleChangeAvaibility}
                       dish={dish}
                       item={item}
+                      refetch={refetch}
                     />
                   );
                 })}

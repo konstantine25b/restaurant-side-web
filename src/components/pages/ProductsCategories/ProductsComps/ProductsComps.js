@@ -1,8 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { API } from "../../../../Processing/PrestoAPI";
+
 import styled from "@emotion/styled";
 import COLORS from "../../../../themes/colors";
+import { API } from "../../../../Processing/RestaurantAPI";
 
 export default function ProductsComps({
   restInfo,
@@ -11,14 +12,13 @@ export default function ProductsComps({
   handleChangeAvaibility,
   dish,
   item,
+  refetch
 }) {
   const navigate = useNavigate();
 
   const handleDelete = (deleteDishID, deleteDishTitle) => {
     if (window.confirm("Are you sure you want to delete?")) {
-      handleDeleteDish(deleteDishID, deleteDishTitle).then(() => {
-        window.location.reload(true);
-      });
+      handleDeleteDish(deleteDishID, deleteDishTitle)
     }
   };
   const handleDeleteDish = async (deleteDishID, deleteDishTitle) => {
@@ -29,6 +29,7 @@ export default function ProductsComps({
     alert(
       deleteDishSuccess ? "Dish deleted successfully!" : "Dish deletion failed."
     );
+    refetch()
   };
 
   return (
