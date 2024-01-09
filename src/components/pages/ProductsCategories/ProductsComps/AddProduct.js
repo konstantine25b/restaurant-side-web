@@ -67,25 +67,24 @@ export default function AddProduct() {
     }
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     let arr = [];
 
     for (let i = 0; i < fields.length; i++) {
       arr.push(data.ingredients[i]);
     }
-    handleFileUpload(selectedFile).then(() => {
-      handleCreateDish(
-        categoryMap.get(data.Category),
-        data.NameEng,
-        uploadLink.current,
-        data.Price,
-        data.AproxTime,
-        data.Description,
-        data.ingredients !== undefined ? arr : [] //Undefined check
-      ).then(() => {
-        navigate(-1);
-      });
-    });
+    await handleFileUpload(selectedFile);
+
+    await handleCreateDish(
+      categoryMap.get(data.Category),
+      data.NameEng,
+      uploadLink.current,
+      data.Price,
+      data.AproxTime,
+      data.Description,
+      data.ingredients !== undefined ? arr : [] //Undefined check
+    );
+    navigate(-1);
   };
 
   const { fields, append, remove } = useFieldArray({

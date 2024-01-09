@@ -37,17 +37,11 @@ export default function AddCategories() {
     }
   };
 
-  useEffect(() => {
-    console.log(uploadLink);
-  }, [uploadLink]);
-  const onSubmit = (data) => {
-    handleFileUpload(selectedFile).then(() => {
-      console.log(uploadLink.current);
+  const onSubmit = async (data) => {
+    await handleFileUpload(selectedFile);
 
-      handleCreateCategory(data.NameEng, uploadLink.current).then(() => {
-        navigate(-1);
-      });
-    });
+    await handleCreateCategory(data.NameEng, uploadLink.current);
+    navigate(-1)
   };
   const handleCreateCategory = async (createCategoryTitle, categoryImage) => {
     const createCategoryData = {
