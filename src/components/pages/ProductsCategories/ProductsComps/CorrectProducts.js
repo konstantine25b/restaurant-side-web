@@ -33,9 +33,6 @@ export default function CorrectProduct() {
     // Force a render by setting the state.
   });
 
-  useEffect(() => {
-    handleFileUpload(selectedFile);
-  }, [selectedFile]);
   const firstData = {
     Category: restInfo.categories[categoryIndex].title,
     NameEng: dishInfo.title,
@@ -79,7 +76,7 @@ export default function CorrectProduct() {
     );
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     let imgLink = uploadLink.current == "" ? firstData.img : uploadLink.current;
     let arr = [];
 
@@ -87,8 +84,8 @@ export default function CorrectProduct() {
       arr.push(data.ingredients[i]);
     }
     console.log(data.AproxTime);
-
-    handleUpdateDish(
+    await handleFileUpload(selectedFile);
+    await handleUpdateDish(
       dishInfo.id,
       data.NameEng,
       data.Price,
@@ -97,10 +94,9 @@ export default function CorrectProduct() {
       data.Description,
       data.ingredients !== undefined ? arr : [], //Undefined check
       categoryMap.get(data.Category)
-    ).then(() => {
-      window.location.reload(true);
-      navigate(-1);
-    });
+    );
+
+    navigate(-1);
   };
 
   console.log(dishInfo);

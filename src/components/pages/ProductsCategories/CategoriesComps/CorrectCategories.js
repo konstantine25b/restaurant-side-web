@@ -47,18 +47,13 @@ export default function CorrectCategories() {
 
   const [selectedFile, setSelectedFile] = useState(null);
 
-  useEffect(() => {
-    handleFileUpload(selectedFile);
-  }, [selectedFile]);
-
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     let imgLink = uploadLink.current == "" ? firstData.img : uploadLink.current;
 
-    handleUpdateCategory(data.NameEng, imgLink).then(() => {
-      console.log(data, imgLink);
-      window.location.reload(true);
-      navigate(-1);
-    });
+    await handleFileUpload(selectedFile);
+    await handleUpdateCategory(data.NameEng, imgLink);
+
+    navigate(-1);
   };
 
   const handleFileUpload = async (image) => {
