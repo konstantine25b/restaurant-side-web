@@ -16,7 +16,7 @@ import LoginPage from "./components/Authentication/LoginPage";
 import { createContext, useState } from "react";
 import CorrectProduct from "./components/pages/ProductsCategories/ProductsComps/CorrectProducts";
 import CorrectCategories from "./components/pages/ProductsCategories/CategoriesComps/CorrectCategories";
-import DetailsPage from "./components/pages/ProductsCategories/Components/DetailsPage";
+import DetailsPage from "./components/pages/ProductsCategories/Components/ProductDetailsPage";
 import Address from "./components/pages/RestInfo/Address";
 import FullRestInfo from "./components/pages/RestInfo/FullRestInfo";
 import Description from "./components/pages/RestInfo/Description";
@@ -27,6 +27,7 @@ import AllOrders from "./components/pages/Orders/AllOrders";
 import EachOrderDetails from "./components/pages/Orders/EachOrderDetails";
 import DeniedOrders from "./components/pages/Orders/DeniedOrders";
 import DeletedOrders from "./components/pages/Orders/DeletedOrders";
+import CategoriesDetailsPage from "./components/pages/ProductsCategories/Components/CategoriesDetailsPage";
 
 export const UserContext = createContext(null);
 const router = createBrowserRouter(
@@ -37,6 +38,7 @@ const router = createBrowserRouter(
         <Route index={true} element={<HomePage />} />
         <Route path="/HomePage/MainImage" element={<MainImage />} />
         <Route path="/HomePage/Categories" element={<Categories />} />
+        <Route path="/HomePage/Categories/Details" element={<CategoriesDetailsPage />} />
         <Route
           path="/HomePage/Categories/AddCategories"
           element={<AddCategories />}

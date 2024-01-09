@@ -74,6 +74,7 @@ export default function Categories() {
       <Bottom>
         <BottomItem>Name (English)</BottomItem>
         <BottomItem>Name (Georgian)</BottomItem>
+        <BottomItem>Details</BottomItem>
         <BottomItem>Correction</BottomItem>
         <BottomItem>Delete</BottomItem>
       </Bottom>
@@ -83,6 +84,21 @@ export default function Categories() {
             <Bottom1 key={index}>
               <BottomItem1>{item.title}</BottomItem1>
               <BottomItem1>{item.title}</BottomItem1>
+              <CorrectionButton
+                onClick={() => {
+                  navigate(`/HomePage/Categories/Details`, {
+                    state: {
+                      NameEng: item.title,
+                      NameGeo: item.title,
+                      Image: item.image,
+                      categoryInfo: item,
+                      restId: restInfo.id,
+                    },
+                  });
+                }}
+              >
+                See full details
+              </CorrectionButton>
               <CorrectionButton
                 onClick={() => {
                   navigate(`/HomePage/Categories/CorrectCategories`, {

@@ -24,9 +24,7 @@ export default function CorrectCategories() {
     img: Image,
     categoryInfo: categoryInfo,
   };
-  useEffect(() => {
-    console.log(categoryInfo, NameEng, NameGeo, Image);
-  }, [categoryInfo]);
+
 
   const handleUpdateCategory = async (updateCategoryTitle, image) => {
     const updateCategoryData = {
