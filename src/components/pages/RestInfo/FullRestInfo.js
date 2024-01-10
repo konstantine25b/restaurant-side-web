@@ -91,20 +91,7 @@ const TopP = styled.p`
   color: black;
   padding-right: 20px;
 `;
-const BackButton = styled.div`
-  width: 40px;
-  height: 30px;
-  background-color: ${COLORS.insideBlue};
-  border-radius: 10%;
-  margin-bottom: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  &:hover {
-    cursor: pointer;
-    opacity: 0.8;
-  }
-`;
+
 
 const MainImage = styled.img`
   width: 100px;

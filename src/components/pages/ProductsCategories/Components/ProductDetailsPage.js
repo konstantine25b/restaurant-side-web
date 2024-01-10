@@ -54,12 +54,15 @@ export default function DetailsPage() {
       </Top>
       <Top>
         <TopP>Ingredients:</TopP>
-        {firstData.Ingredients == null
-          ? ""
-          : firstData.Ingredients.map((item) => {
-              return item ? <TopP key={item}>{item} ,</TopP> : null;
-            })}
+        <div>
+          {firstData.Ingredients == null
+            ? ""
+            : firstData.Ingredients.map((item) => {
+                return item ? <TopSpan key={item}> {item} ,</TopSpan> : null;
+              })}
+        </div>
       </Top>
+
       <Top>
         <TopP>Product Image :</TopP>
         <ProductImage src={dishInfo.image} />
@@ -87,6 +90,11 @@ const Top = styled.div`
   align-items: center;
 `;
 const TopP = styled.p`
+  font-size: 20px;
+  color: black;
+  padding-right: 20px;
+`;
+const TopSpan = styled.span`
   font-size: 20px;
   color: black;
   padding-right: 20px;
