@@ -25,7 +25,6 @@ export default function CorrectCategories() {
     categoryInfo: categoryInfo,
   };
 
-
   const handleUpdateCategory = async (updateCategoryTitle, image) => {
     const updateCategoryData = {
       title: updateCategoryTitle,
@@ -69,16 +68,13 @@ export default function CorrectCategories() {
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
-  useEffect(() => {
-    console.log(selectedFile);
-  }, [selectedFile]);
 
   return (
     <MainDiv>
       <Top>
         <BackButton
           onClick={() => {
-            onSubmit(firstData);
+            navigate(-1);
           }}
         >
           <ArrowLeftIcon style={{ width: 20, color: "white" }} />

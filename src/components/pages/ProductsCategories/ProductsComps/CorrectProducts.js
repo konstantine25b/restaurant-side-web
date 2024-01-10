@@ -136,9 +136,6 @@ export default function CorrectProduct() {
   const handleFileInputChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
-  useEffect(() => {
-    console.log(selectedFile);
-  }, [selectedFile]);
 
   const categories = restInfo.categories.map((item) => {
     return item.title;
@@ -171,7 +168,7 @@ export default function CorrectProduct() {
       <Top>
         <BackButton
           onClick={() => {
-            onSubmit(firstData);
+            navigate(-1)
           }}
         >
           <ArrowLeftIcon style={{ width: 20, color: "white" }} />
