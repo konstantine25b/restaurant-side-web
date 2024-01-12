@@ -4,7 +4,7 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
-
+import { QueryClient, QueryClientProvider } from "react-query";
 import Root from "./components/Root";
 import MainImage from "./components/pages/RestInfo/MainImage";
 import HomePage from "./components/pages/HomePage";
@@ -13,7 +13,6 @@ import AddCategories from "./components/pages/ProductsCategories/CategoriesComps
 import Products from "./components/pages/ProductsCategories/Products";
 import AddProduct from "./components/pages/ProductsCategories/ProductsComps/AddProduct";
 import LoginPage from "./components/Authentication/LoginPage";
-import { createContext, useState } from "react";
 import CorrectProduct from "./components/pages/ProductsCategories/ProductsComps/CorrectProducts";
 import CorrectCategories from "./components/pages/ProductsCategories/CategoriesComps/CorrectCategories";
 import DetailsPage from "./components/pages/ProductsCategories/Components/ProductDetailsPage";
@@ -28,8 +27,10 @@ import EachOrderDetails from "./components/pages/Orders/EachOrderDetails";
 import DeniedOrders from "./components/pages/Orders/DeniedOrders";
 import DeletedOrders from "./components/pages/Orders/DeletedOrders";
 import CategoriesDetailsPage from "./components/pages/ProductsCategories/Components/CategoriesDetailsPage";
+import { CookiesProvider } from "react-cookie";
 
-export const UserContext = createContext(null);
+const queryClient = new QueryClient();
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
@@ -38,7 +39,10 @@ const router = createBrowserRouter(
         <Route index={true} element={<HomePage />} />
         <Route path="/HomePage/MainImage" element={<MainImage />} />
         <Route path="/HomePage/Categories" element={<Categories />} />
-        <Route path="/HomePage/Categories/Details" element={<CategoriesDetailsPage />} />
+        <Route
+          path="/HomePage/Categories/Details"
+          element={<CategoriesDetailsPage />}
+        />
         <Route
           path="/HomePage/Categories/AddCategories"
           element={<AddCategories />}
@@ -76,7 +80,13 @@ const router = createBrowserRouter(
 );
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <CookiesProvider>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </CookiesProvider>
+  );
 }
 
 export default App;

@@ -1,12 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import styled from "@emotion/styled";
 import COLORS from "../../themes/colors";
 import { API } from "../../Processing/RestaurantAPI";
+import { useCookies } from "react-cookie";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const [cookies, setCookie] = useCookies(["user"]);
+
+  useEffect(() => {
+    if (cookies.user) {
+      navigate("/HomePage");
+    }
+  }, [cookies, navigate]);
 
   const {
     register,
@@ -19,9 +27,8 @@ export default function LoginPage() {
   const handleLogin = async (email, password) => {
     const success = await API.login(email, password);
     if (success) {
-      setTimeout(() => {
-        navigate(`/HomePage`);
-      }, [500]);
+      localStorage.setItem("email", email);
+      setCookie("user", email, { path: "/" });
     } else {
       console.log("ara");
     }
@@ -29,38 +36,40 @@ export default function LoginPage() {
 
   return (
     <MainDiv>
-      <FormDiv>
-        <TopP>Sign In to the Fast Order</TopP>
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <NameInput
-            type="email"
-            placeholder="Enter Your Email"
-            {...register("Email", { required: true })}
-          />
-          {errors.Email?.type === "required" && (
-            <p
-              style={{ color: "red", margin: 0, paddingLeft: 18 }}
-              role="alert"
-            >
-              Email is required
-            </p>
-          )}
-          <NameInput
-            type="password"
-            placeholder="Enter Your Password"
-            {...register("Password", { required: true })}
-          />
-          {errors.Password?.type === "required" && (
-            <p
-              style={{ color: "red", margin: 0, paddingLeft: 18 }}
-              role="alert"
-            >
-              Password is required
-            </p>
-          )}
-          <SubmitInput type="submit" value={"Sign In"} />
-        </Form>
-      </FormDiv>
+      {!cookies.user ? (
+        <FormDiv>
+          <TopP>Sign In to the Fast Order</TopP>
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <NameInput
+              type="email"
+              placeholder="Enter Your Email"
+              {...register("Email", { required: true })}
+            />
+            {errors.Email?.type === "required" && (
+              <p
+                style={{ color: "red", margin: 0, paddingLeft: 18 }}
+                role="alert"
+              >
+                Email is required
+              </p>
+            )}
+            <NameInput
+              type="password"
+              placeholder="Enter Your Password"
+              {...register("Password", { required: true })}
+            />
+            {errors.Password?.type === "required" && (
+              <p
+                style={{ color: "red", margin: 0, paddingLeft: 18 }}
+                role="alert"
+              >
+                Password is required
+              </p>
+            )}
+            <SubmitInput type="submit" value={"Sign In"} />
+          </Form>
+        </FormDiv>
+      ) : null}
     </MainDiv>
   );
 }

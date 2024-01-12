@@ -1,71 +1,50 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "@emotion/styled";
 import COLORS from "../themes/colors";
 import LeftNavbarList from "./pages/pageComponents/LeftNavbarList";
 import { Outlet, useNavigate } from "react-router-dom";
 import { API } from "../Processing/RestaurantAPI";
-import { QueryClient, QueryClientProvider } from "react-query";
-
-const queryClient = new QueryClient();
+import { useQuery } from "react-query";
+import { useCookies } from "react-cookie";
 
 export default function Root() {
   const navigate = useNavigate();
+  const [cookies, , removeCookie] = useCookies(["user"]);
 
-  // restornis axels vwer aq
-  const [restName, setRestName] = useState();
+  useEffect(() => {
+    if (!cookies.user) {
+      navigate("/");
+    }
+  }, [cookies, navigate]);
 
-  // aq vinaxav restornis mtlian informacia
-  const [restInfo, setRestInfo] = useState();
-
-  // es aris localstorageshi shenaxuli data
-  const [data, setData] = useState(null);
-
-  const [dataIsUploaded, setDataIsUploaded] = useState(false);
+  const { data: restInfo } = useQuery(
+    ["restInfo"],
+    () => handleGetOwnedRestaurant(),
+    {
+      keepPreviousData: true,
+      staleTime: 1000 * 5, // 5 secs
+      // Handle error
+      onError: (error) => {
+        console.error("Error fetching confirmed orders:", error);
+      },
+    }
+  );
 
   const handleGetOwnedRestaurant = async () => {
-    var result = await API.getOwnedRestaurant();
+    let result = await API.getOwnedRestaurant();
 
     if (result) {
-      handleGetRestaurantById(result);
+      const restaurantById = await API.getRestaurantById(parseInt(result));
+      return JSON.parse(JSON.stringify(restaurantById));
     } else {
       console.log("no owned restaurants");
+      return null;
     }
   };
-  const handleGetRestaurantById = async (restaurantId) => {
-    const restaurantById = await API.getRestaurantById(parseInt(restaurantId));
-    setRestName(JSON.parse(JSON.stringify(restaurantById))?.title);
-    setRestInfo(JSON.parse(JSON.stringify(restaurantById)));
-  };
-  useEffect(() => {
-    setRestName(restInfo?.title);
-  }, [restInfo]);
-
-  // amit tavidanve momaq restornis saxeli
-  useLayoutEffect(() => {
-    const getRestaurantName = async () => {
-      handleGetOwnedRestaurant();
-      // setRestName(await getRestaurantAdmin());
-    };
-    getRestaurantName();
-    // aq vsetavt local stoaragedan wamogebul datas
-    const savedData = localStorage.getItem("user_email");
-    if (savedData) {
-      setData(savedData);
-      setDataIsUploaded(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (dataIsUploaded && data == null) {
-      setTimeout(() => {
-        navigate(`/`);
-      }, [500]);
-    }
-  }, [data, dataIsUploaded]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Main>
+    <Main>
+      {cookies.user ? (
         <Page>
           <LeftSide>
             <LeftSideTop>
@@ -80,27 +59,27 @@ export default function Root() {
                   {
                     Title: "Full Restaurant Information",
                     Name: "FullRestInfo",
-                    restName: restName,
+                    restName: restInfo?.title,
                   },
                   {
                     Title: "Address",
                     Name: "Address",
-                    restName: restName,
+                    restName: restInfo?.title,
                   },
                   {
                     Title: "Description",
                     Name: "Description",
-                    restName: restName,
+                    restName: restInfo?.title,
                   },
                   {
                     Title: "Tags",
                     Name: "RestaurantTags",
-                    restName: restName,
+                    restName: restInfo?.title,
                   },
                   {
                     Title: "Restaurant Main Image",
                     Name: "MainImage",
-                    restName: restName,
+                    restName: restInfo?.title,
                   },
                 ]}
               />
@@ -110,13 +89,13 @@ export default function Root() {
                   {
                     Title: "Products",
                     Name: "Products",
-                    restName: restName,
+                    restName: restInfo?.title,
                     restInfo: restInfo,
                   },
                   {
                     Title: "Categories",
                     Name: "Categories",
-                    restName: restName,
+                    restName: restInfo?.title,
                   },
                 ]}
               />
@@ -126,31 +105,31 @@ export default function Root() {
                   {
                     Title: "All Orders",
                     Name: "AllOrders",
-                    restName: restName,
+                    restName: restInfo?.title,
                     restInfo: restInfo,
                   },
                   {
                     Title: "Pending Orders",
                     Name: "PendingOrders",
-                    restName: restName,
+                    restName: restInfo?.title,
                     restInfo: restInfo,
                   },
                   {
                     Title: "Confirmed Orders",
                     Name: "ConfirmedOrders",
-                    restName: restName,
+                    restName: restInfo?.title,
                     restInfo: restInfo,
                   },
                   {
                     Title: "Denied Orders",
                     Name: "DeniedOrders",
-                    restName: restName,
+                    restName: restInfo?.title,
                     restInfo: restInfo,
                   },
                   {
                     Title: "Deleted Orders",
                     Name: "DeletedOrders",
-                    restName: restName,
+                    restName: restInfo?.title,
                     restInfo: restInfo,
                   },
                 ]}
@@ -159,17 +138,10 @@ export default function Root() {
           </LeftSide>
           <RightSide>
             <UpperSideIn>
-              <UserTitle>
-                User: {data}
-                {/* {context?.mainUser} */}
-              </UserTitle>
+              <UserTitle>User: {cookies.user || "No user logged in"}</UserTitle>
               <LogOutButton
                 onClick={() => {
-                  // context?.setIsLoggedIn(false);
-                  localStorage.removeItem("user_email");
-                  localStorage.removeItem("user_password");
-                  setData(null);
-                  // signOut();
+                  removeCookie("user", { path: "/" });
                 }}
               >
                 Log Out
@@ -180,8 +152,8 @@ export default function Root() {
             </OutletSpace>
           </RightSide>
         </Page>
-      </Main>
-    </QueryClientProvider>
+      ) : null}
+    </Main>
   );
 }
 
